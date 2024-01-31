@@ -17,7 +17,7 @@
 //#define PLAYER '@'
 
 char map[HEIGHT][WIDTH];
-
+int queSize = 0;
 
 /////Que Implemntation////
  struct Node {  
@@ -40,7 +40,8 @@ void enqueue(int element[2], char seed) {
         return;  
     }  
     rear->next = new_node;  
-    rear = new_node;  
+    rear = new_node; 
+    queSize ++; 
 }  
   
 int dequeue(int coord[2], char *s) {  
@@ -60,6 +61,7 @@ int dequeue(int coord[2], char *s) {
     }  
 
     free(temp);  
+    queSize --;
     return 0;  
 }  
 
@@ -94,7 +96,9 @@ void createMap(){
 //    enqueue(arr, '%');
 //    enqueue(arr, '#');
 
+    enqueue(grass1, ':');
 
+    while 
 
 
 
@@ -115,8 +119,6 @@ void printMap(char map[HEIGHT][WIDTH]){
 int main(int argc, char *argv[]){
 
     srand(time(NULL));
-
-
     createMap();
 
     printMap(map);
