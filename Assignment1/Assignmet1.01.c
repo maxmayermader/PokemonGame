@@ -117,18 +117,18 @@ void createMap(){
         // printf("%d    %c\n", retArr[1], retC);
 
     enqueue(grass1, GRASS);
-    enqueue(grass2, GRASS);
     enqueue(water, WATER);
     enqueue(clearing1, CLEARING);
-    enqueue(clearing2, CLEARING);
+    enqueue(grass2, GRASS);
     enqueue(forest, TREE);
     enqueue(mountain, BOULDER);
+    enqueue(clearing2, CLEARING);
 
-    
+    char *currSeed = (char*)malloc(sizeof(char));
 
     while (getQueSize() > 0) {
         int currCoord[2];
-        char *currSeed = (char*)malloc(sizeof(char));
+        
         dequeue(currCoord, currSeed);
         //printf("%c", *currSeed);
         map[currCoord[0]][currCoord[1]] = *currSeed;
@@ -160,6 +160,7 @@ void createMap(){
             }
         }
     }
+    free(currSeed);
 
 }
 
@@ -168,6 +169,10 @@ void setMap(){
     int j;
     for(i = 0; i < HEIGHT; i++){
         for(j=0; j < WIDTH; j++){
+            if (i == 0 || i == HEIGHT-1 || j == 0 || j == WIDTH-1){
+                map[i][j] = '%';
+                continue;
+            }
             map[i][j] = '_';
         }
     }
