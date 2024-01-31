@@ -104,43 +104,48 @@ void createMap(){
         // dequeue(retArr, &retC);
         // printf("%d    %c\n", retArr[1], retC);
 
-    enqueue(grass1, ':');
-    enqueue(grass2, ':');
+    enqueue(grass1, GRASS);
+    enqueue(grass2, GRASS);
+    enqueue(water, WATER);
+    enqueue(clearing1, CLEARING);
+    enqueue(clearing2, CLEARING);
+    enqueue(forest, TREE);
+    enqueue(mountain, BOULDER);
 
     
 
-    // while (front != NULL) {
-    //     int currCoord[2];
-    //     char *currSeed = (char*)malloc(sizeof(char));
-    //     dequeue(currCoord, currSeed);
-    //     printf("%c", *currSeed);
-    //     map[currCoord[0]][currCoord[1]] = *currSeed;
-    //     //for loops variables
-    //     if (currCoord[0]+1 < 20){
-    //         if (map[currCoord[0]+1][currCoord[1]] == '_'){
-    //             int arr[2] = {currCoord[0]+1, currCoord[1]};
-    //             enqueue(arr, *currSeed);
-    //         }
-    //     }
-    //     if (currCoord[0]-1 > 0){
-    //         if (map[currCoord[0]-1][currCoord[1]] == '_'){
-    //             int arr[2] = {currCoord[0]-1, currCoord[1]};
-    //             enqueue(arr, *currSeed);
-    //         }
-    //     }
-    //     if (currCoord[1]+1 < 79){
-    //         if (map[currCoord[0]][currCoord[1]+1] == '_'){
-    //             int arr[2] = {currCoord[0], currCoord[1]+1};
-    //             enqueue(arr, *currSeed);
-    //         }
-    //     }
-    //     if (currCoord[1]-1 > 0){
-    //         if (map[currCoord[0]][currCoord[1]-1] == '_'){
-    //             int arr[2] = {currCoord[0], currCoord[1]-1};
-    //             enqueue(arr, *currSeed);
-    //         }
-    //     }
-    // }
+    while (front != NULL) {
+        int currCoord[2];
+        char *currSeed = (char*)malloc(sizeof(char));
+        dequeue(currCoord, currSeed);
+        printf("%c", *currSeed);
+        map[currCoord[0]][currCoord[1]] = *currSeed;
+        //for loops variables
+        if (currCoord[0]+1 < 20){
+            if (map[currCoord[0]+1][currCoord[1]] == '_'){
+                int arr[2] = {currCoord[0]+1, currCoord[1]};
+                enqueue(arr, *currSeed);
+            }
+        }
+        if (currCoord[0]-1 > 0){
+            if (map[currCoord[0]-1][currCoord[1]] == '_'){
+                int arr[2] = {currCoord[0]-1, currCoord[1]};
+                enqueue(arr, *currSeed);
+            }
+        }
+        if (currCoord[1]+1 < 79){
+            if (map[currCoord[0]][currCoord[1]+1] == '_'){
+                int arr[2] = {currCoord[0], currCoord[1]+1};
+                enqueue(arr, *currSeed);
+            }
+        }
+        if (currCoord[1]-1 > 0){
+            if (map[currCoord[0]][currCoord[1]-1] == '_'){
+                int arr[2] = {currCoord[0], currCoord[1]-1};
+                enqueue(arr, *currSeed);
+            }
+        }
+    }
 
 }
 
