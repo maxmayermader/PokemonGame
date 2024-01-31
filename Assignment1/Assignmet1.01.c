@@ -3,8 +3,8 @@
 #include <stdlib.h>
 
 #define MAX_SIZE 100  
-#define HEIGHT 21//21 //X
-#define WIDTH 80 //Y
+#define ROW 21//21 //Y
+#define COL 80 //X
 
 #define BOULDER '%'
 #define TREE '^'
@@ -16,7 +16,7 @@
 #define WATER '~'
 //#define PLAYER '@'
 
-char map[HEIGHT][WIDTH];
+char map[ROW][COL];
 int queSize = 0;
 
 int getQueSize(){
@@ -27,8 +27,8 @@ int getQueSize(){
 void printMap(){
     int i;
     int j;
-    for (i=0; i < HEIGHT; i++){
-        for(j=0; j < WIDTH; j++){
+    for (i=0; i < ROW; i++){
+        for(j=0; j < COL; j++){
             printf("%c", map[i][j]);
         }
         printf("\n");
@@ -62,6 +62,7 @@ void enqueue(int element[2], char seed) {
   
 int dequeue(int coord[2], char *s) {  
     if (front == NULL) {  
+        //free(front);
         printf("Queue is empty");  
         return -1;  
     }  
@@ -80,26 +81,85 @@ int dequeue(int coord[2], char *s) {
     queSize --;
     return 0;  
 }  
+/////Que Implemntation////
 
+//Code for creating roads and buildings
+void makeRoads(){
+    int entranceX1[2] = {0, rand() % (COL-2)+1};
+    int entranceX2[2] = {ROW - 1, rand() % (COL-2)+1};
+    int entranceY1[2] = {rand() % (ROW-2)+1, 0};
+    int entranceY2[2] = {rand() % (ROW-2)+1, COL - 1};
 
+    int randX = rand() % (ROW-2) + 1;
+    int randY = rand() % (COL-2) + 1;
 
+    int connectionX1[2] = {randX, entranceX1[1]};
+    int connectionX2[2] = {randX, entranceX2[1]};
+    int connectionY1[2] = {entranceY1[0], randY};
+    int connectionY2[2] = {entranceY2[0], randY};
 
+    int a,b;
+    //build roads for cols
+    //Go down
+    for (a=entranceX1[0]; a <= connectionX1[0]; a++){
+        map[a][entranceX1[1]] = '#';
+        printf("1  %d     %d\n", a, entranceX1[1]);
+    }
+    if(connectionX1[1] <= connectionX2[1]){ //go left
+        for(b=connectionX1[1]; b<=connectionX2[1]; b++){
+            map[connectionX2[0]][b] = '#';
+            printf("2  %d     %d\n", connectionX2[0], b);
+        }
+    } else { //Go right
+        for(b=connectionX1[1]; b>=connectionX2[1]; b--){
+            map[connectionX2[0]][b] = '#';
+            printf("2  %d     %d\n", connectionX2[0], b);
+        }
+    }
+    //Go right
+    
+    //Go down
+    for (a=connectionX1[0]; a <= entranceX2[0]; a++){
+        map[a][connectionX2[1]] = '#';
+        printf("3  %d     %d\n", a, connectionX1[1]);
+    }
 
-//TODO 7 biomes
-//2 tall grass
-//1 water region
-//2 clearings
-//1 forrest
-//1 mountin
+    //Build rooads for rows
+    //Go down
+    for (a=entranceX1[0]; a <= connectionX1[0]; a++){
+        map[a][entranceX1[1]] = '#';
+        printf("1  %d     %d\n", a, entranceX1[1]);
+    }
+    if(connectionX1[1] <= connectionX2[1]){ //go left
+        for(b=connectionX1[1]; b<=connectionX2[1]; b++){
+            map[connectionX2[0]][b] = '#';
+            printf("2  %d     %d\n", connectionX2[0], b);
+        }
+    } else { //Go right
+        for(b=connectionX1[1]; b>=connectionX2[1]; b--){
+            map[connectionX2[0]][b] = '#';
+            printf("2  %d     %d\n", connectionX2[0], b);
+        }
+    }
+    //Go right
+    
+    //Go down
+    for (a=connectionX1[0]; a <= entranceX2[0]; a++){
+        map[a][connectionX2[1]] = '#';
+        printf("3  %d     %d\n", a, connectionX1[1]);
+    }
+
+}
+
 void createMap(){
     //assign biomes
-    int grass1[2] =     {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
-    int grass2[2] =     {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
-    int water[2] =      {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
-    int clearing1[2] =  {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
-    int clearing2[2] =  {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
-    int forest[2] =     {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
-    int mountain[2] =   {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
+    int grass1[2] =     {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
+    int grass2[2] =     {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
+    int water[2] =      {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
+    int clearing1[2] =  {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
+    int clearing2[2] =  {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
+    int forest[2] =     {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
+    int mountain[2] =   {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
 
     /*
     1. make map with que
@@ -126,50 +186,52 @@ void createMap(){
 
     char *currSeed = (char*)malloc(sizeof(char));
 
-    while (getQueSize() > 0) {
-        int currCoord[2];
+    // while (getQueSize() > 0) {
+    //     int currCoord[2];
         
-        dequeue(currCoord, currSeed);
-        //printf("%c", *currSeed);
-        map[currCoord[0]][currCoord[1]] = *currSeed;
-        // printMap();
-        // printf("\n");
-        //for loops variables
-        if (currCoord[0]+1 < HEIGHT-1){
-            if (map[currCoord[0]+1][currCoord[1]] == '_'){
-                int arr[2] = {currCoord[0]+1, currCoord[1]};
-                enqueue(arr, *currSeed);
-            }
-        }
-        if (currCoord[0]-1 > 0){
-            if (map[currCoord[0]-1][currCoord[1]] == '_'){
-                int arr[2] = {currCoord[0]-1, currCoord[1]};
-                enqueue(arr, *currSeed);
-            }
-        }
-        if (currCoord[1]+1 < WIDTH-1){
-            if (map[currCoord[0]][currCoord[1]+1] == '_'){
-                int arr[2] = {currCoord[0], currCoord[1]+1};
-                enqueue(arr, *currSeed);
-            }
-        }
-        if (currCoord[1]-1 > 0){
-            if (map[currCoord[0]][currCoord[1]-1] == '_'){
-                int arr[2] = {currCoord[0], currCoord[1]-1};
-                enqueue(arr, *currSeed);
-            }
-        }
-    }
+    //     dequeue(currCoord, currSeed);
+    //     //printf("%c", *currSeed);
+    //     map[currCoord[0]][currCoord[1]] = *currSeed;
+    //     // printMap();
+    //     // printf("\n");
+    //     //for loops variables
+    //     if (currCoord[0]+1 < ROW-1){
+    //         if (map[currCoord[0]+1][currCoord[1]] == '_'){
+    //             int arr[2] = {currCoord[0]+1, currCoord[1]};
+    //             enqueue(arr, *currSeed);
+    //         }
+    //     }
+    //     if (currCoord[0]-1 > 0){
+    //         if (map[currCoord[0]-1][currCoord[1]] == '_'){
+    //             int arr[2] = {currCoord[0]-1, currCoord[1]};
+    //             enqueue(arr, *currSeed);
+    //         }
+    //     }
+    //     if (currCoord[1]+1 < COL-1){
+    //         if (map[currCoord[0]][currCoord[1]+1] == '_'){
+    //             int arr[2] = {currCoord[0], currCoord[1]+1};
+    //             enqueue(arr, *currSeed);
+    //         }
+    //     }
+    //     if (currCoord[1]-1 > 0){
+    //         if (map[currCoord[0]][currCoord[1]-1] == '_'){
+    //             int arr[2] = {currCoord[0], currCoord[1]-1};
+    //             enqueue(arr, *currSeed);
+    //         }
+    //     }
+    // }
     free(currSeed);
+
+    makeRoads();
 
 }
 
 void setMap(){
     int i;
     int j;
-    for(i = 0; i < HEIGHT; i++){
-        for(j=0; j < WIDTH; j++){
-            if (i == 0 || i == HEIGHT-1 || j == 0 || j == WIDTH-1){
+    for(i = 0; i < ROW; i++){
+        for(j=0; j < COL; j++){
+            if (i == 0 || i == ROW-1 || j == 0 || j == COL-1){
                 map[i][j] = '%';
                 continue;
             }
@@ -181,9 +243,14 @@ void setMap(){
 int main(int argc, char *argv[]){
 
     srand(time(NULL));
+    printf("hello0\n");
     setMap();
+    printf("hello1\n");
     createMap();
-
+    printf("hello2\n");
     printMap(map);
+    printf("hello3\n");
+    
+    
     return 0;
 }
