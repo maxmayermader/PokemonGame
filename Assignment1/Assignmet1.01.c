@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
 
 #define MAX_SIZE 100  
-#define HEIGHT 21
-#define WIDTH 80
+#define HEIGHT 21 //X
+#define WIDTH 80 //Y
 
 #define BOULDER '%'
 #define TREE '^'
@@ -14,33 +16,51 @@
 #define WATER '~'
 //#define PLAYER '@'
 
+char map[HEIGHT][WIDTH];
 
 
 /////Que Implemntation////
-int queue[MAX_SIZE];  
-int front = -1;  
-int rear = -1;  
+ struct Node {  
+    int coord[2]; 
+    char seed; 
+    struct Node* next;  
+};  
   
-void enqueue(int element) {  
-    if (rear == MAX_SIZE - 1) {  
-        printf("Queue is full");  
+struct Node* front = NULL;  
+struct Node* rear = NULL;  
+  
+void enqueue(int element[2], char seed) {  
+    struct Node* new_node = (struct Node*)malloc(sizeof(struct Node));  
+    new_node->coord[0] = element[0];
+    new_node->coord[1] = element[1];
+    new_node->seed = seed;  
+    new_node->next = NULL;  
+    if (front == NULL && rear == NULL) {  
+        front = rear = new_node;  
         return;  
     }  
-    if (front == -1) {  
-        front = 0;  
-    }  
-    rear++;  
-    queue[rear] = element;  
+    rear->next = new_node;  
+    rear = new_node;  
 }  
   
-int dequeue() {  
-    if (front == -1 || front > rear) {  
+int dequeue(int coord[2], char *s) {  
+    if (front == NULL) {  
         printf("Queue is empty");  
         return -1;  
     }  
-    int element = queue[front];  
-    front++;  
-    return element;  
+    struct Node* temp = front;  
+    coord[0] = temp->coord[0]; 
+    coord[1] = temp->coord[1]; 
+    *s = temp->seed;
+    if (front == rear) {  
+        front = rear = NULL;  
+    }  
+    else {  
+        front = front->next;  
+    }  
+
+    free(temp);  
+    return 0;  
 }  
 
 
@@ -53,30 +73,35 @@ int dequeue() {
 //2 clearings
 //1 forrest
 //1 mountin
-void createMap(char *map[HEIGHT][HEIGHT]){
+void createMap(){
     //assign biomes
-    int grass1[2][1] = {rand() % (WIDTH+1), rand() % (HEIGHT+1)};
-    int grass2[2][1] = {rand() % (WIDTH+1), rand() % (HEIGHT+1)};
-    int water[2][1] = {rand() % (WIDTH+1), rand() % (HEIGHT+1)};
-    int clearing1[2][1] = {rand() % (WIDTH+1), rand() % (HEIGHT+1)};
-    int clearing2[2][1] = {rand() % (WIDTH+1), rand() % (HEIGHT+1)};
-    int forrest[2][1] = {rand() % (WIDTH+1), rand() % (HEIGHT+1)};
-    int mountin[2][1] = {rand() % (WIDTH+1), rand() % (HEIGHT+1)};
+    int grass1[2] = {rand() % (WIDTH - 2) + 1, rand() % (HEIGHT - 2) + 1};
+    int grass2[2] = {rand() % (WIDTH - 2) + 1, rand() % (HEIGHT - 2) + 1};
+    int water[2] = {rand() % (WIDTH - 2) + 1, rand() % (HEIGHT - 2) + 1};
+    int clearing1[2] = {rand() % (WIDTH - 2) + 1, rand() % (HEIGHT - 2) + 1};
+    int clearing2[2] = {rand() % (WIDTH - 2) + 1, rand() % (HEIGHT - 2) + 1};
+    int forrest[2] = {rand() % (WIDTH - 2) + 1, rand() % (HEIGHT - 2) + 1};
+    int mountin[2] = {rand() % (WIDTH - 2) + 1, rand() % (HEIGHT - 2) + 1};
 
     /*
     1. make map with que
     2. make border
     3. make roads
     4. make buildings
-    
-    
     */
+
+//    int arr[2]={1,2};
+//    enqueue(arr, '%');
+//    enqueue(arr, '#');
+
+
+
 
 
 }
 
 //Prints map out to the terminal
-void printMap(char *map[HEIGHT][HEIGHT]){
+void printMap(char map[HEIGHT][WIDTH]){
     int i;
     int j;
     for (i=0; i < HEIGHT; i++){
@@ -88,12 +113,11 @@ void printMap(char *map[HEIGHT][HEIGHT]){
 }
 
 int main(int argc, char *argv[]){
-    char map[HEIGHT][WIDTH];
 
     srand(time(NULL));
 
 
-    createMap(map);
+    createMap();
 
     printMap(map);
     return 0;
