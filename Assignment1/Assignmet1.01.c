@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #define MAX_SIZE 100  
-#define HEIGHT 21 //X
+#define HEIGHT 21//21 //X
 #define WIDTH 80 //Y
 
 #define BOULDER '%'
@@ -21,6 +21,18 @@ int queSize = 0;
 
 int getQueSize(){
     return queSize;
+}
+
+//Prints map out to the terminal
+void printMap(){
+    int i;
+    int j;
+    for (i=0; i < HEIGHT; i++){
+        for(j=0; j < WIDTH; j++){
+            printf("%c", map[i][j]);
+        }
+        printf("\n");
+    }
 }
 
 /////Que Implemntation////
@@ -81,13 +93,13 @@ int dequeue(int coord[2], char *s) {
 //1 mountin
 void createMap(){
     //assign biomes
-    int grass1[2] = {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
-    int grass2[2] = {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
-    int water[2] = {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
-    int clearing1[2] = {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
-    int clearing2[2] = {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
-    int forest[2] = {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
-    int mountain[2] = {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
+    int grass1[2] =     {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
+    int grass2[2] =     {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
+    int water[2] =      {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
+    int clearing1[2] =  {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
+    int clearing2[2] =  {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
+    int forest[2] =     {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
+    int mountain[2] =   {rand() % (HEIGHT - 2) + 1, rand() % (WIDTH - 2) + 1};
 
     /*
     1. make map with que
@@ -114,14 +126,16 @@ void createMap(){
 
     
 
-    while (front != NULL) {
+    while (getQueSize() > 0) {
         int currCoord[2];
         char *currSeed = (char*)malloc(sizeof(char));
         dequeue(currCoord, currSeed);
-        printf("%c", *currSeed);
+        //printf("%c", *currSeed);
         map[currCoord[0]][currCoord[1]] = *currSeed;
+        // printMap();
+        // printf("\n");
         //for loops variables
-        if (currCoord[0]+1 < 20){
+        if (currCoord[0]+1 < HEIGHT-1){
             if (map[currCoord[0]+1][currCoord[1]] == '_'){
                 int arr[2] = {currCoord[0]+1, currCoord[1]};
                 enqueue(arr, *currSeed);
@@ -133,7 +147,7 @@ void createMap(){
                 enqueue(arr, *currSeed);
             }
         }
-        if (currCoord[1]+1 < 79){
+        if (currCoord[1]+1 < WIDTH-1){
             if (map[currCoord[0]][currCoord[1]+1] == '_'){
                 int arr[2] = {currCoord[0], currCoord[1]+1};
                 enqueue(arr, *currSeed);
@@ -147,18 +161,6 @@ void createMap(){
         }
     }
 
-}
-
-//Prints map out to the terminal
-void printMap(char map[HEIGHT][WIDTH]){
-    int i;
-    int j;
-    for (i=0; i < HEIGHT; i++){
-        for(j=0; j < WIDTH; j++){
-            printf("%c", map[i][j]);
-        }
-        printf("\n");
-    }
 }
 
 void setMap(){
