@@ -103,52 +103,55 @@ void makeRoads(){
     //Go down
     for (a=entranceX1[0]; a <= connectionX1[0]; a++){
         map[a][entranceX1[1]] = '#';
-        printf("1  %d     %d\n", a, entranceX1[1]);
+        //printf("1  %d     %d\n", a, entranceX1[1]);
     }
     if(connectionX1[1] <= connectionX2[1]){ //go left
         for(b=connectionX1[1]; b<=connectionX2[1]; b++){
             map[connectionX2[0]][b] = '#';
-            printf("2  %d     %d\n", connectionX2[0], b);
+            //printf("2  %d     %d\n", connectionX2[0], b);
         }
     } else { //Go right
         for(b=connectionX1[1]; b>=connectionX2[1]; b--){
             map[connectionX2[0]][b] = '#';
-            printf("2  %d     %d\n", connectionX2[0], b);
+            //printf("2  %d     %d\n", connectionX2[0], b);
         }
     }
     //Go right
     
     //Go down
-    for (a=connectionX1[0]; a <= entranceX2[0]; a++){
+    for (a=connectionX2[0]; a <= entranceX2[0]; a++){
         map[a][connectionX2[1]] = '#';
-        printf("3  %d     %d\n", a, connectionX1[1]);
+        //printf("3  %d     %d\n", a, connectionX1[1]);
     }
+
+
+
+
 
     //Build rooads for rows
-    //Go down
-    for (a=entranceX1[0]; a <= connectionX1[0]; a++){
-        map[a][entranceX1[1]] = '#';
-        printf("1  %d     %d\n", a, entranceX1[1]);
-    }
-    if(connectionX1[1] <= connectionX2[1]){ //go left
-        for(b=connectionX1[1]; b<=connectionX2[1]; b++){
-            map[connectionX2[0]][b] = '#';
-            printf("2  %d     %d\n", connectionX2[0], b);
-        }
-    } else { //Go right
-        for(b=connectionX1[1]; b>=connectionX2[1]; b--){
-            map[connectionX2[0]][b] = '#';
-            printf("2  %d     %d\n", connectionX2[0], b);
-        }
-    }
     //Go right
-    
-    //Go down
-    for (a=connectionX1[0]; a <= entranceX2[0]; a++){
-        map[a][connectionX2[1]] = '#';
-        printf("3  %d     %d\n", a, connectionX1[1]);
+    for (a=entranceY1[1]; a <= connectionY1[1]; a++){
+        map[entranceY1[0]][a] = '#';
+        //printf("1  %d     %d\n", a, entranceX1[1]);
     }
-
+    if(connectionY1[0] <= connectionY2[0]){ //go down
+        for(b=connectionY1[0]; b<=connectionY2[0]; b++){
+            map[b][connectionY1[1]] = '#';
+            //printf("2  %d     %d\n", connectionX2[0], b);
+        }
+    } else { //Go up
+        for(b=connectionY1[0]; b>=connectionY2[0]; b--){
+            map[b][connectionY1[1]] = '#';
+            //printf("2  %d     %d\n", connectionX2[0], b);
+        }
+    }
+    
+    //Go right
+     for (a=connectionY2[1]; a <= entranceY2[1]; a++){
+        map[connectionY2[0]][a] = '#';
+        p//rintf("1  %d     %d\n", a, entranceX1[1]);
+    }
+    
 }
 
 void createMap(){
