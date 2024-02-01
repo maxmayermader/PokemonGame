@@ -83,20 +83,33 @@ int dequeue(int coord[2], char *s) {
 }  
 /////Que Implemntation////
 
+// int canPlaceBuilding(int pos[2], int road, char type){
+    
+
+//     return -1;
+// }
+
+
 //Code for creating roads and buildings
 void makeRoads(){
-    int entranceX1[2] = {0, rand() % (COL-2)+1};
-    int entranceX2[2] = {ROW - 1, rand() % (COL-2)+1};
-    int entranceY1[2] = {rand() % (ROW-2)+1, 0};
-    int entranceY2[2] = {rand() % (ROW-2)+1, COL - 1};
+    //rand() % (max_number + 1 - minimum_number) + minimum_number
+    int entranceX1[2] = {0, rand() % (COL-4+1-4)+4};
+    int entranceX2[2] = {ROW - 1, rand() % (COL-4+1-4)+4};
+    int entranceY1[2] = {rand() % (ROW-10+1-10)+10, 0};
+    int entranceY2[2] = {rand() % (ROW-10+1-10)+10, COL - 1};
 
-    int randX = rand() % (ROW-5) + 10;
-    int randY = rand() % (COL-30) + 10;
+    int randX = rand() % (ROW-5+1-5) + 5;
+    int randY = rand() % (COL-20+1-20) + 20;
 
     int connectionX1[2] = {randX, entranceX1[1]};
     int connectionX2[2] = {randX, entranceX2[1]};
     int connectionY1[2] = {entranceY1[0], randY};
     int connectionY2[2] = {entranceY2[0], randY};
+
+    // int rowRL = 0;
+    // int colUD = 0;
+
+    int C1[2], C2[2], C3[2], C4[2], M1[2], M2[2], M3[2], M4[2];
 
     int a,b;
     //build roads for cols
@@ -109,11 +122,13 @@ void makeRoads(){
         for(b=connectionX1[1]; b<=connectionX2[1]; b++){
             map[connectionX2[0]][b] = '#';
             //printf("2  %d     %d\n", connectionX2[0], b);
+            //rowRL = 1;
         }
     } else { //Go right
         for(b=connectionX1[1]; b>=connectionX2[1]; b--){
             map[connectionX2[0]][b] = '#';
             //printf("2  %d     %d\n", connectionX2[0], b);
+            //rowRL = -1;
         }
     }
     //Go right
@@ -135,11 +150,13 @@ void makeRoads(){
         for(b=connectionY1[0]; b<=connectionY2[0]; b++){
             map[b][connectionY1[1]] = '#';
             //printf("2  %d     %d\n", connectionX2[0], b);
+            //colUD=1;
         }
     } else { //Go up
         for(b=connectionY1[0]; b>=connectionY2[0]; b--){
             map[b][connectionY1[1]] = '#';
             //printf("2  %d     %d\n", connectionX2[0], b);
+            //colUD=-1;
         }
     }
     
@@ -152,18 +169,36 @@ void makeRoads(){
 
     //make pokemart
     int i, j;
-    for(i = connectionX1[0]-4; i<connectionX1[0]-2; i++){
-        for(j = connectionX1[1]+1; j<connectionX1[1]+3; j++){
+    for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
+        for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
             map[i][j] = 'M';
+            // b++;
+            // if (b == 4)
+            //     break;
         }
     }
 
 
     //make center
-    for(i = connectionY1[1]-4; i<connectionY1[1]-2; i++){
-        for(j = connectionY1[0]+1; j<connectionY1[0]+3; j++){
-            printf("setting center\n %d   %d\n", i, j);
-            map[j][i] = 'C';
+    // b=0;
+    // for(i = connectionY1[1]-4; i<connectionY1[1]-2; i++){
+    //     for(j = connectionY1[0]+1; j<connectionY1[0]+3; j++){
+    //         printf("setting center\n %d   %d\n", i, j);
+    //         map[j][i] = 'C';
+    //         // b++;
+    //         // if (b == 4)
+    //         //     break;
+    //     }
+    //     // if (b == 4)
+    //     //     break;
+
+    // }
+    for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
+        for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
+            map[i][j] = 'C';
+            // b++;
+            // if (b == 4)
+            //     break;
         }
     }
     
@@ -204,43 +239,43 @@ void createMap(){
 
     char *currSeed = (char*)malloc(sizeof(char));
 
-    // while (getQueSize() > 0) {
-    //     int currCoord[2];
+    while (getQueSize() > 0) {
+        int currCoord[2];
         
-    //     dequeue(currCoord, currSeed);
-    //     //printf("%c", *currSeed);
-    //     map[currCoord[0]][currCoord[1]] = *currSeed;
-    //     // printMap();
-    //     // printf("\n");
-    //     //for loops variables
-    //     if (currCoord[0]+1 < ROW-1){
-    //         if (map[currCoord[0]+1][currCoord[1]] == '_'){
-    //             int arr[2] = {currCoord[0]+1, currCoord[1]};
-    //             enqueue(arr, *currSeed);
-    //         }
-    //     }
-    //     if (currCoord[0]-1 > 0){
-    //         if (map[currCoord[0]-1][currCoord[1]] == '_'){
-    //             int arr[2] = {currCoord[0]-1, currCoord[1]};
-    //             enqueue(arr, *currSeed);
-    //         }
-    //     }
-    //     if (currCoord[1]+1 < COL-1){
-    //         if (map[currCoord[0]][currCoord[1]+1] == '_'){
-    //             int arr[2] = {currCoord[0], currCoord[1]+1};
-    //             enqueue(arr, *currSeed);
-    //         }
-    //     }
-    //     if (currCoord[1]-1 > 0){
-    //         if (map[currCoord[0]][currCoord[1]-1] == '_'){
-    //             int arr[2] = {currCoord[0], currCoord[1]-1};
-    //             enqueue(arr, *currSeed);
-    //         }
-    //     }
-    // }
+        dequeue(currCoord, currSeed);
+        //printf("%c", *currSeed);
+        map[currCoord[0]][currCoord[1]] = *currSeed;
+        // printMap();
+        // printf("\n");
+        //for loops variables
+        if (currCoord[0]+1 < ROW-1){
+            if (map[currCoord[0]+1][currCoord[1]] == '_'){
+                int arr[2] = {currCoord[0]+1, currCoord[1]};
+                enqueue(arr, *currSeed);
+            }
+        }
+        if (currCoord[0]-1 > 0){
+            if (map[currCoord[0]-1][currCoord[1]] == '_'){
+                int arr[2] = {currCoord[0]-1, currCoord[1]};
+                enqueue(arr, *currSeed);
+            }
+        }
+        if (currCoord[1]+1 < COL-1){
+            if (map[currCoord[0]][currCoord[1]+1] == '_'){
+                int arr[2] = {currCoord[0], currCoord[1]+1};
+                enqueue(arr, *currSeed);
+            }
+        }
+        if (currCoord[1]-1 > 0){
+            if (map[currCoord[0]][currCoord[1]-1] == '_'){
+                int arr[2] = {currCoord[0], currCoord[1]-1};
+                enqueue(arr, *currSeed);
+            }
+        }
+    }
     free(currSeed);
 
-    makeRoads();
+    //makeRoads();
 
 }
 
@@ -265,6 +300,7 @@ int main(int argc, char *argv[]){
     setMap();
     //printf("hello1\n");
     createMap();
+    makeRoads();
     //printf("hello2\n");
     printMap();
     //printf("hello3\n");
