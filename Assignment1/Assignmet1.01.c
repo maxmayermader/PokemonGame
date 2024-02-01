@@ -90,8 +90,8 @@ void makeRoads(){
     int entranceY1[2] = {rand() % (ROW-2)+1, 0};
     int entranceY2[2] = {rand() % (ROW-2)+1, COL - 1};
 
-    int randX = rand() % (ROW-2) + 1;
-    int randY = rand() % (COL-2) + 1;
+    int randX = rand() % (ROW-5) + 10;
+    int randY = rand() % (COL-30) + 10;
 
     int connectionX1[2] = {randX, entranceX1[1]};
     int connectionX2[2] = {randX, entranceX2[1]};
@@ -125,9 +125,6 @@ void makeRoads(){
     }
 
 
-
-
-
     //Build rooads for rows
     //Go right
     for (a=entranceY1[1]; a <= connectionY1[1]; a++){
@@ -149,7 +146,25 @@ void makeRoads(){
     //Go right
      for (a=connectionY2[1]; a <= entranceY2[1]; a++){
         map[connectionY2[0]][a] = '#';
-        p//rintf("1  %d     %d\n", a, entranceX1[1]);
+        //printf("1  %d     %d\n", a, entranceX1[1]);
+    }
+
+
+    //make pokemart
+    int i, j;
+    for(i = connectionX1[0]-4; i<connectionX1[0]-2; i++){
+        for(j = connectionX1[1]+1; j<connectionX1[1]+3; j++){
+            map[i][j] = 'M';
+        }
+    }
+
+
+    //make center
+    for(i = connectionY1[1]-4; i<connectionY1[1]-2; i++){
+        for(j = connectionY1[0]+1; j<connectionY1[0]+3; j++){
+            printf("setting center\n %d   %d\n", i, j);
+            map[j][i] = 'C';
+        }
     }
     
 }
@@ -246,13 +261,13 @@ void setMap(){
 int main(int argc, char *argv[]){
 
     srand(time(NULL));
-    printf("hello0\n");
+    //printf("hello0\n");
     setMap();
-    printf("hello1\n");
+    //printf("hello1\n");
     createMap();
-    printf("hello2\n");
-    printMap(map);
-    printf("hello3\n");
+    //printf("hello2\n");
+    printMap();
+    //printf("hello3\n");
     
     
     return 0;
