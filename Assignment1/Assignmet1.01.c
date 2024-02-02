@@ -237,43 +237,46 @@ void createMap(){
     enqueue(mountain, BOULDER);
     enqueue(clearing2, CLEARING);
 
-    char *currSeed = (char*)malloc(sizeof(char));
+    char currSeed;
 
     while (getQueSize() > 0) {
         int currCoord[2];
         
-        dequeue(currCoord, currSeed);
+        dequeue(currCoord, &currSeed);
         //printf("%c", *currSeed);
-        map[currCoord[0]][currCoord[1]] = *currSeed;
+        map[currCoord[0]][currCoord[1]] = currSeed;
         // printMap();
         // printf("\n");
         //for loops variables
         if (currCoord[0]+1 < ROW-1){
             if (map[currCoord[0]+1][currCoord[1]] == '_'){
                 int arr[2] = {currCoord[0]+1, currCoord[1]};
-                enqueue(arr, *currSeed);
+                map[arr[0]][arr[1]] = '!';
+                enqueue(arr, currSeed);
             }
         }
         if (currCoord[0]-1 > 0){
             if (map[currCoord[0]-1][currCoord[1]] == '_'){
                 int arr[2] = {currCoord[0]-1, currCoord[1]};
-                enqueue(arr, *currSeed);
+                map[arr[0]][arr[1]] = '!';
+                enqueue(arr, currSeed);
             }
         }
         if (currCoord[1]+1 < COL-1){
             if (map[currCoord[0]][currCoord[1]+1] == '_'){
                 int arr[2] = {currCoord[0], currCoord[1]+1};
-                enqueue(arr, *currSeed);
+                map[arr[0]][arr[1]] = '!';
+                enqueue(arr, currSeed);
             }
         }
         if (currCoord[1]-1 > 0){
             if (map[currCoord[0]][currCoord[1]-1] == '_'){
                 int arr[2] = {currCoord[0], currCoord[1]-1};
-                enqueue(arr, *currSeed);
+                map[arr[0]][arr[1]] = '!';
+                enqueue(arr, currSeed);
             }
         }
     }
-    free(currSeed);
 
     //makeRoads();
 
