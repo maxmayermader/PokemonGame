@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #define MAX_SIZE 100  
 #define ROW 21//21 //Y
@@ -16,14 +17,14 @@
 #define WATER '~'
 //#define PLAYER '@'
 
-typedef struct map{
+typedef struct mapStruct{
 	bool generated;
 	int gateAx;//top
 	int gateBx;//bottom
 	int gateCy;//left
 	int gateDy;//right
-	char *tiles[MAPHEIGHT][MAPWIDTH];
-}map;
+	char *tiles[ROW][COL];
+}mapStruct;
 
 char map[ROW][COL];
 int queSize = 0;
@@ -248,40 +249,43 @@ void createMap(){
 
     char currSeed;
 
-    while (getQueSize() > 0) {
+    while (front != NULL) {
         int currCoord[2];
+        int randVal = rand() % 10;
         
         dequeue(currCoord, &currSeed);
         //printf("%c", *currSeed);
-        map[currCoord[0]][currCoord[1]] = currSeed;
+        //map[currCoord[0]][currCoord[1]] = currSeed;
         // printMap();
         // printf("\n");
         //for loops variables
-        if (currCoord[0]+1 < ROW-1){
-            if (map[currCoord[0]+1][currCoord[1]] == '_'){
-                int arr[2] = {currCoord[0]+1, currCoord[1]};
-                map[arr[0]][arr[1]] = '!';
-                enqueue(arr, currSeed);
+        if (randVal < 2){
+            if (currCoord[0]+1 < ROW-1){
+                if (map[currCoord[0]+1][currCoord[1]] == '_'){
+                    int arr[2] = {currCoord[0]+1, currCoord[1]};
+                    map[arr[0]][arr[1]] = currSeed;
+                    enqueue(arr, currSeed);
+                }
             }
-        }
-        if (currCoord[0]-1 > 0){
-            if (map[currCoord[0]-1][currCoord[1]] == '_'){
-                int arr[2] = {currCoord[0]-1, currCoord[1]};
-                map[arr[0]][arr[1]] = '!';
-                enqueue(arr, currSeed);
+            if (currCoord[0]-1 > 0){
+                if (map[currCoord[0]-1][currCoord[1]] == '_'){
+                    int arr[2] = {currCoord[0]-1, currCoord[1]};
+                    map[arr[0]][arr[1]] = currSeed;
+                    enqueue(arr, currSeed);
+                }
             }
         }
         if (currCoord[1]+1 < COL-1){
             if (map[currCoord[0]][currCoord[1]+1] == '_'){
                 int arr[2] = {currCoord[0], currCoord[1]+1};
-                map[arr[0]][arr[1]] = '!';
+                map[arr[0]][arr[1]] = currSeed;
                 enqueue(arr, currSeed);
             }
         }
         if (currCoord[1]-1 > 0){
             if (map[currCoord[0]][currCoord[1]-1] == '_'){
                 int arr[2] = {currCoord[0], currCoord[1]-1};
-                map[arr[0]][arr[1]] = '!';
+                map[arr[0]][arr[1]] = currSeed;
                 enqueue(arr, currSeed);
             }
         }
@@ -308,14 +312,47 @@ void setMap(){
 int main(int argc, char *argv[]){
 
     srand(time(NULL));
-    //printf("hello0\n");
     setMap();
-    //printf("hello1\n");
     createMap();
     makeRoads();
-    //printf("hello2\n");
     printMap();
-    //printf("hello3\n");
+
+    char userChar;
+    userChar = getchar();
+
+    do{
+        if (scanf(" %c", &userChar) != 1) {
+            /* To handle EOF */
+            putchar('\n');
+            break;
+        }
+        switch (userChar) {
+            case 'n':
+                
+                break;
+            case 's':
+                
+                break;
+            case 'e':
+                
+                break;
+            case 'w':
+                
+                break;
+            case 'q':
+                break;
+            case 'f':
+                
+                break;
+            case 'h':
+                printf("Move with 'e'ast, 'w'est, 'n'orth, 's'outh or 'f'ly x y.\n"
+                        "Quit with 'q'.  '?' and 'h' print this help message.\n");
+                break;
+            default:
+                fprintf(stderr, "%c: Invalid input.  Enter '?' for help.\n", userChar);
+            break;
+        }
+    } while (userChar != 'q');
     
     
     return 0;
