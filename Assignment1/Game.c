@@ -16,6 +16,15 @@
 #define WATER '~'
 //#define PLAYER '@'
 
+typedef struct map{
+	bool generated;
+	int gateAx;//top
+	int gateBx;//bottom
+	int gateCy;//left
+	int gateDy;//right
+	char *tiles[MAPHEIGHT][MAPWIDTH];
+}map;
+
 char map[ROW][COL];
 int queSize = 0;
 
