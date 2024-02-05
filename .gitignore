@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 .gz
 .vscode
+=======
+!*/bin/*.exe
+.gz
+>>>>>>> 7316a2a (Edited file names and updated branch)
