@@ -1,5 +1,6 @@
 Game: Game.c
-		gcc Game.c -o Game
+		gcc -Wall Game.c -o Game
+		#gcc -Wall -Werror Game.c -o Game
 	
 
 clean:

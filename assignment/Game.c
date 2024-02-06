@@ -17,6 +17,9 @@
 #define WATER '~'
 //#define PLAYER '@'
 
+int globalRow = 200;
+int globalCol = 200;
+
 typedef struct mapStruct{
 	bool generated;
 	int gateAx;//top
@@ -26,7 +29,7 @@ typedef struct mapStruct{
 	char *tiles[ROW][COL];
 }mapStruct;
 
-char map[ROW][COL];
+char startMap[ROW][COL];
 int queSize = 0;
 
 int getQueSize(){
@@ -39,7 +42,7 @@ void printMap(){
     int j;
     for (i=0; i < ROW; i++){
         for(j=0; j < COL; j++){
-            printf("%c", map[i][j]);
+            printf("%c", startMap[i][j]);
         }
         printf("\n");
     }
@@ -119,24 +122,24 @@ void makeRoads(){
     // int rowRL = 0;
     // int colUD = 0;
 
-    int C1[2], C2[2], C3[2], C4[2], M1[2], M2[2], M3[2], M4[2];
+    //int C1[2], C2[2], C3[2], C4[2], M1[2], M2[2], M3[2], M4[2];
 
     int a,b;
     //build roads for cols
     //Go down
     for (a=entranceX1[0]; a <= connectionX1[0]; a++){
-        map[a][entranceX1[1]] = '#';
+        startMap[a][entranceX1[1]] = '#';
         //printf("1  %d     %d\n", a, entranceX1[1]);
     }
     if(connectionX1[1] <= connectionX2[1]){ //go left
         for(b=connectionX1[1]; b<=connectionX2[1]; b++){
-            map[connectionX2[0]][b] = '#';
+            startMap[connectionX2[0]][b] = '#';
             //printf("2  %d     %d\n", connectionX2[0], b);
             //rowRL = 1;
         }
     } else { //Go right
         for(b=connectionX1[1]; b>=connectionX2[1]; b--){
-            map[connectionX2[0]][b] = '#';
+            startMap[connectionX2[0]][b] = '#';
             //printf("2  %d     %d\n", connectionX2[0], b);
             //rowRL = -1;
         }
@@ -145,7 +148,7 @@ void makeRoads(){
     
     //Go down
     for (a=connectionX2[0]; a <= entranceX2[0]; a++){
-        map[a][connectionX2[1]] = '#';
+        startMap[a][connectionX2[1]] = '#';
         //printf("3  %d     %d\n", a, connectionX1[1]);
     }
 
@@ -153,18 +156,18 @@ void makeRoads(){
     //Build rooads for rows
     //Go right
     for (a=entranceY1[1]; a <= connectionY1[1]; a++){
-        map[entranceY1[0]][a] = '#';
+        startMap[entranceY1[0]][a] = '#';
         //printf("1  %d     %d\n", a, entranceX1[1]);
     }
     if(connectionY1[0] <= connectionY2[0]){ //go down
         for(b=connectionY1[0]; b<=connectionY2[0]; b++){
-            map[b][connectionY1[1]] = '#';
+            startMap[b][connectionY1[1]] = '#';
             //printf("2  %d     %d\n", connectionX2[0], b);
             //colUD=1;
         }
     } else { //Go up
         for(b=connectionY1[0]; b>=connectionY2[0]; b--){
-            map[b][connectionY1[1]] = '#';
+            startMap[b][connectionY1[1]] = '#';
             //printf("2  %d     %d\n", connectionX2[0], b);
             //colUD=-1;
         }
@@ -172,7 +175,7 @@ void makeRoads(){
     
     //Go right
      for (a=connectionY2[1]; a <= entranceY2[1]; a++){
-        map[connectionY2[0]][a] = '#';
+        startMap[connectionY2[0]][a] = '#';
         //printf("1  %d     %d\n", a, entranceX1[1]);
     }
 
@@ -181,7 +184,7 @@ void makeRoads(){
     int i, j;
     for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
         for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
-            map[i][j] = 'M';
+            startMap[i][j] = 'M';
             // b++;
             // if (b == 4)
             //     break;
@@ -205,7 +208,7 @@ void makeRoads(){
     // }
     for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
         for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
-            map[i][j] = 'C';
+            startMap[i][j] = 'C';
             // b++;
             // if (b == 4)
             //     break;
@@ -261,31 +264,31 @@ void createMap(){
         //for loops variables
         if (randVal < 2){
             if (currCoord[0]+1 < ROW-1){
-                if (map[currCoord[0]+1][currCoord[1]] == '_'){
+                if (startMap[currCoord[0]+1][currCoord[1]] == '_'){
                     int arr[2] = {currCoord[0]+1, currCoord[1]};
-                    map[arr[0]][arr[1]] = currSeed;
+                    startMap[arr[0]][arr[1]] = currSeed;
                     enqueue(arr, currSeed);
                 }
             }
             if (currCoord[0]-1 > 0){
-                if (map[currCoord[0]-1][currCoord[1]] == '_'){
+                if (startMap[currCoord[0]-1][currCoord[1]] == '_'){
                     int arr[2] = {currCoord[0]-1, currCoord[1]};
-                    map[arr[0]][arr[1]] = currSeed;
+                    startMap[arr[0]][arr[1]] = currSeed;
                     enqueue(arr, currSeed);
                 }
             }
         }
         if (currCoord[1]+1 < COL-1){
-            if (map[currCoord[0]][currCoord[1]+1] == '_'){
+            if (startMap[currCoord[0]][currCoord[1]+1] == '_'){
                 int arr[2] = {currCoord[0], currCoord[1]+1};
-                map[arr[0]][arr[1]] = currSeed;
+                startMap[arr[0]][arr[1]] = currSeed;
                 enqueue(arr, currSeed);
             }
         }
         if (currCoord[1]-1 > 0){
-            if (map[currCoord[0]][currCoord[1]-1] == '_'){
+            if (startMap[currCoord[0]][currCoord[1]-1] == '_'){
                 int arr[2] = {currCoord[0], currCoord[1]-1};
-                map[arr[0]][arr[1]] = currSeed;
+                startMap[arr[0]][arr[1]] = currSeed;
                 enqueue(arr, currSeed);
             }
         }
@@ -301,10 +304,10 @@ void setMap(){
     for(i = 0; i < ROW; i++){
         for(j=0; j < COL; j++){
             if (i == 0 || i == ROW-1 || j == 0 || j == COL-1){
-                map[i][j] = '%';
+                startMap[i][j] = '%';
                 continue;
             }
-            map[i][j] = '_';
+            startMap[i][j] = '_';
         }
     }
 }
@@ -318,7 +321,9 @@ int main(int argc, char *argv[]){
     printMap();
 
     char userChar;
-    userChar = getchar();
+    //userChar = getchar();
+    printf("Move with 'e'ast, 'w'est, 'n'orth, 's'outh or 'f'ly x y.\n"
+                        "Quit with 'q'.  and 'h' print this help message.\n");
 
     do{
         if (scanf(" %c", &userChar) != 1) {
@@ -346,7 +351,7 @@ int main(int argc, char *argv[]){
                 break;
             case 'h':
                 printf("Move with 'e'ast, 'w'est, 'n'orth, 's'outh or 'f'ly x y.\n"
-                        "Quit with 'q'.  '?' and 'h' print this help message.\n");
+                        "Quit with 'q'.  and 'h' print this help message.\n");
                 break;
             default:
                 fprintf(stderr, "%c: Invalid input.  Enter '?' for help.\n", userChar);
