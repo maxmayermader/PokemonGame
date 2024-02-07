@@ -2,7 +2,7 @@
 
 How to run:
     make
-    ./Assignment1
+    ./Game
 
 
 Bugs:
@@ -19,4 +19,4 @@ Bugs:
     Sometimes roads can go through buildings
 
 Description:
-    terrain generation
+    World map generation

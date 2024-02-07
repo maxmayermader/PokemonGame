@@ -107,12 +107,12 @@ int dequeue(int coord[2], char *s) {
 
 
 //Code for creating roads and buildings
-void makeRoads(mapStruct *map){
+void makeRoads(mapStruct *map, int distanceFromCenter){
     //rand() % (max_number + 1 - minimum_number) + minimum_number
-    int entranceX1[2] = {0, rand() % (COL-4+1-4)+4};
-    int entranceX2[2] = {ROW - 1, rand() % (COL-4+1-4)+4};
-    int entranceY1[2] = {rand() % (ROW-10+1-10)+10, 0};
-    int entranceY2[2] = {rand() % (ROW-4+1-4)+4, COL - 1};
+    int entranceX1[2] = {0, rand() % (COL-4+1-4)+4}; //North gate
+    int entranceX2[2] = {ROW - 1, rand() % (COL-4+1-4)+4}; //South gate
+    int entranceY1[2] = {rand() % (ROW-10+1-10)+10, 0};//West gate
+    int entranceY2[2] = {rand() % (ROW-4+1-4)+4, COL - 1};//East Gate
 
     int randX = rand() % (ROW-5+1-5) + 5;
     int randY = rand() % (COL-20+1-20) + 20;
@@ -123,28 +123,32 @@ void makeRoads(mapStruct *map){
     int connectionY2[2] = {entranceY2[0], randY};
 
     if(map->gateN != -1){
-        entranceX1[1] = map->gateN;
+        int gateVal = map->gateN;
+        entranceX1[1] = gateVal;
         //entranceY1[1] = 0;
     } else {
-        map->gateN = entranceY1[0];
+        map->gateN = entranceX1[1];
     }
     if(map->gateS != -1){
-        entranceX2[1] = map->gateS;
+        int gateVal = map->gateS;
+        entranceX2[1] = gateVal;
         //entranceY1[0] = 0;
     } else {
-        map->gateE = entranceX2[1];
+        map->gateS = entranceX2[1];
     }
     if(map->gateW != -1){
-        entranceY1[0] = map->gateN;
+        int gateVal = map->gateN;
+        entranceY1[0] = gateVal;
         //entranceY1[0] = ROW - 1;
     } else {
-        map->gateN = entranceY1[1];
+        map->gateW = entranceY1[0];
     }
     if(map->gateE != -1){
-        entranceY2[0] = map->gateS;
+        int gateVal = map->gateE;
+        entranceY2[0] = gateVal;
         //entranceY1[1] = COL - 1;
     } else {
-        map->gateN = entranceY2[0];
+        map->gateE = entranceY2[0];
     }
 
 
@@ -164,11 +168,11 @@ void makeRoads(mapStruct *map){
             map->terrain[connectionX2[0]][b] = '#';
         }
     }
-    //Go right
+    
     
     //Go down
     for (a=connectionX2[0]; a <= entranceX2[0]; a++){
-        map->terrain[a][connectionX2[1]] = '#';
+        map->terrain[a][entranceX2[1]] = '#';
     }
 
 
@@ -189,9 +193,10 @@ void makeRoads(mapStruct *map){
     
     //Go right
      for (a=connectionY2[1]; a <= entranceY2[1]; a++){
-        map->terrain[connectionY2[0]][a] = '#';
+        map->terrain[entranceY2[0]][a] = '#';
     }
 
+    int oddsForBuilding = ((-45*distanceFromCenter)/200 + 50) / 100;
 
     //make pokemart
     int i, j;
@@ -303,25 +308,25 @@ void setMap(mapStruct *map, int x, int y, worldMap *wm){
     if(x - 1 >= 0){
         if ((wm->arr[x-1][y]) != NULL){
             map->gateW = wm->arr[x-1][y]->gateE;
-            printf("%d\n",wm->arr[x-1][y]->gateE);
+            printf("West Gate%d\n",wm->arr[x-1][y]->gateE);
         }
     }
     if(x + 1 < worldXSize){
         if ((wm->arr[x+1][y]) != NULL){
             map->gateE = wm->arr[x+1][y]->gateW;
-            printf("%d\n",wm->arr[x+1][y]->gateW);
+            printf("East Gate%d\n",wm->arr[x+1][y]->gateW);
         }
     }
     if(y - 1 >= 0){
         if (wm->arr[x][y-1] != NULL){
             map->gateN = wm->arr[x][y-1]->gateS;
-            printf("%d\n",wm->arr[x][y-1]->gateS);
+            printf("North Gate %d\n",wm->arr[x][y-1]->gateS);
         }
     }
     if(y + 1 < worldYSize){
         if (wm->arr[x][y+1] != NULL){
             map->gateS= wm->arr[x][y+1]->gateN;
-            printf("hello %d\n",wm->arr[x][y+1]->gateN);
+            printf("South Gate %d\n",wm->arr[x][y+1]->gateN);
 
         }
     }
@@ -347,7 +352,8 @@ void createMap(int x, int y, worldMap *wm){
     //newMap->map = terrainMap;
     setMap(newMap, x, y, wm);;
     createTerrain(newMap);
-    makeRoads(newMap);
+    int distanceFromCenter = abs(x - 200) + abs(y - 200);
+    makeRoads(newMap, distanceFromCenter);
 
     wm->arr[x][y] = newMap;
 
@@ -361,12 +367,11 @@ void fly(int x, int y, worldMap *wm){
     } else {
         createMap(x, y, wm);
     }
-
 }
 
 int main(int argc, char *argv[]){
 
-    //srand(time(NULL));
+    srand(time(NULL));
     // setMap();
     // createTerrain();
     // printMap();
