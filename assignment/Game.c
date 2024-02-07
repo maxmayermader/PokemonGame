@@ -5,7 +5,7 @@
 
 #define MAX_SIZE 100  
 #define ROW 21//21 //Y
-#define COL 80 //X
+#define COL 80//80 //X 
 #define worldXSize 401
 #define worldYSize 401
 
@@ -20,14 +20,14 @@
 //#define PLAYER '@'
 
 
+
 //map struct for terrain. 21x80 map
 typedef struct mapStruct{
-	bool generated;
 	int gateN;//top
 	int gateS;//bottom
 	int gateW;//left
 	int gateE;//right
-	char *terrain[ROW][COL];
+	char terrain[ROW][COL];
 }mapStruct;
 
 //Global map. Array of map pointers
@@ -42,13 +42,17 @@ int getQueSize(){
     return queSize;
 }
 
+
+//func declerations
+    void createMap(int x, int y, worldMap *wm);
+
 //Prints map out to the terminal
-void printMap(char printMap[ROW][COL]){
+void printMap(mapStruct *map){
     int i;
     int j;
     for (i=0; i < ROW; i++){
         for(j=0; j < COL; j++){
-            printf("%c", printMap[i][j]);
+            printf("%c", map->terrain[i][j]);
         }
         printf("\n");
     }
@@ -103,12 +107,12 @@ int dequeue(int coord[2], char *s) {
 
 
 //Code for creating roads and buildings
-void makeRoads(){
+void makeRoads(mapStruct *map){
     //rand() % (max_number + 1 - minimum_number) + minimum_number
     int entranceX1[2] = {0, rand() % (COL-4+1-4)+4};
     int entranceX2[2] = {ROW - 1, rand() % (COL-4+1-4)+4};
     int entranceY1[2] = {rand() % (ROW-10+1-10)+10, 0};
-    int entranceY2[2] = {rand() % (ROW-10+1-10)+10, COL - 1};
+    int entranceY2[2] = {rand() % (ROW-4+1-4)+4, COL - 1};
 
     int randX = rand() % (ROW-5+1-5) + 5;
     int randY = rand() % (COL-20+1-20) + 20;
@@ -118,49 +122,74 @@ void makeRoads(){
     int connectionY1[2] = {entranceY1[0], randY};
     int connectionY2[2] = {entranceY2[0], randY};
 
+    if(map->gateN != -1){
+        entranceX1[1] = map->gateN;
+        //entranceY1[1] = 0;
+    } else {
+        map->gateN = entranceY1[0];
+    }
+    if(map->gateS != -1){
+        entranceX2[1] = map->gateS;
+        //entranceY1[0] = 0;
+    } else {
+        map->gateE = entranceX2[1];
+    }
+    if(map->gateW != -1){
+        entranceY1[0] = map->gateN;
+        //entranceY1[0] = ROW - 1;
+    } else {
+        map->gateN = entranceY1[1];
+    }
+    if(map->gateE != -1){
+        entranceY2[0] = map->gateS;
+        //entranceY1[1] = COL - 1;
+    } else {
+        map->gateN = entranceY2[0];
+    }
+
 
     int a,b;
     //build roads for cols
     //Go down
     for (a=entranceX1[0]; a <= connectionX1[0]; a++){
-        startMap[a][entranceX1[1]] = '#';
+        map->terrain[a][entranceX1[1]] = '#';
         //printf("1  %d     %d\n", a, entranceX1[1]);
     }
     if(connectionX1[1] <= connectionX2[1]){ //go left
         for(b=connectionX1[1]; b<=connectionX2[1]; b++){
-            startMap[connectionX2[0]][b] = '#';
+            map->terrain[connectionX2[0]][b] = '#';
         }
     } else { //Go right
         for(b=connectionX1[1]; b>=connectionX2[1]; b--){
-            startMap[connectionX2[0]][b] = '#';
+            map->terrain[connectionX2[0]][b] = '#';
         }
     }
     //Go right
     
     //Go down
     for (a=connectionX2[0]; a <= entranceX2[0]; a++){
-        startMap[a][connectionX2[1]] = '#';
+        map->terrain[a][connectionX2[1]] = '#';
     }
 
 
     //Build rooads for rows
     //Go right
     for (a=entranceY1[1]; a <= connectionY1[1]; a++){
-        startMap[entranceY1[0]][a] = '#';
+        map->terrain[entranceY1[0]][a] = '#';
     }
     if(connectionY1[0] <= connectionY2[0]){ //go down
         for(b=connectionY1[0]; b<=connectionY2[0]; b++){
-            startMap[b][connectionY1[1]] = '#';
+            map->terrain[b][connectionY1[1]] = '#';
         }
     } else { //Go up
         for(b=connectionY1[0]; b>=connectionY2[0]; b--){
-            startMap[b][connectionY1[1]] = '#';
+            map->terrain[b][connectionY1[1]] = '#';
         }
     }
     
     //Go right
      for (a=connectionY2[1]; a <= entranceY2[1]; a++){
-        startMap[connectionY2[0]][a] = '#';
+        map->terrain[connectionY2[0]][a] = '#';
     }
 
 
@@ -168,7 +197,7 @@ void makeRoads(){
     int i, j;
     for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
         for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
-            startMap[i][j] = 'M';
+            map->terrain[i][j] = 'M';
             // b++;
             // if (b == 4)
             //     break;
@@ -177,7 +206,7 @@ void makeRoads(){
 
     for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
         for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
-            startMap[i][j] = 'C';
+            map->terrain[i][j] = 'C';
             // b++;
             // if (b == 4)
             //     break;
@@ -229,22 +258,22 @@ void createTerrain(mapStruct *map){
             if (currCoord[0]-1 > 0){
                 if (map->terrain[currCoord[0]-1][currCoord[1]] == '_'){
                     int arr[2] = {currCoord[0]-1, currCoord[1]};
-                    startMap[arr[0]][arr[1]] = currSeed;
+                    map->terrain[arr[0]][arr[1]] = currSeed;
                     enqueue(arr, currSeed);
                 }
             }
         }
         if (currCoord[1]+1 < COL-1){
-            if (startMap[currCoord[0]][currCoord[1]+1] == '_'){
+            if (map->terrain[currCoord[0]][currCoord[1]+1] == '_'){
                 int arr[2] = {currCoord[0], currCoord[1]+1};
-                startMap[arr[0]][arr[1]] = currSeed;
+                map->terrain[arr[0]][arr[1]] = currSeed;
                 enqueue(arr, currSeed);
             }
         }
         if (currCoord[1]-1 > 0){
-            if (startMap[currCoord[0]][currCoord[1]-1] == '_'){
+            if (map->terrain[currCoord[0]][currCoord[1]-1] == '_'){
                 int arr[2] = {currCoord[0], currCoord[1]-1};
-                startMap[arr[0]][arr[1]] = currSeed;
+                map->terrain[arr[0]][arr[1]] = currSeed;
                 enqueue(arr, currSeed);
             }
         }
@@ -254,7 +283,7 @@ void createTerrain(mapStruct *map){
 
 }
 
-void setMap(mapStruct *map){
+void setMap(mapStruct *map, int x, int y, worldMap *wm){
     int i;
     int j;
     for(i = 0; i < ROW; i++){
@@ -266,28 +295,87 @@ void setMap(mapStruct *map){
             map->terrain[i][j] = '_';
         }
     }
+    map->gateN = -1;
+    map->gateE = -1;
+    map->gateW = -1;
+    map->gateS = -1;
+
+    if(x - 1 >= 0){
+        if ((wm->arr[x-1][y]) != NULL){
+            map->gateW = wm->arr[x-1][y]->gateE;
+            printf("%d\n",wm->arr[x-1][y]->gateE);
+        }
+    }
+    if(x + 1 < worldXSize){
+        if ((wm->arr[x+1][y]) != NULL){
+            map->gateE = wm->arr[x+1][y]->gateW;
+            printf("%d\n",wm->arr[x+1][y]->gateW);
+        }
+    }
+    if(y - 1 >= 0){
+        if (wm->arr[x][y-1] != NULL){
+            map->gateN = wm->arr[x][y-1]->gateS;
+            printf("%d\n",wm->arr[x][y-1]->gateS);
+        }
+    }
+    if(y + 1 < worldYSize){
+        if (wm->arr[x][y+1] != NULL){
+            map->gateS= wm->arr[x][y+1]->gateN;
+            printf("hello %d\n",wm->arr[x][y+1]->gateN);
+
+        }
+    }
 }
 
-void createMap(){
+void createWorldMap(worldMap *wm){
+    int i;
+    int j;
+
+    for(i=0; i<worldYSize; i++){
+        for(j=0; j<worldXSize; j++){
+            wm->arr[i][j] = NULL;
+        }
+    }
+}
+
+
+
+void createMap(int x, int y, worldMap *wm){
     
     mapStruct *newMap = malloc(sizeof(mapStruct));
     //char terrainMap[ROW][COL];
     //newMap->map = terrainMap;
-    setMap(*newMap);
-    createTerrain(*newMap);
-    makeRoads(*newMap)
+    setMap(newMap, x, y, wm);;
+    createTerrain(newMap);
+    makeRoads(newMap);
+
+    wm->arr[x][y] = newMap;
 
 
-    printMap(map);
+    printMap(newMap);
+}
+
+void fly(int x, int y, worldMap *wm){
+    if (wm->arr[x][y] != NULL){
+        printMap(wm->arr[x][y]);
+    } else {
+        createMap(x, y, wm);
+    }
+
 }
 
 int main(int argc, char *argv[]){
 
-    // srand(time(NULL));
+    //srand(time(NULL));
     // setMap();
     // createTerrain();
     // printMap();
-    createMap();
+    worldMap wm;
+    int currX = 200;
+    int currY = 200;
+    
+    createWorldMap(&wm);
+    createMap(currX, currY, &wm);
 
     char userChar;
     //userChar = getchar();
@@ -302,21 +390,55 @@ int main(int argc, char *argv[]){
         }
         switch (userChar) {
             case 'n':
-                
+                if(currY - 1 > -1){
+                    currY--;
+                    fly(currX, currY, &wm);
+                } else {
+                    printf("Can't go that way");
+                }
                 break;
             case 's':
-                
+                if(currY + 1 <  worldYSize){
+                    currY++;
+                    fly(currX, currY, &wm);
+                } else {
+                    printf("Can't go that way");
+                }
                 break;
             case 'e':
-                
+                if(currX + 1 < worldXSize){
+                    currX++;
+                    fly(currX, currY, &wm);
+                } else {
+                    printf("Can't go that way");
+                }
                 break;
             case 'w':
-                
+                if(currX - 1 > -1){
+                    currX--;
+                    fly(currX, currY, &wm);
+                } else {
+                    printf("Can't go that way");
+                }
                 break;
             case 'q':
                 break;
             case 'f':
-                
+                int userX;
+                int userY;
+                printf("Enter x y coordinates\n");
+                if (scanf(" %d %d", &userX, &userY) != 1) {
+                    /* To handle EOF */
+                    putchar('\n');
+                    if(userX >= worldXSize || userX < 0 || userY >= worldYSize || userY < 0){
+                        printf("invalid coordinates\n");
+                    } else {
+                        currX = userX;
+                        currY = userY;
+                        fly(currX, currY, &wm);
+                    }
+                    break;
+                }
                 break;
             case 'h':
                 printf("Move with 'e'ast, 'w'est, 'n'orth, 's'outh or 'f'ly x y.\n"
