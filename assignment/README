@@ -1,4 +1,4 @@
-***Assignemnt1.01***
+***Assignemnt1.02***
 
 How to run:
     make
@@ -8,15 +8,7 @@ How to run:
 Bugs:
     /**If you are having any issues running, just close the terminal and run it again. Thank you.**/
 
-    not sure if it's a bug but it can take a while to run.
-
-    Sometimes there there is a segmentation fault if you keep on trying to run the program. Usually works on the first try, but not if you keep trying to run it.
-
-    If were supposed to have two differint biomes sometimes they can morph into one big one.
-
-    If generation takes too long or doesn't work I just close the terminal and reopen it and then re run it
-
-    Sometimes roads can go through buildings
+    Sometimes roads don't form fully
 
 Description:
     World map generation

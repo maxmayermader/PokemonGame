@@ -114,14 +114,6 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
     int entranceY1[2] = {rand() % (ROW-10+1-10)+10, 0};//West gate
     int entranceY2[2] = {rand() % (ROW-4+1-4)+4, COL - 1};//East Gate
 
-    int randX = rand() % (ROW-5+1-5) + 5;
-    int randY = rand() % (COL-20+1-20) + 20;
-
-    int connectionX1[2] = {randX, entranceX1[1]};
-    int connectionX2[2] = {randX, entranceX2[1]};
-    int connectionY1[2] = {entranceY1[0], randY};
-    int connectionY2[2] = {entranceY2[0], randY};
-
     if(map->gateN != -1){
         int gateVal = map->gateN;
         entranceX1[1] = gateVal;
@@ -137,7 +129,7 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
         map->gateS = entranceX2[1];
     }
     if(map->gateW != -1){
-        int gateVal = map->gateN;
+        int gateVal = map->gateW;
         entranceY1[0] = gateVal;
         //entranceY1[0] = ROW - 1;
     } else {
@@ -151,6 +143,13 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
         map->gateE = entranceY2[0];
     }
 
+    int randX = rand() % (ROW-5+1-5) + 5;
+    int randY = rand() % (COL-20+1-20) + 20;
+
+    int connectionX1[2] = {randX, entranceX1[1]};
+    int connectionX2[2] = {randX, entranceX2[1]};
+    int connectionY1[2] = {entranceY1[0], randY};
+    int connectionY2[2] = {entranceY2[0], randY};
 
     int a,b;
     //build roads for cols
@@ -159,7 +158,8 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
         map->terrain[a][entranceX1[1]] = '#';
         //printf("1  %d     %d\n", a, entranceX1[1]);
     }
-    if(connectionX1[1] <= connectionX2[1]){ //go left
+    //go sideways
+    if(connectionX1[1] < connectionX2[1]){ //go left
         for(b=connectionX1[1]; b<=connectionX2[1]; b++){
             map->terrain[connectionX2[0]][b] = '#';
         }
@@ -168,8 +168,6 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
             map->terrain[connectionX2[0]][b] = '#';
         }
     }
-    
-    
     //Go down
     for (a=connectionX2[0]; a <= entranceX2[0]; a++){
         map->terrain[a][entranceX2[1]] = '#';
@@ -181,7 +179,8 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
     for (a=entranceY1[1]; a <= connectionY1[1]; a++){
         map->terrain[entranceY1[0]][a] = '#';
     }
-    if(connectionY1[0] <= connectionY2[0]){ //go down
+    //Go up or down
+    if(connectionY1[0] < connectionY2[0]){ //go down
         for(b=connectionY1[0]; b<=connectionY2[0]; b++){
             map->terrain[b][connectionY1[1]] = '#';
         }
@@ -189,8 +188,7 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
         for(b=connectionY1[0]; b>=connectionY2[0]; b--){
             map->terrain[b][connectionY1[1]] = '#';
         }
-    }
-    
+    }    
     //Go right
      for (a=connectionY2[1]; a <= entranceY2[1]; a++){
         map->terrain[entranceY2[0]][a] = '#';
@@ -371,7 +369,7 @@ void fly(int x, int y, worldMap *wm){
 
 int main(int argc, char *argv[]){
 
-    srand(time(NULL));
+    //srand(time(NULL));
     // setMap();
     // createTerrain();
     // printMap();
