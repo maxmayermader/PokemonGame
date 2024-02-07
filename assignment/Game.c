@@ -194,27 +194,81 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
         map->terrain[entranceY2[0]][a] = '#';
     }
 
-    int oddsForBuilding = ((-45*distanceFromCenter)/200 + 50) / 100;
+    int oddsForBuilding = ((-45*distanceFromCenter)/200 + 50);
+    int chancesOutOf100 = rand() % 100 + 1;
 
-    //make pokemart
-    int i, j;
-    for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
-        for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
-            map->terrain[i][j] = 'M';
-            // b++;
-            // if (b == 4)
-            //     break;
+    //Make pokemart
+    if (distanceFromCenter == 0){
+        //make pokemart
+        int i, j;
+        for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
+            for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
+                map->terrain[i][j] = 'M';
+                // b++;
+                // if (b == 4)
+                //     break;
+            }
+        }
+    } else if ( chancesOutOf100 <= oddsForBuilding && distanceFromCenter <= 200) {
+        int i, j;
+        for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
+            for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
+                map->terrain[i][j] = 'M';
+                // b++;
+                // if (b == 4)
+                //     break;
+            }
+        }
+    } else if (chancesOutOf100 <= 5){
+        int i, j;
+        for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
+            for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
+                map->terrain[i][j] = 'M';
+                // b++;
+                // if (b == 4)
+                //     break;
+            }
         }
     }
 
-    for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
-        for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
-            map->terrain[i][j] = 'C';
-            // b++;
-            // if (b == 4)
-            //     break;
+
+    chancesOutOf100 = rand() % 100 + 1;
+    //make Center
+    if (distanceFromCenter == 0){
+        int i, j;
+        //Make center
+        for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
+            for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
+                map->terrain[i][j] = 'C';
+                // b++;
+                // if (b == 4)
+                //     break;
+            }
+        }
+    } else if ( chancesOutOf100 <= oddsForBuilding && distanceFromCenter <= 200) {
+        int i, j;
+        //Make center
+        for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
+            for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
+                map->terrain[i][j] = 'C';
+                // b++;
+                // if (b == 4)
+                //     break;
+            }
+        }
+    } else if (chancesOutOf100 <= 5){
+        int i, j;
+        //Make center
+        for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
+            for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
+                map->terrain[i][j] = 'C';
+                // b++;
+                // if (b == 4)
+                //     break;
+            }
         }
     }
+    
     
 }
 
@@ -306,25 +360,25 @@ void setMap(mapStruct *map, int x, int y, worldMap *wm){
     if(x - 1 >= 0){
         if ((wm->arr[x-1][y]) != NULL){
             map->gateW = wm->arr[x-1][y]->gateE;
-            printf("West Gate%d\n",wm->arr[x-1][y]->gateE);
+            //printf("West Gate%d\n",wm->arr[x-1][y]->gateE);
         }
     }
     if(x + 1 < worldXSize){
         if ((wm->arr[x+1][y]) != NULL){
             map->gateE = wm->arr[x+1][y]->gateW;
-            printf("East Gate%d\n",wm->arr[x+1][y]->gateW);
+            //printf("East Gate%d\n",wm->arr[x+1][y]->gateW);
         }
     }
     if(y - 1 >= 0){
         if (wm->arr[x][y-1] != NULL){
             map->gateN = wm->arr[x][y-1]->gateS;
-            printf("North Gate %d\n",wm->arr[x][y-1]->gateS);
+            //printf("North Gate %d\n",wm->arr[x][y-1]->gateS);
         }
     }
     if(y + 1 < worldYSize){
         if (wm->arr[x][y+1] != NULL){
             map->gateS= wm->arr[x][y+1]->gateN;
-            printf("South Gate %d\n",wm->arr[x][y+1]->gateN);
+            //printf("South Gate %d\n",wm->arr[x][y+1]->gateN);
 
         }
     }
@@ -396,32 +450,36 @@ int main(int argc, char *argv[]){
                 if(currY - 1 > -1){
                     currY--;
                     fly(currX, currY, &wm);
+                    printf("(%d, %d)\n", currX-200, currY-200);
                 } else {
-                    printf("Can't go that way");
+                    printf("Can't go that way\n");
                 }
                 break;
             case 's':
                 if(currY + 1 <  worldYSize){
                     currY++;
                     fly(currX, currY, &wm);
+                    printf("(%d, %d)\n", currX-200, currY-200);
                 } else {
-                    printf("Can't go that way");
+                    printf("Can't go that way\n");
                 }
                 break;
             case 'e':
                 if(currX + 1 < worldXSize){
                     currX++;
                     fly(currX, currY, &wm);
+                    printf("(%d, %d)\n", currX-200, currY-200);
                 } else {
-                    printf("Can't go that way");
+                    printf("Can't go that way\n");
                 }
                 break;
             case 'w':
                 if(currX - 1 > -1){
                     currX--;
                     fly(currX, currY, &wm);
+                    printf("(%d, %d)\n", currX-200, currY-200);
                 } else {
-                    printf("Can't go that way");
+                    printf("Can't go that way\n");
                 }
                 break;
             case 'q':
@@ -433,6 +491,8 @@ int main(int argc, char *argv[]){
                 if (scanf(" %d %d", &userX, &userY) != 1) {
                     /* To handle EOF */
                     putchar('\n');
+                    userX+=200;
+                    userY+=200;
                     if(userX >= worldXSize || userX < 0 || userY >= worldYSize || userY < 0){
                         printf("invalid coordinates\n");
                     } else {
@@ -440,6 +500,7 @@ int main(int argc, char *argv[]){
                         currY = userY;
                         fly(currX, currY, &wm);
                     }
+                    printf("(%d, %d)\n", currX-200, currY-200);
                     break;
                 }
                 break;
