@@ -106,7 +106,7 @@ int dequeue(int coord[2], char *s) {
 
 
 
-//Code for creating roads and buildings
+/*Code for creating roads and buildings*/
 void makeRoads(mapStruct *map, int distanceFromCenter){
     //rand() % (max_number + 1 - minimum_number) + minimum_number
     int entranceX1[2] = {0, rand() % (COL-4+1-4)+4}; //North gate
@@ -209,7 +209,7 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
                 //     break;
             }
         }
-    } else if ( chancesOutOf100 <= oddsForBuilding && distanceFromCenter <= 200) {
+    } else if ( chancesOutOf100 <= oddsForBuilding && distanceFromCenter <= 200) { //away from center but distance is less than 200
         int i, j;
         for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
             for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
@@ -219,7 +219,7 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
                 //     break;
             }
         }
-    } else if (chancesOutOf100 <= 5){
+    } else if (chancesOutOf100 <= 5){//flat 5% chance if 200 away from center
         int i, j;
         for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
             for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
@@ -234,9 +234,9 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
 
     chancesOutOf100 = rand() % 100 + 1;
     //make Center
-    if (distanceFromCenter == 0){
+    if (distanceFromCenter == 0){//if at center
         int i, j;
-        //Make center
+        
         for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
             for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
                 map->terrain[i][j] = 'C';
@@ -245,9 +245,9 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
                 //     break;
             }
         }
-    } else if ( chancesOutOf100 <= oddsForBuilding && distanceFromCenter <= 200) {
+    } else if ( chancesOutOf100 <= oddsForBuilding && distanceFromCenter <= 200) { //away from center but distance is less than 200
         int i, j;
-        //Make center
+        
         for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
             for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
                 map->terrain[i][j] = 'C';
@@ -256,9 +256,9 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
                 //     break;
             }
         }
-    } else if (chancesOutOf100 <= 5){
+    } else if (chancesOutOf100 <= 5){ //flat 5% chance if 200 away from center
         int i, j;
-        //Make center
+        
         for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
             for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
                 map->terrain[i][j] = 'C';
@@ -272,9 +272,10 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
     
 }
 
+/*Randomly generate terrain*/
 void createTerrain(mapStruct *map){
 
-    //assign biomes
+    //assign biomes or seeds
     int grass1[2] =     {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
     int grass2[2] =     {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
     int water[2] =      {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
@@ -283,7 +284,7 @@ void createTerrain(mapStruct *map){
     int forest[2] =     {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
     int mountain[2] =   {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
 
-
+    //add to que
     enqueue(grass1, GRASS);
     enqueue(water, WATER);
     enqueue(clearing1, CLEARING);
@@ -340,6 +341,7 @@ void createTerrain(mapStruct *map){
 
 }
 
+/*Initilaize map to empty spaces and add border*/
 void setMap(mapStruct *map, int x, int y, worldMap *wm){
     int i;
     int j;
@@ -384,6 +386,7 @@ void setMap(mapStruct *map, int x, int y, worldMap *wm){
     }
 }
 
+/*Set all pointers to NULL*/
 void createWorldMap(worldMap *wm){
     int i;
     int j;
@@ -396,12 +399,10 @@ void createWorldMap(worldMap *wm){
 }
 
 
-
+/*Create a terrain map and add it to world map at position x y*/
 void createMap(int x, int y, worldMap *wm){
     
     mapStruct *newMap = malloc(sizeof(mapStruct));
-    //char terrainMap[ROW][COL];
-    //newMap->map = terrainMap;
     setMap(newMap, x, y, wm);;
     createTerrain(newMap);
     int distanceFromCenter = abs(x - 200) + abs(y - 200);
@@ -409,10 +410,10 @@ void createMap(int x, int y, worldMap *wm){
 
     wm->arr[x][y] = newMap;
 
-
     printMap(newMap);
 }
 
+/*Go to terrain map at x y*/
 void fly(int x, int y, worldMap *wm){
     if (wm->arr[x][y] != NULL){
         printMap(wm->arr[x][y]);
@@ -423,16 +424,15 @@ void fly(int x, int y, worldMap *wm){
 
 int main(int argc, char *argv[]){
 
-    //srand(time(NULL));
-    // setMap();
-    // createTerrain();
-    // printMap();
+    srand(time(NULL));//random seed
+   
     worldMap wm;
     int currX = 200;
     int currY = 200;
     
     createWorldMap(&wm);
     createMap(currX, currY, &wm);
+    printf("(%d, %d)\n", currX-200, currY-200);
 
     char userChar;
     //userChar = getchar();
@@ -509,7 +509,7 @@ int main(int argc, char *argv[]){
                         "Quit with 'q'.  and 'h' print this help message.\n");
                 break;
             default:
-                fprintf(stderr, "%c: Invalid input.  Enter '?' for help.\n", userChar);
+                fprintf(stderr, "%c: Invalid input.  Enter 'h' for help.\n", userChar);
             break;
         }
     } while (userChar != 'q');
