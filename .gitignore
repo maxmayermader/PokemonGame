@@ -1,2 +1,5 @@
 .gz
 .vscode
+.tsr
+!*/bin/*.exe
+

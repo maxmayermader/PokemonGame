@@ -1,0 +1,16 @@
+***Assignemnt1.02***
+
+How to run:
+    make
+    ./Game
+
+
+Bugs:
+    /**If you are having any issues running, just close the terminal and run it again. Thank you.**/
+
+    Sometimes roads don't form fully
+
+Description:
+    World map generation
+    Move with 'e'ast, 'w'est, 'n'orth, 's'outh or 'f'ly x y.
+    to fly press f then you will be prompted to enter x anad y coordinates
