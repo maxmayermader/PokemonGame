@@ -1,4 +1,4 @@
-***Assignemnt1.02***
+***Assignemnt1.03***
 
 How to run:
     make
@@ -8,7 +8,7 @@ How to run:
 Bugs:
     /**If you are having any issues running, just close the terminal and run it again. Thank you.**/
 
-    Sometimes roads don't form fully
+    Buildings can form away from raods
 
 Description:
     World map generation

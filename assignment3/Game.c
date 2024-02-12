@@ -107,7 +107,7 @@ int dequeue(int coord[2], char *s) {
 
 
 /*Code for creating roads and buildings*/
-void makeRoads(mapStruct *map, int distanceFromCenter){
+void makeRoads(mapStruct *map, int distanceFromCenter, int x, int y){
     //rand() % (max_number + 1 - minimum_number) + minimum_number
     int entranceX1[2] = {0, rand() % (COL-4+1-4)+4}; //North gate
     int entranceX2[2] = {ROW - 1, rand() % (COL-4+1-4)+4}; //South gate
@@ -151,12 +151,15 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
     int connectionY1[2] = {entranceY1[0], randY};
     int connectionY2[2] = {entranceY2[0], randY};
 
+    
     int a,b;
     //build roads for cols
     //Go down
-    for (a=entranceX1[0]; a <= connectionX1[0]; a++){
-        map->terrain[a][entranceX1[1]] = '#';
-        //printf("1  %d     %d\n", a, entranceX1[1]);
+    if (y != 0){
+        for (a=entranceX1[0]; a <= connectionX1[0]; a++){
+            map->terrain[a][entranceX1[1]] = '#';
+            //printf("1  %d     %d\n", a, entranceX1[1]);
+        }
     }
     //go sideways
     if(connectionX1[1] < connectionX2[1]){ //go left
@@ -169,15 +172,19 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
         }
     }
     //Go down
-    for (a=connectionX2[0]; a <= entranceX2[0]; a++){
-        map->terrain[a][entranceX2[1]] = '#';
+    if(y != worldYSize-1){
+        for (a=connectionX2[0]; a <= entranceX2[0]; a++){
+            map->terrain[a][entranceX2[1]] = '#';
+        }
     }
 
 
     //Build rooads for rows
     //Go right
-    for (a=entranceY1[1]; a <= connectionY1[1]; a++){
-        map->terrain[entranceY1[0]][a] = '#';
+    if(x != 0){
+        for (a=entranceY1[1]; a <= connectionY1[1]; a++){
+            map->terrain[entranceY1[0]][a] = '#';
+        }
     }
     //Go up or down
     if(connectionY1[0] < connectionY2[0]){ //go down
@@ -190,8 +197,10 @@ void makeRoads(mapStruct *map, int distanceFromCenter){
         }
     }    
     //Go right
-     for (a=connectionY2[1]; a <= entranceY2[1]; a++){
-        map->terrain[entranceY2[0]][a] = '#';
+    if (x!= worldXSize-1){
+        for (a=connectionY2[1]; a <= entranceY2[1]; a++){
+            map->terrain[entranceY2[0]][a] = '#';
+        }
     }
 
     int oddsForBuilding = ((-45*distanceFromCenter)/200 + 50);
@@ -406,7 +415,7 @@ void createMap(int x, int y, worldMap *wm){
     setMap(newMap, x, y, wm);;
     createTerrain(newMap);
     int distanceFromCenter = abs(x - 200) + abs(y - 200);
-    makeRoads(newMap, distanceFromCenter);
+    makeRoads(newMap, distanceFromCenter, x, y);
 
     wm->arr[x][y] = newMap;
 
