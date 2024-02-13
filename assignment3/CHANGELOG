@@ -1,3 +1,42 @@
+commit 3d1a61b5c5a3c70e5b08072977555fa1138bdd47
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 13 17:40:46 2024 -0600
+
+    new heap added
+
+commit 482daae2f09803105a1b7e5aec163835584cac40
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 13 13:41:30 2024 -0600
+
+    added priority que; semi complete
+
+commit 57d7b05124c9eefa01fd40e2075602dcac03d0fb
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 12 10:44:39 2024 -0600
+
+    no gates at edeges
+
+commit 097babd691c06c67ad7d293d1b5bb2bc8981fbb4
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Feb 8 13:54:09 2024 -0600
+
+    cleaned code
+
+commit 5c3daf02e8008500fd6074b629364b8b546f63da
+Merge: ae47379 6a7c0eb
+Author: Max Mayer-Mader <119761775+maxmayermader@users.noreply.github.com>
+Date:   Thu Feb 8 12:47:20 2024 -0600
+
+    Merge pull request #7 from maxmayermader/Ass2
+    
+    Ass2
+
+commit 6a7c0ebeacf6b8637154cb6170b4950286335946
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 7 19:03:28 2024 -0600
+
+    git ignore
+
 commit c0cf9b636194e55df2575c5acd081416f43e2c2f
 Author: Max P <maxmay@iastate.edu>
 Date:   Wed Feb 7 18:54:29 2024 -0600

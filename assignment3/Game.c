@@ -41,7 +41,6 @@ int getQueSize(){
     return queSize;
 }
 
-
 //func declerations
     void createMap(int x, int y, worldMap *wm);
 
@@ -56,6 +55,12 @@ void printMap(mapStruct *map){
         printf("\n");
     }
 }
+
+typedef struct heapNode {
+    int row;
+    int col;
+    int weight;
+} heapNode;
 
 /*Begin heap implemantation*/
 typedef struct MinHeap MinHeap;
