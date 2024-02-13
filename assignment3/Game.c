@@ -37,7 +37,6 @@ typedef struct worldMap{
 
 //char startMap[ROW][COL];
 int queSize = 0;
-
 int getQueSize(){
     return queSize;
 }
@@ -57,6 +56,75 @@ void printMap(mapStruct *map){
         printf("\n");
     }
 }
+
+/*Begin heap implemantation*/
+int heapSize = 0;
+void swap(int *a, int *b) {
+  int temp = *b;
+  *b = *a;
+  *a = temp;
+}
+
+// Function to heapify the tree
+void heapify(int array[], int size, int i) {
+  if (size == 1) {
+    printf("Single element in the heap");
+  } else {
+    // Find the largest among root, left child and right child
+    int smallest = i;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
+    if (l < heapSize && array[l] < array[smallest])
+      smallest = l;
+    if (r < heapSize && array[r] < array[smallest])
+      smallest = r;
+
+    // Swap and continue heapifying if root is not smallest
+    if (smallest != i) {
+      swap(&array[i], &array[smallest]);
+      heapify(array, size, smallest);
+    }
+  }
+}
+
+// Function to insert an element into the tree
+void insert(int array[], int newNum) {
+  if (heapSize == 0) {
+    array[0] = newNum;
+    heapSize += 1;
+  } else {
+    array[heapSize] = newNum;
+    heapSize += 1;
+    for (int i = heapSize / 2 - 1; i >= 0; i--) {
+      heapify(array, heapSize, i);
+    }
+  }
+}
+
+// Function to delete an element from the tree
+void deleteRoot(int array[], int num) {
+  int i;
+  for (i = 0; i < heapSize; i++) {
+    if (num == array[i])
+      break;
+  }
+
+  swap(&array[i], &array[heapSize - 1]);
+  heapSize -= 1;
+  for (int i = heapSize / 2 - 1; i >= 0; i--) {
+    heapify(array, heapSize, i);
+  }
+}
+
+//function to pop min
+
+// Print the array
+void printArray(int array[], int size) {
+  for (int i = 0; i < size; ++i)
+    printf("%d ", array[i]);
+  printf("\n");
+}
+/*End heap implementation*/
 
 /////Que Implemntation////
  struct Node {  
@@ -101,7 +169,7 @@ int dequeue(int coord[2], char *s) {
     queSize --;
     return 0;  
 }  
-/////Que Implemntation////
+/////End Que Implemntation////
 
 
 
@@ -197,7 +265,7 @@ void makeRoads(mapStruct *map, int distanceFromCenter, int x, int y){
         }
     }    
     //Go right
-    if (x!= worldXSize-1){
+    if (x != worldXSize-1){
         for (a=connectionY2[1]; a <= entranceY2[1]; a++){
             map->terrain[entranceY2[0]][a] = '#';
         }
@@ -434,6 +502,32 @@ void fly(int x, int y, worldMap *wm){
 int main(int argc, char *argv[]){
 
     srand(time(NULL));//random seed
+
+    int array[10];
+
+  insert(array, 3);
+  printArray(array, heapSize);
+  insert(array, 4);
+  printArray(array, heapSize);
+  insert(array, 9);
+  printArray(array, heapSize);
+  insert(array, 5);
+  printArray(array, heapSize);
+  insert(array, 0);
+  printArray(array, heapSize);
+  insert(array, 2);
+  printArray(array, heapSize);
+  insert(array, 1);
+  printArray(array, heapSize);
+
+  printf("Min-Heap array: ");
+  printArray(array, heapSize);
+
+  deleteRoot(array, 4);
+
+  printf("After deleting an element: ");
+
+  printArray(array, heapSize);
    
     worldMap wm;
     int currX = 200;
