@@ -336,11 +336,9 @@ void makeRoads(mapStruct *map, int distanceFromCenter, int x, int y){
     int a,b;
     //build roads for cols
     //Go down
-    if (y != 0){
-        for (a=entranceX1[0]; a <= connectionX1[0]; a++){
-            map->terrain[a][entranceX1[1]] = '#';
-            //printf("1  %d     %d\n", a, entranceX1[1]);
-        }
+    for (a=entranceX1[0]; a <= connectionX1[0]; a++){
+        map->terrain[a][entranceX1[1]] = '#';
+        //printf("1  %d     %d\n", a, entranceX1[1]);
     }
     //go sideways
     if(connectionX1[1] < connectionX2[1]){ //go left
@@ -353,19 +351,15 @@ void makeRoads(mapStruct *map, int distanceFromCenter, int x, int y){
         }
     }
     //Go down
-    if(y != worldYSize-1){
-        for (a=connectionX2[0]; a <= entranceX2[0]; a++){
-            map->terrain[a][entranceX2[1]] = '#';
-        }
+    for (a=connectionX2[0]; a <= entranceX2[0]; a++){
+        map->terrain[a][entranceX2[1]] = '#';
     }
 
 
     //Build rooads for rows
     //Go right
-    if(x != 0){
-        for (a=entranceY1[1]; a <= connectionY1[1]; a++){
-            map->terrain[entranceY1[0]][a] = '#';
-        }
+    for (a=entranceY1[1]; a <= connectionY1[1]; a++){
+        map->terrain[entranceY1[0]][a] = '#';
     }
     //Go up or down
     if(connectionY1[0] < connectionY2[0]){ //go down
@@ -378,11 +372,20 @@ void makeRoads(mapStruct *map, int distanceFromCenter, int x, int y){
         }
     }    
     //Go right
-    if (x != worldXSize-1){
-        for (a=connectionY2[1]; a <= entranceY2[1]; a++){
-            map->terrain[entranceY2[0]][a] = '#';
-        }
+    for (a=connectionY2[1]; a <= entranceY2[1]; a++){
+        map->terrain[entranceY2[0]][a] = '#';
     }
+    
+    //Close gates if at the edge
+    if (y == 0)
+        map->terrain[entranceX2[0]][entranceX1[1]] = '%';
+    if(y == worldYSize-1)
+        map->terrain[entranceX2[0]][entranceX2[1]] = '%';
+    if (x == 0)
+        map->terrain[entranceY2[0]][entranceY1[1]] = '%';
+    if(x == worldXSize-1)
+        map->terrain[entranceY2[0]][entranceY2[1]] = '%';
+
 
     int oddsForBuilding = ((-45*distanceFromCenter)/200 + 50);
     int chancesOutOf100 = rand() % 100 + 1;
@@ -653,7 +656,7 @@ int calcCost(int npc, char terrainType){
 }
 
 /*Function for printing weightmap*/
-void printWeightMap(int *weightArr){
+void printWeightMap(int *weightArr[NPCROW][NPCCOL]){
     int i,j;
     for(i=0; i<ROW; i++){
         for(j=0; j<COL; j++){
