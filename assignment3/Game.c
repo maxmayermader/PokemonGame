@@ -63,71 +63,159 @@ typedef struct heapNode {
 } heapNode;
 
 /*Begin heap implemantation*/
-int heapSize = 0;
-void swap(int *a, int *b) {
-  int temp = *b;
-  *b = *a;
-  *a = temp;
-}
-
-// Function to heapify the tree
-void heapify(int array[], int size, int i) {
-  if (size == 1) {
-    printf("Single element in the heap");
-  } else {
-    // Find the largest among root, left child and right child
-    int smallest = i;
-    int l = 2 * i + 1;
-    int r = 2 * i + 2;
-    if (l < heapSize && array[l] < array[smallest])
-      smallest = l;
-    if (r < heapSize && array[r] < array[smallest])
-      smallest = r;
-
-    // Swap and continue heapifying if root is not smallest
-    if (smallest != i) {
-      swap(&array[i], &array[smallest]);
-      heapify(array, size, smallest);
+// Declare a heap structure
+struct Heap {
+    int* arr;
+    int size;
+    int capacity;
+};
+ 
+// define the struct Heap name
+typedef struct Heap heap;
+ 
+// forward declarations
+heap* createHeap(int capacity, int* nums);
+void insertHelper(heap* h, int index);
+void heapify(heap* h, int index);
+int extractMin(heap* h);
+void insert(heap* h, int data);
+ 
+// Define a createHeap function
+heap* createHeap(int capacity, int* nums)
+{
+    // Allocating memory to heap h
+    heap* h = (heap*)malloc(sizeof(heap));
+ 
+    // Checking if memory is allocated to h or not
+    if (h == NULL) {
+        printf("Memory error");
+        return NULL;
     }
-  }
-}
-
-// Function to insert an element into the tree
-void insert(int array[], int newNum) {
-  if (heapSize == 0) {
-    array[0] = newNum;
-    heapSize += 1;
-  } else {
-    array[heapSize] = newNum;
-    heapSize += 1;
-    for (int i = heapSize / 2 - 1; i >= 0; i--) {
-      heapify(array, heapSize, i);
+    // set the values to size and capacity
+    h->size = 0;
+    h->capacity = capacity;
+ 
+    // Allocating memory to array
+    h->arr = (int*)malloc(capacity * sizeof(int));
+ 
+    // Checking if memory is allocated to h or not
+    if (h->arr == NULL) {
+        printf("Memory error");
+        return NULL;
     }
-  }
+    int i;
+    for (i = 0; i < capacity; i++) {
+        h->arr[i] = nums[i];
+    }
+ 
+    h->size = i;
+    i = (h->size - 2) / 2;
+    while (i >= 0) {
+        heapify(h, i);
+        i--;
+    }
+    return h;
 }
-
-// Function to delete an element from the tree
-void deleteRoot(int array[], int num) {
-  int i;
-  for (i = 0; i < heapSize; i++) {
-    if (num == array[i])
-      break;
-  }
-
-  swap(&array[i], &array[heapSize - 1]);
-  heapSize -= 1;
-  for (int i = heapSize / 2 - 1; i >= 0; i--) {
-    heapify(array, heapSize, i);
-  }
+ 
+// Defining insertHelper function
+void insertHelper(heap* h, int index)
+{
+ 
+    // Store parent of element at index
+    // in parent variable
+    int parent = (index - 1) / 2;
+ 
+    if (h->arr[parent] > h->arr[index]) {
+        // Swapping when child is smaller
+        // than parent element
+        int temp = h->arr[parent];
+        h->arr[parent] = h->arr[index];
+        h->arr[index] = temp;
+ 
+        // Recursively calling insertHelper
+        insertHelper(h, parent);
+    }
 }
-
-//function to pop min
-
-// Print the array
-void printArray(int array[], int size) {
-  for (int i = 0; i < size; ++i)
-    printf("%d ", array[i]);
-  printf("\n");
+ 
+void heapify(heap* h, int index)
+{
+    int left = index * 2 + 1;
+    int right = index * 2 + 2;
+    int min = index;
+ 
+    // Checking whether our left or child element
+    // is at right index or not to avoid index error
+    if (left >= h->size || left < 0)
+        left = -1;
+    if (right >= h->size || right < 0)
+        right = -1;
+ 
+    // store left or right element in min if
+    // any of these is smaller that its parent
+    if (left != -1 && h->arr[left] < h->arr[index])
+        min = left;
+    if (right != -1 && h->arr[right] < h->arr[min])
+        min = right;
+ 
+    // Swapping the nodes
+    if (min != index) {
+        int temp = h->arr[min];
+        h->arr[min] = h->arr[index];
+        h->arr[index] = temp;
+ 
+        // recursively calling for their child elements
+        // to maintain min heap
+        heapify(h, min);
+    }
+}
+ 
+int extractMin(heap* h)
+{
+    int deleteItem;
+ 
+    // Checking if the heap is empty or not
+    if (h->size == 0) {
+        printf("\nHeap id empty.");
+        return -999;
+    }
+ 
+    // Store the node in deleteItem that
+    // is to be deleted.
+    deleteItem = h->arr[0];
+ 
+    // Replace the deleted node with the last node
+    h->arr[0] = h->arr[h->size - 1];
+    // Decrement the size of heap
+    h->size--;
+ 
+    // Call minheapify_top_down for 0th index
+    // to maintain the heap property
+    heapify(h, 0);
+    return deleteItem;
+}
+ 
+// Define a insert function
+void insert(heap* h, int data)
+{
+ 
+    // Checking if heap is full or not
+    if (h->size < h->capacity) {
+        // Inserting data into an array
+        h->arr[h->size] = data;
+        // Calling insertHelper function
+        insertHelper(h, h->size);
+        // Incrementing size of array
+        h->size++;
+    }
+}
+ 
+void printHeap(heap* h)
+{
+ 
+    for (int i = 0; i < h->size; i++) {
+        printf("%d ", h->arr[i]);
+    }
+    printf("\n");
 }
 /*End heap implementation*/
 
