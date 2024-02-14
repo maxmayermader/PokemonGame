@@ -71,7 +71,7 @@ typedef struct heapNode {
 struct Heap {
     heapNode* arr[MAX_HEAP_SIZE];
     int size;
-    int capacity;
+    //int capacity;
 };
  // define the struct Heap name
 typedef struct Heap heap;
@@ -96,7 +96,7 @@ heap* createHeap(int capacity)
     }
     // set the values to size and capacity
     h->size = 0;
-    h->capacity = capacity;
+    //h->capacity = capacity;
  
     // Allocating memory to array
     //h->arr = (heapNode*)malloc(capacity * sizeof(heapNode));
@@ -201,7 +201,7 @@ heapNode* extractMin(heap* h){
 void insert(heap* h, heapNode* data){
  
     // Checking if heap is full or not
-    if (h->size < h->capacity) {
+    if (h->size < MAX_HEAP_SIZE) {
         // Inserting data into an array
         h->arr[h->size] = data;
         // Calling insertHelper function
