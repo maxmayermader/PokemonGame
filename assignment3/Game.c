@@ -6,8 +6,8 @@
 #define MAX_SIZE 100  
 #define ROW 21//21 //Y
 #define COL 80//80 //X 
-#define NPCROW 19 //Y
-#define NPCCOL 78 //X 
+#define NPCROW (ROW - 2) //Y
+#define NPCCOL (COL - 2) //X 
 #define worldXSize 401
 #define worldYSize 401
 #define MAX_HEAP_SIZE 99999
@@ -652,12 +652,27 @@ int calcCost(int npc, char terrainType){
     return costArr[npc][terrainTypeInt];
 }
 
+/*Function for printing weightmap*/
+void printWeightMap(int *weightArr){
+    int i,j;
+    for(i=0; i<ROW; i++){
+        for(j=0; j<COL; j++){
+            if(i != 0 && i > NPCROW && j != 0 && j > NPCCOL){
+                printf("%d ", *weightArr[i][j]);
+            } else {
+                printf("   ");
+            }
+        }
+        printf("\n");
+    }
+}
+
 /*Helper method for dijkstras. Sets all weigts to inity*/
 void setWeights(int *weightArr[NPCROW][NPCCOL]){
     int i,j;
     for(i=0; i<NPCROW; i++){
         for(j=0; j<NPCCOL; j++){
-            weightArr[i][j] = INFINTY;
+            *weightArr[i][j] = INFINTY;
         }
     }
 }
