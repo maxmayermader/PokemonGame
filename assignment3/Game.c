@@ -56,6 +56,7 @@ void printMap(mapStruct *map){
     }
 }
 
+
 typedef struct heapNode {
     int row;
     int col;
@@ -65,23 +66,22 @@ typedef struct heapNode {
 /*Begin heap implemantation*/
 // Declare a heap structure
 struct Heap {
-    int* arr;
+    heapNode* arr[999999];
     int size;
     int capacity;
 };
- 
-// define the struct Heap name
+ // define the struct Heap name
 typedef struct Heap heap;
  
 // forward declarations
-heap* createHeap(int capacity, int* nums);
+heap* createHeap(int capacity);
 void insertHelper(heap* h, int index);
 void heapify(heap* h, int index);
-int extractMin(heap* h);
-void insert(heap* h, int data);
+heapNode* extractMin(heap* h);
+void insert(heap* h, heapNode* data);
  
 // Define a createHeap function
-heap* createHeap(int capacity, int* nums)
+heap* createHeap(int capacity)
 {
     // Allocating memory to heap h
     heap* h = (heap*)malloc(sizeof(heap));
@@ -96,17 +96,17 @@ heap* createHeap(int capacity, int* nums)
     h->capacity = capacity;
  
     // Allocating memory to array
-    h->arr = (int*)malloc(capacity * sizeof(int));
+    //h->arr = (heapNode*)malloc(capacity * sizeof(heapNode));
  
     // Checking if memory is allocated to h or not
     if (h->arr == NULL) {
         printf("Memory error");
         return NULL;
     }
-    int i;
-    for (i = 0; i < capacity; i++) {
-        h->arr[i] = nums[i];
-    }
+    int i=0;
+    // for (i = 0; i < capacity; i++) {
+    //     h->arr[i] = nodes[i];
+    // }
  
     h->size = i;
     i = (h->size - 2) / 2;
@@ -118,22 +118,22 @@ heap* createHeap(int capacity, int* nums)
 }
  
 // Defining insertHelper function
-void insertHelper(heap* h, int index)
+void insertHelper(heap* hp, int index)
 {
  
     // Store parent of element at index
     // in parent variable
     int parent = (index - 1) / 2;
  
-    if (h->arr[parent] > h->arr[index]) {
+    if (hp->arr[parent]->weight > hp->arr[index]->weight) {
         // Swapping when child is smaller
         // than parent element
-        int temp = h->arr[parent];
-        h->arr[parent] = h->arr[index];
-        h->arr[index] = temp;
+        heapNode* temp = hp->arr[parent];
+        hp->arr[parent] = hp->arr[index];
+        hp->arr[index] = temp;
  
         // Recursively calling insertHelper
-        insertHelper(h, parent);
+        insertHelper(hp, parent);
     }
 }
  
@@ -152,9 +152,9 @@ void heapify(heap* h, int index)
  
     // store left or right element in min if
     // any of these is smaller that its parent
-    if (left != -1 && h->arr[left] < h->arr[index])
+    if (left != -1 && h->arr[left]->weight < h->arr[index]->weight)
         min = left;
-    if (right != -1 && h->arr[right] < h->arr[min])
+    if (right != -1 && h->arr[right]->weight < h->arr[min]->weight)
         min = right;
  
     // Swapping the nodes
@@ -169,10 +169,9 @@ void heapify(heap* h, int index)
     }
 }
  
-int extractMin(heap* h)
-{
-    int deleteItem;
- 
+heapNode* extractMin(heap* h){
+    heapNode* deleteItem;
+    
     // Checking if the heap is empty or not
     if (h->size == 0) {
         printf("\nHeap id empty.");
@@ -190,13 +189,13 @@ int extractMin(heap* h)
  
     // Call minheapify_top_down for 0th index
     // to maintain the heap property
+    //ret = deleteItem;
     heapify(h, 0);
     return deleteItem;
 }
  
 // Define a insert function
-void insert(heap* h, int data)
-{
+void insert(heap* h, heapNode* data){
  
     // Checking if heap is full or not
     if (h->size < h->capacity) {
