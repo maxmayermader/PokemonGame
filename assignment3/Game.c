@@ -6,6 +6,8 @@
 #define MAX_SIZE 100  
 #define ROW 21//21 //Y
 #define COL 80//80 //X 
+#define NPCROW 19 //Y
+#define NPCCOL 78 //X 
 #define worldXSize 401
 #define worldYSize 401
 #define MAX_HEAP_SIZE 99999
@@ -22,6 +24,12 @@
 #define PLAYERCHAR '@'
 
 
+//NPC struct
+typedef struct NPC{
+    int type;
+    int row;
+    int col;
+}NPC;
 
 //map struct for terrain. 21x80 map
 typedef struct mapStruct{
@@ -30,7 +38,9 @@ typedef struct mapStruct{
 	int gateW;//left
 	int gateE;//right
 	char terrain[ROW][COL];
+    NPC npcArray[5];
 }mapStruct;
+
 
 //Global map. Array of map pointers
 typedef struct worldMap{
@@ -45,7 +55,7 @@ int getQueSize(){
 
 //forward declerations
     void createMap(int x, int y, worldMap *wm);
-    void dijkstras(int row, int col, int *weightArr[ROW][COL]);
+    void dijkstras(int row, int col, mapStruct* costMap, int *weightArr[ROW][COL], int typ);
     
 
 //Prints map out to the terminal
@@ -173,6 +183,8 @@ void heapify(heap* h, int index)
     }
 }
  
+ //potential leakage
+ //TODO
 heapNode* extractMin(heap* h){
     heapNode* deleteItem;
     
@@ -190,6 +202,7 @@ heapNode* extractMin(heap* h){
     h->arr[0] = h->arr[h->size - 1];
     // Decrement the size of heap
     h->size--;
+    free(h->arr[h->size - 1]);
  
     // Call minheapify_top_down for 0th index
     // to maintain the heap property
@@ -219,6 +232,10 @@ void printHeap(heap* h)
         printf("%d ", h->arr[i]->weight);
     }
     printf("\n");
+}
+
+void killHeap(heap* h){
+    free(h);
 }
 /*End heap implementation*/
 
@@ -595,10 +612,51 @@ void fly(int x, int y, worldMap *wm){
     }
 }
 
-void setWeights(int *weightArr[ROW][COL]){
+/*calc cost function. Get cost for NPC type*/
+int calcCost(int npc, char terrainType){
+    int terrainTypeInt;
+    switch (terrainType){
+        // case ROAD:
+        //     terrainTypeInt = 0;
+        //     break;
+        case 'M':
+            terrainTypeInt = 1;
+            break;
+        case 'C':
+            terrainTypeInt = 2;
+            break;
+        case GRASS:
+            terrainTypeInt = 3;
+            break;
+        case CLEARING:
+            terrainTypeInt = 4;
+            break;
+        case BOULDER:
+            terrainTypeInt = 5;
+            break;
+        case WATER:
+            terrainTypeInt = 6;
+            break; 
+        case ROAD:
+            terrainTypeInt = 6;
+            break;
+        default:
+            printf("error. Uknown type of terrrain\n");
+            break;
+    }
+                 // 0   1   2   3   4   5   6   7 
+                 // P   M   C   T   S   M   F   W   
+    int costArr = {{10, 50, 50, 15, 10, 15, 15, INFINTY},               //Hiker
+                   {10, 50, 50, 20, 10, INFINTY, INFINTY, INFINTY}};    //Rival
+
+    return costArr[npc][terrainTypeInt];
+}
+
+/*Helper method for dijkstras. Sets all weigts to inity*/
+void setWeights(int *weightArr[NPCROW][NPCCOL]){
     int i,j;
-    for(i=0; i<ROW; i++){
-        for(j=0; j<COL; j++){
+    for(i=0; i<NPCROW; i++){
+        for(j=0; j<NPCCOL; j++){
             weightArr[i][j] = INFINTY;
         }
     }
@@ -623,7 +681,7 @@ void setWeights(int *weightArr[ROW][COL]){
 // 17                  prev[v] ← u
 // 18
 // 19      return dist[], prev[]
-void dijkstras(int row, int col, int *weightArr[ROW][COL]){
+void dijkstras(int row, int col, mapStruct* terrainMap, int *weightArr[NPCROW][NPCCOL], int type){
     
 }
 
