@@ -55,7 +55,7 @@ int getQueSize(){
 
 //forward declerations
     void createMap(int x, int y, worldMap *wm);
-    void dijkstras(int row, int col, mapStruct* costMap, int *weightArr[ROW][COL], int typ);
+    void dijkstras(int row, int col, mapStruct* terrainMap, int *weightArr[NPCROW][NPCCOL], int type);
     
 
 //Prints map out to the terminal
@@ -616,9 +616,9 @@ void fly(int x, int y, worldMap *wm){
 int calcCost(int npc, char terrainType){
     int terrainTypeInt;
     switch (terrainType){
-        // case ROAD:
-        //     terrainTypeInt = 0;
-        //     break;
+        case ROAD:
+            terrainTypeInt = 0;
+            break;
         case 'M':
             terrainTypeInt = 1;
             break;
@@ -634,11 +634,11 @@ int calcCost(int npc, char terrainType){
         case BOULDER:
             terrainTypeInt = 5;
             break;
-        case WATER:
+        case TREE:
             terrainTypeInt = 6;
             break; 
-        case ROAD:
-            terrainTypeInt = 6;
+        case WATER:
+            terrainTypeInt = 7;
             break;
         default:
             printf("error. Uknown type of terrrain\n");
@@ -646,7 +646,7 @@ int calcCost(int npc, char terrainType){
     }
                  // 0   1   2   3   4   5   6   7 
                  // P   M   C   T   S   M   F   W   
-    int costArr = {{10, 50, 50, 15, 10, 15, 15, INFINTY},               //Hiker
+    int costArr[2][1] = {{10, 50, 50, 15, 10, 15, 15, INFINTY},               //Hiker
                    {10, 50, 50, 20, 10, INFINTY, INFINTY, INFINTY}};    //Rival
 
     return costArr[npc][terrainTypeInt];
