@@ -8,6 +8,8 @@
 #define COL 80//80 //X 
 #define worldXSize 401
 #define worldYSize 401
+#define MAX_HEAP_SIZE 99999
+#define INFINTY   999999999
 
 #define BOULDER '%'
 #define TREE '^'
@@ -17,7 +19,7 @@
 #define GRASS ':'
 #define CLEARING '.'
 #define WATER '~'
-//#define PLAYER '@'
+#define PLAYERCHAR '@'
 
 
 
@@ -43,6 +45,7 @@ int getQueSize(){
 
 //func declerations
     void createMap(int x, int y, worldMap *wm);
+    
 
 //Prints map out to the terminal
 void printMap(mapStruct *map){
@@ -66,7 +69,7 @@ typedef struct heapNode {
 /*Begin heap implemantation*/
 // Declare a heap structure
 struct Heap {
-    heapNode* arr[999999];
+    heapNode* arr[MAX_HEAP_SIZE];
     int size;
     int capacity;
 };
@@ -99,21 +102,21 @@ heap* createHeap(int capacity)
     //h->arr = (heapNode*)malloc(capacity * sizeof(heapNode));
  
     // Checking if memory is allocated to h or not
-    if (h->arr == NULL) {
-        printf("Memory error");
-        return NULL;
-    }
-    int i=0;
+    // if (h->arr == NULL) {
+    //     printf("Memory error");
+    //     return NULL;
+    // }
+    //int i=0;
     // for (i = 0; i < capacity; i++) {
     //     h->arr[i] = nodes[i];
     // }
  
-    h->size = i;
-    i = (h->size - 2) / 2;
-    while (i >= 0) {
-        heapify(h, i);
-        i--;
-    }
+    //h->size = i;
+    // int i = (h->size - 2) / 2;
+    // while (i >= 0) {
+    //     heapify(h, i);
+    //     i--;
+    // }
     return h;
 }
  
@@ -159,7 +162,7 @@ void heapify(heap* h, int index)
  
     // Swapping the nodes
     if (min != index) {
-        int temp = h->arr[min];
+        heapNode* temp = h->arr[min];
         h->arr[min] = h->arr[index];
         h->arr[index] = temp;
  
@@ -175,7 +178,7 @@ heapNode* extractMin(heap* h){
     // Checking if the heap is empty or not
     if (h->size == 0) {
         printf("\nHeap id empty.");
-        return -999;
+        return NULL;
     }
  
     // Store the node in deleteItem that
@@ -212,7 +215,7 @@ void printHeap(heap* h)
 {
  
     for (int i = 0; i < h->size; i++) {
-        printf("%d ", h->arr[i]);
+        printf("%d ", h->arr[i]->weight);
     }
     printf("\n");
 }
@@ -594,6 +597,21 @@ void fly(int x, int y, worldMap *wm){
 int main(int argc, char *argv[]){
 
     srand(time(NULL));//random seed
+
+    heap* h = createHeap(MAX_HEAP_SIZE);
+
+    heapNode hn1;
+    hn1.row = 14;
+    hn1.col = 21;
+    hn1.weight = 100;
+
+    heapNode hn2;
+    hn2.row = 10;
+    hn2.col = 23;
+    hn2.weight = 0;
+
+    insert(h,&hn1);
+    insert(h, &hn2);
 
    
     worldMap wm;
