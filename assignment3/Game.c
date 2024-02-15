@@ -11,7 +11,7 @@
 #define worldXSize 401
 #define worldYSize 401
 #define MAX_HEAP_SIZE 99999
-#define INFINTY   999999999
+#define INFINTY 999999
 
 #define BOULDER '%'
 #define TREE '^'
@@ -649,7 +649,7 @@ int calcCost(int npc, char terrainType){
     }
                  // 0   1   2   3   4   5   6   7 
                  // P   M   C   T   S   M   F   W   
-    int costArr[2][1] = {{10, 50, 50, 15, 10, 15, 15, INFINTY},               //Hiker
+    int costArr[2][8] = {{10, 50, 50, 15, 10, 15, 15, INFINTY},               //Hiker
                    {10, 50, 50, 20, 10, INFINTY, INFINTY, INFINTY}};    //Rival
 
     return costArr[npc][terrainTypeInt];
