@@ -378,11 +378,11 @@ void makeRoads(mapStruct *map, int distanceFromCenter, int x, int y){
     
     //Close gates if at the edge
     if (y == 0)
-        map->terrain[entranceX2[0]][entranceX1[1]] = '%';
+        map->terrain[entranceX1[0]][entranceX1[1]] = '%';
     if(y == worldYSize-1)
         map->terrain[entranceX2[0]][entranceX2[1]] = '%';
     if (x == 0)
-        map->terrain[entranceY2[0]][entranceY1[1]] = '%';
+        map->terrain[entranceY1[0]][entranceY1[1]] = '%';
     if(x == worldXSize-1)
         map->terrain[entranceY2[0]][entranceY2[1]] = '%';
 
