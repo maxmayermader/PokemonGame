@@ -26,10 +26,19 @@
 
 //NPC struct
 typedef struct NPC{
-    int type;
+    int symb;
     int row;
     int col;
 }NPC;
+
+//PC struct
+typedef struct PC{
+    int symb;
+    int row;
+    int col;
+    int globalX;
+    int globalY;
+}PC;
 
 //map struct for terrain. 21x80 map
 typedef struct mapStruct{
@@ -45,6 +54,7 @@ typedef struct mapStruct{
 //Global map. Array of map pointers
 typedef struct worldMap{
     mapStruct* arr[worldYSize][worldXSize];
+    PC player;
 }worldMap;
 
 //char startMap[ROW][COL];
@@ -55,7 +65,7 @@ int getQueSize(){
 
 //forward declerations
     void createMap(int x, int y, worldMap *wm);
-    void dijkstras(int row, int col, mapStruct* terrainMap, int *weightArr[NPCROW][NPCCOL], int type);
+    void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NPCCOL], int type);
     
 
 //Prints map out to the terminal
@@ -650,18 +660,18 @@ int calcCost(int npc, char terrainType){
                  // 0   1   2   3   4   5   6   7 
                  // P   M   C   T   S   M   F   W   
     int costArr[2][8] = {{10, 50, 50, 15, 10, 15, 15, INFINTY},               //Hiker
-                   {10, 50, 50, 20, 10, INFINTY, INFINTY, INFINTY}};    //Rival
+                         {10, 50, 50, 20, 10, INFINTY, INFINTY, INFINTY}};    //Rival
 
     return costArr[npc][terrainTypeInt];
 }
 
 /*Function for printing weightmap*/
-void printWeightMap(int *weightArr[NPCROW][NPCCOL]){
+void printWeightMap(int weightArr[NPCROW][NPCCOL]){
     int i,j;
     for(i=0; i<ROW; i++){
         for(j=0; j<COL; j++){
             if(i != 0 && i > NPCROW && j != 0 && j > NPCCOL){
-                printf("%d ", *weightArr[i][j]);
+                printf("%d ", weightArr[i][j]);
             } else {
                 printf("   ");
             }
@@ -671,11 +681,11 @@ void printWeightMap(int *weightArr[NPCROW][NPCCOL]){
 }
 
 /*Helper method for dijkstras. Sets all weigts to inity*/
-void setWeights(int *weightArr[NPCROW][NPCCOL]){
+void setWeights(int weightArr[NPCROW][NPCCOL]){
     int i,j;
     for(i=0; i<NPCROW; i++){
         for(j=0; j<NPCCOL; j++){
-            *weightArr[i][j] = INFINTY;
+            weightArr[i][j] = INFINTY;
         }
     }
 }
@@ -699,37 +709,112 @@ void setWeights(int *weightArr[NPCROW][NPCCOL]){
 // 17                  prev[v] ← u
 // 18
 // 19      return dist[], prev[]
-void dijkstras(int row, int col, mapStruct* terrainMap, int *weightArr[NPCROW][NPCCOL], int type){
-    
+void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NPCCOL], int type){
+    //Initilaize var
+    int i,j;
+    heap h;
+    createHeap(&h);
+
+    setWeights(weightArr); //Set all weights to infinty
+    for(i=0; i<NPCROW; i++){
+        for(j=0; j<NPCCOL; j++){
+            heapNode data;
+            data.row = i;
+            data.col = j;
+            data.weight = calcCost(type, terrainMap->terrain[i+1][j+1]); //get weight
+            insert(&h, &data); //insert data into heap
+        }
+    }
+
+    //Set player pos weight to 0
+    weightArr[row-1][col-1] = 0;
+
+    while(h.size > 0){
+        heapNode* HN = extractMin(&h);
+
+        if (HN->row-1 >= 0){ //Up
+            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row-1][HN->col];
+            if(alt < weightArr[HN->row-1][HN->col]){
+                weightArr[HN->row-1][HN->col] = alt;
+            }
+        }
+
+        if (HN->row-1 >= 0 && HN->col+1 < NPCCOL){ //Diagonal up-right
+            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row-1][HN->col+1];
+            if(alt < weightArr[HN->row-1][HN->col+1]){
+                weightArr[HN->row-1][HN->col+1] = alt;
+            }
+        }
+
+        if (HN->col + 1 < NPCCOL){ //Right
+            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row][HN->col+1];
+            if(alt < weightArr[HN->row][HN->col+1]){
+                weightArr[HN->row][HN->col+1] = alt;
+            }
+        }
+
+        if (HN->row+1 < NPCROW && HN->col+1 < NPCCOL){ //Down right
+            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row+1][HN->col+1];
+            if(alt < weightArr[HN->row+1][HN->col+1]){
+                weightArr[HN->row+1][HN->col+1] = alt;
+            }
+        }
+
+        if (HN->row+1 < NPCROW){ //Down
+            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row+1][HN->col];
+            if(alt < weightArr[HN->row+1][HN->col]){
+                weightArr[HN->row+1][HN->col] = alt;
+            }
+        }
+
+        if (HN->row+1 < NPCROW && HN->col-1 >= 0){  //Down Left
+            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row+1][HN->col-1];
+            if(alt < weightArr[HN->row+1][HN->col-1]){
+                weightArr[HN->row+1][HN->col-1] = alt;
+            }
+        }
+
+        if (HN->col-1 >= 0){ //Left
+            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row][HN->col-1];
+            if(alt < weightArr[HN->row][HN->col-1]){
+                weightArr[HN->row][HN->col-1] = alt;
+            }
+        }
+
+        if (HN->row-1 >= 0 && HN->col-1 >= 0){ //Up left
+            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row-1][HN->col-1];
+            if(alt < weightArr[HN->row-1][HN->col-1]){
+                weightArr[HN->row-1][HN->col-1] = alt;
+            }
+        }
+    }
+
+
+    killHeap(&h);
 }
 
 int main(int argc, char *argv[]){
 
     srand(time(NULL));//random seed
 
-    heap* h = createHeap(MAX_HEAP_SIZE);
-
-    heapNode hn1;
-    hn1.row = 14;
-    hn1.col = 21;
-    hn1.weight = 100;
-
-    heapNode hn2;
-    hn2.row = 10;
-    hn2.col = 23;
-    hn2.weight = 0;
-
-    insert(h,&hn1);
-    insert(h, &hn2);
-
    
     worldMap wm;
     int currX = 200;
     int currY = 200;
+
+
+    
     
     createWorldMap(&wm);
     createMap(currX, currY, &wm);
     printf("(%d, %d)\n", currX-200, currY-200);
+
+    int wArr[NPCROW][NPCCOL];
+    
+    printWeightMap(wArr);
+
+    dijkstras(10, 40, wm.arr[200][200], wArr, 0);
+    printWeightMap(wArr);
 
     char userChar;
     //userChar = getchar();
