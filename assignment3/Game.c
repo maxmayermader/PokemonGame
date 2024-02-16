@@ -98,14 +98,14 @@ struct Heap {
 typedef struct Heap heap;
  
 // forward declarations
-heap* createHeap(int capacity);
+heap* createHeap();
 void insertHelper(heap* h, int index);
 void heapify(heap* h, int index);
 heapNode* extractMin(heap* h);
 void insert(heap* h, heapNode* data);
  
 // Define a createHeap function
-heap* createHeap(int capacity)
+heap* createHeap()
 {
     // Allocating memory to heap h
     heap* h = (heap*)malloc(sizeof(heap));
@@ -690,6 +690,14 @@ void setWeights(int weightArr[NPCROW][NPCCOL]){
     }
 }
 
+*heapNode makeHeapNodeData(int i, int j, int type, mapStruct* terrainMap){
+    heapNode HN;
+    HN.row = i;
+    HN.col = j;
+    HN.weight = calcCost(type, terrainMap->terrain[i+1][j+1]);
+    return &HN;
+}
+
 //  1  function Dijkstra(Graph, source):
 //  2      
 //  3      for each vertex v in Graph.Vertices:
@@ -712,25 +720,26 @@ void setWeights(int weightArr[NPCROW][NPCCOL]){
 void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NPCCOL], int type){
     //Initilaize var
     int i,j;
-    heap h;
-    createHeap(&h);
+    heap* h = createHeap();
 
     setWeights(weightArr); //Set all weights to infinty
     for(i=0; i<NPCROW; i++){
         for(j=0; j<NPCCOL; j++){
-            heapNode data;
-            data.row = i;
-            data.col = j;
-            data.weight = calcCost(type, terrainMap->terrain[i+1][j+1]); //get weight
-            insert(&h, &data); //insert data into heap
+            // heapNode data;
+            // data.row = i;
+            // data.col = j;
+            // data.weight = calcCost(type, terrainMap->terrain[i+1][j+1]); //get weight
+            heapNode* data = makeHeapNodeData(i, j, type, terrainMap);
+            insert(h, data); //insert data into heap
         }
     }
 
+    printWeightMap(weightArr);
     //Set player pos weight to 0
     weightArr[row-1][col-1] = 0;
 
-    while(h.size > 0){
-        heapNode* HN = extractMin(&h);
+    while(h->size > 0){
+        heapNode* HN = extractMin(h);
 
         if (HN->row-1 >= 0){ //Up
             int alt = weightArr[HN->row][HN->col] + weightArr[HN->row-1][HN->col];
@@ -790,7 +799,7 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
     }
 
 
-    killHeap(&h);
+    killHeap(h);
 }
 
 int main(int argc, char *argv[]){
@@ -811,7 +820,7 @@ int main(int argc, char *argv[]){
 
     int wArr[NPCROW][NPCCOL];
     
-    printWeightMap(wArr);
+    
 
     dijkstras(10, 40, wm.arr[200][200], wArr, 0);
     printWeightMap(wArr);
