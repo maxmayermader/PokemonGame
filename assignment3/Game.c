@@ -690,12 +690,27 @@ void setWeights(int weightArr[NPCROW][NPCCOL]){
     }
 }
 
-*heapNode makeHeapNodeData(int i, int j, int type, mapStruct* terrainMap){
-    heapNode HN;
-    HN.row = i;
-    HN.col = j;
-    HN.weight = calcCost(type, terrainMap->terrain[i+1][j+1]);
-    return &HN;
+void makeHeapNodeData(heapNode* HN, int i, int j, int type, mapStruct* terrainMap){
+    //heapNode HN;
+  
+    HN->row = i;
+    HN->col = j;
+    HN->weight = calcCost(type, terrainMap->terrain[i+1][j+1]);
+    //HN = HN1;
+    //return &HN;
+}
+
+void initHeapNodeDatat(heapNode* HNArr[NPCROW][NPCCOL]){
+    int i,j;
+    for(i=0; i<NPCROW; i++){
+        for(j=0; j<NPCCOL; j++){
+            heapNode* HN = malloc(sizeof(heapNode));
+            HN->row = -1;
+            HN->col = -1;
+            HN->weight = -1;
+            HNArr[i][j] = HN;
+        }
+    }
 }
 
 //  1  function Dijkstra(Graph, source):
@@ -721,16 +736,26 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
     //Initilaize var
     int i,j;
     heap* h = createHeap();
+    heapNode* HNArr[NPCROW][NPCCOL];
 
     setWeights(weightArr); //Set all weights to infinty
+    initHeapNodeDatat(HNArr);
+    
+    
+
+
     for(i=0; i<NPCROW; i++){
         for(j=0; j<NPCCOL; j++){
-            // heapNode data;
+            //heapNode data;
             // data.row = i;
             // data.col = j;
             // data.weight = calcCost(type, terrainMap->terrain[i+1][j+1]); //get weight
-            heapNode* data = makeHeapNodeData(i, j, type, terrainMap);
-            insert(h, data); //insert data into heap
+            // HNArr[i][j]->row = i;
+            // HNArr[i][j]->col = j;
+            // HNArr[i][j]->weight = calcCost(type, terrainMap->terrain[i+1][j+1]);
+            makeHeapNodeData(HNArr[i][j], i, j, type, terrainMap);
+            
+            insert(h, HNArr[i][j]); //insert data into heap
         }
     }
 
