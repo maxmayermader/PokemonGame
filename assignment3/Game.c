@@ -69,12 +69,15 @@ int getQueSize(){
     
 
 //Prints map out to the terminal
-void printMap(mapStruct *map, PC pc*){
+void printMap(mapStruct *map, PC *pc){
     int i;
     int j;
     for (i=0; i < ROW; i++){
         for(j=0; j < COL; j++){
-            if()
+            if(pc-> row == i && pc->col == j){
+                printf("%c", PLAYERCHAR);
+            }
+            
             printf("%c", map->terrain[i][j]);
         }
         printf("\n");
@@ -606,7 +609,7 @@ void createWorldMap(worldMap *wm){
             wm->arr[i][j] = NULL;
         }
     }
-    wm->player = NULL;
+    wm->player = malloc(sizeof(PC));
     wm->player->symb = 0;
     wm->player->row = 10;
     wm->player->col = 40;
@@ -626,13 +629,13 @@ void createMap(int x, int y, worldMap *wm){
 
     wm->arr[x][y] = newMap;
 
-    printMap(newMap);
+    printMap(newMap, wm->player);
 }
 
 /*Go to terrain map at x y*/
 void fly(int x, int y, worldMap *wm){
     if (wm->arr[x][y] != NULL){
-        printMap(wm->arr[x][y]);
+        printMap(wm->arr[x][y], wm->player);
     } else {
         createMap(x, y, wm);
     }
@@ -908,7 +911,7 @@ int main(int argc, char *argv[]){
     
     
 
-    dijkstras(10, 25, wm.arr[200][200], wArr, 0);
+    dijkstras(wm.player->row, wm.player->col, wm.arr[200][200], wArr, 0);
     printWeightMap(wArr);
 
     char userChar;
