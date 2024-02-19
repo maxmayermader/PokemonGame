@@ -85,6 +85,7 @@ typedef struct heapNode {
     int row;
     int col;
     int weight;
+    int visited;
 } heapNode;
 
 /*Begin heap implemantation*/
@@ -705,6 +706,7 @@ void makeHeapNodeData(heapNode* HN, int i, int j, int type, mapStruct* terrainMa
     HN->row = i;
     HN->col = j;
     HN->weight = calcCost(type, terrainMap->terrain[i+1][j+1]);
+    HN->visited = -1;
     //HN = HN1;
     //return &HN;
 }
@@ -717,6 +719,7 @@ void initHeapNodeDatat(heapNode* HNArr[NPCROW][NPCCOL]){
             HN->row = -1;
             HN->col = -1;
             HN->weight = INFINTY;
+            HN->visited = -1;
             HNArr[i][j] = HN;
         }
     }
@@ -786,73 +789,77 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
                 printf("its broken\n");
             }
             
-            insert(h, HNArr[i][j]); //insert data into heap
+            //insert(h, HNArr[i][j]); //insert data into heap
         }
     }
 
     printWeightMap(weightArr);
     //Set player pos weight to 0
     weightArr[row-1][col-1] = 0;
-
+    insert(h, HNArr[row-1][col-1]);
     int heapRunCount=0;
     heapNode* lastNode = h->arr[h->size-1];
 
     while(h->size > 0){
         heapNode* HN = extractMin(h);
+        if(HN->visited == 0)
+            continue;
+
+        HN->visited = 0;
 
         if (HN->row-1 >= 0){ //Up
-            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row-1][HN->col];
-            if(alt < weightArr[HN->row-1][HN->col]){
-                weightArr[HN->row-1][HN->col] = alt;
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row-1][HN->col]->weight;
+            if(tentativeDistance < weightArr[HN->row-1][HN->col]){
+                weightArr[HN->row-1][HN->col] = tentativeDistance;
             }
         }
 
         if (HN->row-1 >= 0 && HN->col+1 < NPCCOL){ //Diagonal up-right
-            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row-1][HN->col+1];
-            if(alt < weightArr[HN->row-1][HN->col+1]){
-                weightArr[HN->row-1][HN->col+1] = alt;
+            int tentativeDistance = weightArr[HN->row][HN->col] + weightArr[HN->row-1][HN->col+1];
+            if(tentativeDistance < weightArr[HN->row-1][HN->col+1]){
+                weightArr[HN->row-1][HN->col+1] = tentativeDistance;
             }
         }
 
         if (HN->col + 1 < NPCCOL){ //Right
-            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row][HN->col+1];
-            if(alt < weightArr[HN->row][HN->col+1]){
-                weightArr[HN->row][HN->col+1] = alt;
+            int tentativeDistance = weightArr[HN->row][HN->col] + weightArr[HN->row][HN->col+1];
+            if(tentativeDistance < weightArr[HN->row][HN->col+1]){
+                weightArr[HN->row][HN->col+1] = tentativeDistance;
             }
         }
 
         if (HN->row+1 < NPCROW && HN->col+1 < NPCCOL){ //Down right
-            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row+1][HN->col+1];
-            if(alt < weightArr[HN->row+1][HN->col+1]){
-                weightArr[HN->row+1][HN->col+1] = alt;
+            int tentativeDistance = weightArr[HN->row][HN->col] + weightArr[HN->row+1][HN->col+1];
+            if(tentativeDistance < weightArr[HN->row+1][HN->col+1]){
+                weightArr[HN->row+1][HN->col+1] = tentativeDistance;
             }
         }
 
         if (HN->row+1 < NPCROW){ //Down
-            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row+1][HN->col];
-            if(alt < weightArr[HN->row+1][HN->col]){
-                weightArr[HN->row+1][HN->col] = alt;
+            int tentativeDistance = weightArr[HN->row][HN->col] + weightArr[HN->row+1][HN->col];
+            if(tentativeDistance < weightArr[HN->row+1][HN->col]){
+                weightArr[HN->row+1][HN->col] = tentativeDistance;
             }
         }
 
         if (HN->row+1 < NPCROW && HN->col-1 >= 0){  //Down Left
-            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row+1][HN->col-1];
-            if(alt < weightArr[HN->row+1][HN->col-1]){
-                weightArr[HN->row+1][HN->col-1] = alt;
+            int tentativeDistance = weightArr[HN->row][HN->col] + weightArr[HN->row+1][HN->col-1];
+            if(tentativeDistance < weightArr[HN->row+1][HN->col-1]){
+                weightArr[HN->row+1][HN->col-1] = tentativeDistance;
             }
         }
 
         if (HN->col-1 >= 0){ //Left
-            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row][HN->col-1];
-            if(alt < weightArr[HN->row][HN->col-1]){
-                weightArr[HN->row][HN->col-1] = alt;
+            int tentativeDistance = weightArr[HN->row][HN->col] + weightArr[HN->row][HN->col-1];
+            if(tentativeDistance < weightArr[HN->row][HN->col-1]){
+                weightArr[HN->row][HN->col-1] = tentativeDistance;
             }
         }
 
         if (HN->row-1 >= 0 && HN->col-1 >= 0){ //Up left
-            int alt = weightArr[HN->row][HN->col] + weightArr[HN->row-1][HN->col-1];
-            if(alt < weightArr[HN->row-1][HN->col-1]){
-                weightArr[HN->row-1][HN->col-1] = alt;
+            int tentativeDistance = weightArr[HN->row][HN->col] + weightArr[HN->row-1][HN->col-1];
+            if(tentativeDistance < weightArr[HN->row-1][HN->col-1]){
+                weightArr[HN->row-1][HN->col-1] = tentativeDistance;
             }
         }
 
