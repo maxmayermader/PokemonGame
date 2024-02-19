@@ -148,6 +148,10 @@ void insertHelper(heap* hp, int index)
     // Store parent of element at index
     // in parent variable
     int parent = (index - 1) / 2;
+
+    if(hp->arr[index]->row == 4251078){
+        printf("bruhhhh\n");
+    }
  
     if (hp->arr[parent]->weight > hp->arr[index]->weight) {
         // Swapping when child is smaller
@@ -211,15 +215,15 @@ heapNode* extractMin(heap* h){
     // Replace the deleted node with the last node
     h->arr[0] = h->arr[h->size - 1];
     // Decrement the size of heap
+    //free(h->arr[h->size - 1]);
     h->size--;
-    free(h->arr[h->size - 1]);
  
     // Call minheapify_top_down for 0th index
     // to maintain the heap property
     //ret = deleteItem;
     heapify(h, 0);
     return deleteItem;
-}
+} 
  
 // Define a insert function
 void insert(heap* h, heapNode* data){
@@ -668,12 +672,17 @@ int calcCost(int npc, char terrainType){
 /*Function for printing weightmap*/
 void printWeightMap(int weightArr[NPCROW][NPCCOL]){
     int i,j;
+    printf("\n");
     for(i=0; i<ROW; i++){
         for(j=0; j<COL; j++){
-            if(i != 0 && i > NPCROW && j != 0 && j > NPCCOL){
-                printf("%d ", weightArr[i][j]);
+            if(i != 0 && i <= NPCROW && j != 0 && j <= NPCCOL){
+                if(weightArr[i-1][j-1] != INFINTY){
+                    printf("%d ", weightArr[i-1][j-1]);
+                } else {
+                    printf("_ ");
+                }
             } else {
-                printf("   ");
+                printf("B ");
             }
         }
         printf("\n");
@@ -754,6 +763,9 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
             // HNArr[i][j]->col = j;
             // HNArr[i][j]->weight = calcCost(type, terrainMap->terrain[i+1][j+1]);
             makeHeapNodeData(HNArr[i][j], i, j, type, terrainMap);
+            if(HNArr[i][j]->row == 4251078 || (i == 18 && j == 76)){
+                printf("its broken\n");
+            }
             
             insert(h, HNArr[i][j]); //insert data into heap
         }
@@ -764,6 +776,7 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
     weightArr[row-1][col-1] = 0;
 
     int heapRunCount=0;
+    heapNode* lastNode = h->arr[h->size-1];
 
     while(h->size > 0){
         heapNode* HN = extractMin(h);
@@ -825,7 +838,8 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
         }
 
         heapRunCount++;
-         printWeightMap(weightArr);
+        lastNode = h->arr[h->size-1];
+        //printWeightMap(weightArr);
     }
 
 
