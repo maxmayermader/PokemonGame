@@ -54,7 +54,7 @@ typedef struct mapStruct{
 //Global map. Array of map pointers
 typedef struct worldMap{
     mapStruct* arr[worldYSize][worldXSize];
-    PC player;
+    PC* player;
 }worldMap;
 
 //char startMap[ROW][COL];
@@ -69,15 +69,17 @@ int getQueSize(){
     
 
 //Prints map out to the terminal
-void printMap(mapStruct *map){
+void printMap(mapStruct *map, PC pc*){
     int i;
     int j;
     for (i=0; i < ROW; i++){
         for(j=0; j < COL; j++){
+            if()
             printf("%c", map->terrain[i][j]);
         }
         printf("\n");
     }
+
 }
 
 
@@ -604,6 +606,12 @@ void createWorldMap(worldMap *wm){
             wm->arr[i][j] = NULL;
         }
     }
+    wm->player = NULL;
+    wm->player->symb = 0;
+    wm->player->row = 10;
+    wm->player->col = 40;
+    wm->player->globalX = 200;
+    wm->player->globalY = 200;
 }
 
 
@@ -811,55 +819,63 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
             int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row-1][HN->col]->weight;
             if(tentativeDistance < weightArr[HN->row-1][HN->col]){
                 weightArr[HN->row-1][HN->col] = tentativeDistance;
+                insert(h, HNArr[HN->row-1][HN->col]);
             }
         }
 
         if (HN->row-1 >= 0 && HN->col+1 < NPCCOL){ //Diagonal up-right
-            int tentativeDistance = weightArr[HN->row][HN->col] + weightArr[HN->row-1][HN->col+1];
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row-1][HN->col+1]->weight;
             if(tentativeDistance < weightArr[HN->row-1][HN->col+1]){
                 weightArr[HN->row-1][HN->col+1] = tentativeDistance;
+                insert(h, HNArr[HN->row-1][HN->col+1]);
             }
         }
 
         if (HN->col + 1 < NPCCOL){ //Right
-            int tentativeDistance = weightArr[HN->row][HN->col] + weightArr[HN->row][HN->col+1];
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row][HN->col+1]->weight;
             if(tentativeDistance < weightArr[HN->row][HN->col+1]){
                 weightArr[HN->row][HN->col+1] = tentativeDistance;
+                insert(h, HNArr[HN->row][HN->col+1]);
             }
         }
 
         if (HN->row+1 < NPCROW && HN->col+1 < NPCCOL){ //Down right
-            int tentativeDistance = weightArr[HN->row][HN->col] + weightArr[HN->row+1][HN->col+1];
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row+1][HN->col+1]->weight;
             if(tentativeDistance < weightArr[HN->row+1][HN->col+1]){
                 weightArr[HN->row+1][HN->col+1] = tentativeDistance;
+                insert(h, HNArr[HN->row+1][HN->col+1]);
             }
         }
 
         if (HN->row+1 < NPCROW){ //Down
-            int tentativeDistance = weightArr[HN->row][HN->col] + weightArr[HN->row+1][HN->col];
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row+1][HN->col]->weight;
             if(tentativeDistance < weightArr[HN->row+1][HN->col]){
                 weightArr[HN->row+1][HN->col] = tentativeDistance;
+                insert(h, HNArr[HN->row+1][HN->col]);
             }
         }
 
         if (HN->row+1 < NPCROW && HN->col-1 >= 0){  //Down Left
-            int tentativeDistance = weightArr[HN->row][HN->col] + weightArr[HN->row+1][HN->col-1];
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row+1][HN->col-1]->weight;
             if(tentativeDistance < weightArr[HN->row+1][HN->col-1]){
                 weightArr[HN->row+1][HN->col-1] = tentativeDistance;
+                insert(h, HNArr[HN->row+1][HN->col-1]);
             }
         }
 
         if (HN->col-1 >= 0){ //Left
-            int tentativeDistance = weightArr[HN->row][HN->col] + weightArr[HN->row][HN->col-1];
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row][HN->col-1]->weight;
             if(tentativeDistance < weightArr[HN->row][HN->col-1]){
                 weightArr[HN->row][HN->col-1] = tentativeDistance;
+                insert(h, HNArr[HN->row][HN->col-1]);
             }
         }
 
         if (HN->row-1 >= 0 && HN->col-1 >= 0){ //Up left
-            int tentativeDistance = weightArr[HN->row][HN->col] + weightArr[HN->row-1][HN->col-1];
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row-1][HN->col-1]->weight;
             if(tentativeDistance < weightArr[HN->row-1][HN->col-1]){
                 weightArr[HN->row-1][HN->col-1] = tentativeDistance;
+                insert(h, HNArr[HN->row-1][HN->col-1]);
             }
         }
 
