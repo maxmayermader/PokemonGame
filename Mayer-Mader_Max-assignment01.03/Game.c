@@ -689,12 +689,12 @@ void printWeightMap(int weightArr[NPCROW][NPCCOL]){
         for(j=0; j<COL; j++){
             if(i != 0 && i <= NPCROW && j != 0 && j <= NPCCOL){
                 if(weightArr[i-1][j-1] != INFINTY){
-                    printf("%d ", weightArr[i-1][j-1]);
+                    printf("%4d ", weightArr[i-1][j-1]);
                 } else {
-                    printf("_ ");
+                    printf("%4s ", "_");
                 }
             } else {
-                printf("B ");
+                printf("%4s ", "B");
             }
         }
         printf("\n");
@@ -893,7 +893,7 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
 
 int main(int argc, char *argv[]){
 
-    //srand(time(NULL));//random seed
+    srand(time(NULL));//random seed
 
    
     worldMap wm;
