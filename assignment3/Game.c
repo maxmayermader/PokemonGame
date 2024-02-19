@@ -10,8 +10,8 @@
 #define NPCCOL (COL - 2) //X 
 #define worldXSize 401
 #define worldYSize 401
-#define MAX_HEAP_SIZE 99999
-#define INFINTY 999999
+#define MAX_HEAP_SIZE 1482
+#define INFINTY 99999
 
 #define BOULDER '%'
 #define TREE '^'
@@ -707,7 +707,7 @@ void initHeapNodeDatat(heapNode* HNArr[NPCROW][NPCCOL]){
             heapNode* HN = malloc(sizeof(heapNode));
             HN->row = -1;
             HN->col = -1;
-            HN->weight = -1;
+            HN->weight = INFINTY;
             HNArr[i][j] = HN;
         }
     }
@@ -762,6 +762,8 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
     printWeightMap(weightArr);
     //Set player pos weight to 0
     weightArr[row-1][col-1] = 0;
+
+    int heapRunCount=0;
 
     while(h->size > 0){
         heapNode* HN = extractMin(h);
@@ -821,6 +823,9 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
                 weightArr[HN->row-1][HN->col-1] = alt;
             }
         }
+
+        heapRunCount++;
+         printWeightMap(weightArr);
     }
 
 
@@ -829,7 +834,7 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
 
 int main(int argc, char *argv[]){
 
-    srand(time(NULL));//random seed
+    //srand(time(NULL));//random seed
 
    
     worldMap wm;
@@ -847,7 +852,7 @@ int main(int argc, char *argv[]){
     
     
 
-    dijkstras(10, 40, wm.arr[200][200], wArr, 0);
+    dijkstras(10, 25, wm.arr[200][200], wArr, 0);
     printWeightMap(wArr);
 
     char userChar;
