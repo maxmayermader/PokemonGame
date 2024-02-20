@@ -50,6 +50,7 @@ typedef struct mapStruct{
 	int gateE;//right
 	char terrain[ROW][COL];
     NPC* npcArray[NPCS_PER_MAP];
+    PC* playerT;
 }mapStruct;
 
 
@@ -79,6 +80,7 @@ void printMap(mapStruct *map, PC *pc){
         for(j=0; j < COL; j++){
             if(pc-> row == i && pc->col == j){
                 printf("%c", PLAYERCHAR);
+                continue;
             }
             
             printf("%c", map->terrain[i][j]);
@@ -608,6 +610,8 @@ void setMap(mapStruct *map, int x, int y, worldMap *wm){
         }
     }
 
+    map->playerT = malloc(sizeof(PC));
+
 }
 
 /*Set all pointers to NULL*/
@@ -641,6 +645,10 @@ void createMap(int x, int y, worldMap *wm){
 
     wm->arr[x][y] = newMap; //add new terrain map to world map
 
+    //TODO : fix later
+    newMap->playerT->row = wm->player->row;
+    newMap->playerT->col = wm->player->col;
+
     printMap(newMap, wm->player); //print map and player
     
     newMap->npcArray[0] = malloc(sizeof(NPC)); //Hiker
@@ -662,7 +670,7 @@ void createMap(int x, int y, worldMap *wm){
 /*Go to terrain map at x y*/
 void fly(int x, int y, worldMap *wm){
     if (wm->arr[x][y] != NULL){
-        printMap(wm->arr[x][y], wm->player);
+        printMap(wm->arr[x][y], wm->arr[x][y]->playerT);
 
         printf("Weights for hiker\n");
         printWeightMap(wm->arr[x][y]->npcArray[0]->weightArr);
@@ -722,12 +730,12 @@ void printWeightMap(int weightArr[NPCROW][NPCCOL]){
         for(j=0; j<COL; j++){
             if(i != 0 && i <= NPCROW && j != 0 && j <= NPCCOL){
                 if(weightArr[i-1][j-1] != INFINTY){
-                    printf("%4d ", weightArr[i-1][j-1]);
+                    printf("%2d ", weightArr[i-1][j-1]%100);
                 } else {
-                    printf("%4s ", "_");
+                    printf("%2s ", "_");
                 }
             } else {
-                printf("%4s ", "B");
+                printf("%2s ", "B");
             }
         }
         printf("\n");
@@ -873,7 +881,7 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
 
 int main(int argc, char *argv[]){
 
-    srand(time(NULL));//random seed
+    //srand(time(NULL));//random seed
 
    
     worldMap wm;
