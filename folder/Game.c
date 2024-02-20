@@ -12,6 +12,7 @@
 #define worldYSize 401
 #define MAX_HEAP_SIZE 1482
 #define INFINTY 99999
+#define NPCS_PER_MAP 5
 
 #define BOULDER '%'
 #define TREE '^'
@@ -29,6 +30,7 @@ typedef struct NPC{
     int symb;
     int row;
     int col;
+    int weightArr[NPCROW][NPCCOL];
 }NPC;
 
 //PC struct
@@ -47,7 +49,7 @@ typedef struct mapStruct{
 	int gateW;//left
 	int gateE;//right
 	char terrain[ROW][COL];
-    NPC npcArray[5];
+    NPC* npcArray[NPCS_PER_MAP];
 }mapStruct;
 
 
@@ -63,9 +65,10 @@ int getQueSize(){
     return queSize;
 }
 
-//forward declerations
+//prototype declerations
     void createMap(int x, int y, worldMap *wm);
     void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NPCCOL], int type);
+    void printWeightMap(int weightArr[NPCROW][NPCCOL]);
     
 
 //Prints map out to the terminal
@@ -308,7 +311,7 @@ int dequeue(int coord[2], char *s) {
 
 
 /*Code for creating roads and buildings*/
-void makeRoads(mapStruct *map, int distanceFromCenter, int x, int y){
+void makeRoads(mapStruct *map, int distanceFromCenter, int x, int y, worldMap* wm){
     //rand() % (max_number + 1 - minimum_number) + minimum_number
     int entranceX1[2] = {0, rand() % (COL-4+1-4)+4}; //North gate
     int entranceX2[2] = {ROW - 1, rand() % (COL-4+1-4)+4}; //South gate
@@ -396,6 +399,11 @@ void makeRoads(mapStruct *map, int distanceFromCenter, int x, int y){
         map->terrain[entranceY2[0]][a] = '#';
     }
     
+    //if(x == 200 && y == 200){
+        wm->player->row = connectionX1[0];
+        wm->player->col = connectionX1[1];
+    //}
+
     //Close gates if at the edge
     if (y == 0)
         map->terrain[entranceX1[0]][entranceX1[1]] = '%';
@@ -558,7 +566,7 @@ void createTerrain(mapStruct *map){
 void setMap(mapStruct *map, int x, int y, worldMap *wm){
     int i;
     int j;
-    for(i = 0; i < ROW; i++){
+    for(i = 0; i < ROW; i++){ //Set terrai  to null
         for(j=0; j < COL; j++){
             if (i == 0 || i == ROW-1 || j == 0 || j == COL-1){
                 map->terrain[i][j] = '%';
@@ -567,11 +575,13 @@ void setMap(mapStruct *map, int x, int y, worldMap *wm){
             map->terrain[i][j] = '_';
         }
     }
+    //set gates to NULL
     map->gateN = -1;
     map->gateE = -1;
     map->gateW = -1;
     map->gateS = -1;
 
+    //check if there are gates to neighbours
     if(x - 1 >= 0){
         if ((wm->arr[x-1][y]) != NULL){
             map->gateW = wm->arr[x-1][y]->gateE;
@@ -597,6 +607,7 @@ void setMap(mapStruct *map, int x, int y, worldMap *wm){
 
         }
     }
+
 }
 
 /*Set all pointers to NULL*/
@@ -609,10 +620,11 @@ void createWorldMap(worldMap *wm){
             wm->arr[i][j] = NULL;
         }
     }
+    //Initialize player
     wm->player = malloc(sizeof(PC));
-    wm->player->symb = 0;
-    wm->player->row = 10;
-    wm->player->col = 40;
+    //wm->player->symb = 0;
+    //wm->player->row = 10;
+    //wm->player->col = 40;
     wm->player->globalX = 200;
     wm->player->globalY = 200;
 }
@@ -621,21 +633,42 @@ void createWorldMap(worldMap *wm){
 /*Create a terrain map and add it to world map at position x y*/
 void createMap(int x, int y, worldMap *wm){
     
-    mapStruct *newMap = malloc(sizeof(mapStruct));
-    setMap(newMap, x, y, wm);;
-    createTerrain(newMap);
+    mapStruct *newMap = malloc(sizeof(mapStruct)); //malloc new mapStruct
+    setMap(newMap, x, y, wm); //set mapStruct terrain to pseudo NULL values
+    createTerrain(newMap); //create a terrain and set it to newMap
     int distanceFromCenter = abs(x - 200) + abs(y - 200);
-    makeRoads(newMap, distanceFromCenter, x, y);
+    makeRoads(newMap, distanceFromCenter, x, y, wm);//add roads to map
 
-    wm->arr[x][y] = newMap;
+    wm->arr[x][y] = newMap; //add new terrain map to world map
 
-    printMap(newMap, wm->player);
+    printMap(newMap, wm->player); //print map and player
+    
+    newMap->npcArray[0] = malloc(sizeof(NPC)); //Hiker
+    newMap->npcArray[1] = malloc(sizeof(NPC)); //Rival
+
+    newMap->npcArray[0]->symb = 0;
+    newMap->npcArray[1]->symb = 1;
+
+    dijkstras(wm->player->row, wm->player->col, wm->arr[x][y], newMap->npcArray[0]->weightArr, newMap->npcArray[0]->symb); //dijkstras for hiker
+    dijkstras(wm->player->row, wm->player->col, wm->arr[x][y], newMap->npcArray[1]->weightArr, newMap->npcArray[1]->symb); //dijkstras for rival
+
+    printf("Weights for hiker\n");
+    printWeightMap(wm->arr[x][y]->npcArray[0]->weightArr);
+
+    printf("Weights for rival\n");
+    printWeightMap(wm->arr[x][y]->npcArray[1]->weightArr);
 }
 
 /*Go to terrain map at x y*/
 void fly(int x, int y, worldMap *wm){
     if (wm->arr[x][y] != NULL){
         printMap(wm->arr[x][y], wm->player);
+
+        printf("Weights for hiker\n");
+        printWeightMap(wm->arr[x][y]->npcArray[0]->weightArr);
+
+        printf("Weights for rival\n");
+        printWeightMap(wm->arr[x][y]->npcArray[1]->weightArr);
     } else {
         createMap(x, y, wm);
     }
@@ -736,158 +769,105 @@ void initHeapNodeDatat(heapNode* HNArr[NPCROW][NPCCOL]){
     }
 }
 
-/*
-function Dijkstra(Graph, source):
-   // Initialize distances to all nodes as infinity, except for the source node.
-   distances = map infinity to all nodes
-   distances = 0
-
-   // Initialize an empty set of visited nodes and a priority queue to keep track of the nodes to visit.
-   visited = empty set
-   queue = new PriorityQueue()
-   queue.enqueue(source, 0)
-
-   // Loop until all nodes have been visited.
-   while queue is not empty:
-       // Dequeue the node with the smallest distance from the priority queue.
-       current = queue.dequeue()
-
-       // If the node has already been visited, skip it.
-       if current in visited:
-           continue
-
-       // Mark the node as visited.
-       visited.add(current)
-
-       // Check all neighboring nodes to see if their distances need to be updated.
-       for neighbor in Graph.neighbors(current):
-           // Calculate the tentative distance to the neighbor through the current node.
-           tentative_distance = distances[current] + Graph.distance(current, neighbor)
-
-           // If the tentative distance is smaller than the current distance to the neighbor, update the distance.
-           if tentative_distance < distances[neighbor]:
-               distances[neighbor] = tentative_distance
-
-               // Enqueue the neighbor with its new distance to be considered for visitation in the future.
-               queue.enqueue(neighbor, distances[neighbor])
-
-   // Return the calculated distances from the source to all other nodes in the graph.
-   return distances
-*/
+/*Function for implemnting dijkstras algorthm. Finds all shortest paths staring at PC depending on NPC type*/
 void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NPCCOL], int type){
     //Initilaize var
     int i,j;
     heap* h = createHeap();
-    heapNode* HNArr[NPCROW][NPCCOL];
+    heapNode* HNArr[NPCROW][NPCCOL]; //heapNodes array if pointers
 
     setWeights(weightArr); //Set all weights to infinty
-    initHeapNodeDatat(HNArr);
+    initHeapNodeDatat(HNArr); //Set all heap nodes to null
     
     
 
-
+    //add all weights to heapNode
     for(i=0; i<NPCROW; i++){
         for(j=0; j<NPCCOL; j++){
-            //heapNode data;
-            // data.row = i;
-            // data.col = j;
-            // data.weight = calcCost(type, terrainMap->terrain[i+1][j+1]); //get weight
-            // HNArr[i][j]->row = i;
-            // HNArr[i][j]->col = j;
-            // HNArr[i][j]->weight = calcCost(type, terrainMap->terrain[i+1][j+1]);
             makeHeapNodeData(HNArr[i][j], i, j, type, terrainMap);
-            if(HNArr[i][j]->row == 4251078 || (i == 18 && j == 76)){
-                printf("its broken\n");
-            }
-            
-            //insert(h, HNArr[i][j]); //insert data into heap
         }
     }
 
-    printWeightMap(weightArr);
+    //printWeightMap(weightArr);
     //Set player pos weight to 0
     weightArr[row-1][col-1] = 0;
     insert(h, HNArr[row-1][col-1]);
-    int heapRunCount=0;
-    heapNode* lastNode = h->arr[h->size-1];
+    //int heapRunCount=0;
 
     while(h->size > 0){
         heapNode* HN = extractMin(h);
-        if(HN->visited == 0)
+
+        if(HN->visited == 0)//if visited skip
             continue;
 
-        HN->visited = 0;
+        HN->visited = 0; //set node to visited
 
+         // Check all neighboring nodes to see if their distances need to be updated.
         if (HN->row-1 >= 0){ //Up
-            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row-1][HN->col]->weight;
-            if(tentativeDistance < weightArr[HN->row-1][HN->col]){
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row-1][HN->col]->weight; // Calculate the tentative distance to the neighbor through the current node.
+            if(tentativeDistance < weightArr[HN->row-1][HN->col]){ // If the tentative distance is smaller than the current distance to the neighbor, update the distance.
                 weightArr[HN->row-1][HN->col] = tentativeDistance;
-                insert(h, HNArr[HN->row-1][HN->col]);
+                insert(h, HNArr[HN->row-1][HN->col]); //enque neighbour
             }
         }
 
         if (HN->row-1 >= 0 && HN->col+1 < NPCCOL){ //Diagonal up-right
-            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row-1][HN->col+1]->weight;
-            if(tentativeDistance < weightArr[HN->row-1][HN->col+1]){
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row-1][HN->col+1]->weight; // Calculate the tentative distance to the neighbor through the current node.
+            if(tentativeDistance < weightArr[HN->row-1][HN->col+1]){ // If the tentative distance is smaller than the current distance to the neighbor, update the distance.
                 weightArr[HN->row-1][HN->col+1] = tentativeDistance;
-                insert(h, HNArr[HN->row-1][HN->col+1]);
+                insert(h, HNArr[HN->row-1][HN->col+1]); //enque neighbour
             }
         }
 
         if (HN->col + 1 < NPCCOL){ //Right
-            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row][HN->col+1]->weight;
-            if(tentativeDistance < weightArr[HN->row][HN->col+1]){
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row][HN->col+1]->weight; // Calculate the tentative distance to the neighbor through the current node.
+            if(tentativeDistance < weightArr[HN->row][HN->col+1]){ // If the tentative distance is smaller than the current distance to the neighbor, update the distance.
                 weightArr[HN->row][HN->col+1] = tentativeDistance;
-                insert(h, HNArr[HN->row][HN->col+1]);
+                insert(h, HNArr[HN->row][HN->col+1]); //enque neighbour
             }
         }
 
         if (HN->row+1 < NPCROW && HN->col+1 < NPCCOL){ //Down right
-            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row+1][HN->col+1]->weight;
-            if(tentativeDistance < weightArr[HN->row+1][HN->col+1]){
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row+1][HN->col+1]->weight; // Calculate the tentative distance to the neighbor through the current node.
+            if(tentativeDistance < weightArr[HN->row+1][HN->col+1]){ // If the tentative distance is smaller than the current distance to the neighbor, update the distance.
                 weightArr[HN->row+1][HN->col+1] = tentativeDistance;
-                insert(h, HNArr[HN->row+1][HN->col+1]);
+                insert(h, HNArr[HN->row+1][HN->col+1]); //enque neighbour
             }
         }
 
         if (HN->row+1 < NPCROW){ //Down
-            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row+1][HN->col]->weight;
-            if(tentativeDistance < weightArr[HN->row+1][HN->col]){
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row+1][HN->col]->weight; // Calculate the tentative distance to the neighbor through the current node.
+            if(tentativeDistance < weightArr[HN->row+1][HN->col]){ // If the tentative distance is smaller than the current distance to the neighbor, update the distance.
                 weightArr[HN->row+1][HN->col] = tentativeDistance;
-                insert(h, HNArr[HN->row+1][HN->col]);
+                insert(h, HNArr[HN->row+1][HN->col]); //enque neighbour
             }
         }
 
         if (HN->row+1 < NPCROW && HN->col-1 >= 0){  //Down Left
-            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row+1][HN->col-1]->weight;
-            if(tentativeDistance < weightArr[HN->row+1][HN->col-1]){
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row+1][HN->col-1]->weight; // Calculate the tentative distance to the neighbor through the current node.
+            if(tentativeDistance < weightArr[HN->row+1][HN->col-1]){ // If the tentative distance is smaller than the current distance to the neighbor, update the distance.
                 weightArr[HN->row+1][HN->col-1] = tentativeDistance;
-                insert(h, HNArr[HN->row+1][HN->col-1]);
+                insert(h, HNArr[HN->row+1][HN->col-1]); //enque neighbour
             }
         }
 
         if (HN->col-1 >= 0){ //Left
-            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row][HN->col-1]->weight;
-            if(tentativeDistance < weightArr[HN->row][HN->col-1]){
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row][HN->col-1]->weight; // Calculate the tentative distance to the neighbor through the current node.
+            if(tentativeDistance < weightArr[HN->row][HN->col-1]){ // If the tentative distance is smaller than the current distance to the neighbor, update the distance.
                 weightArr[HN->row][HN->col-1] = tentativeDistance;
-                insert(h, HNArr[HN->row][HN->col-1]);
+                insert(h, HNArr[HN->row][HN->col-1]); //enque neighbour
             }
         }
 
         if (HN->row-1 >= 0 && HN->col-1 >= 0){ //Up left
-            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row-1][HN->col-1]->weight;
-            if(tentativeDistance < weightArr[HN->row-1][HN->col-1]){
+            int tentativeDistance = weightArr[HN->row][HN->col] + HNArr[HN->row-1][HN->col-1]->weight; // Calculate the tentative distance to the neighbor through the current node.
+            if(tentativeDistance < weightArr[HN->row-1][HN->col-1]){ // If the tentative distance is smaller than the current distance to the neighbor, update the distance.
                 weightArr[HN->row-1][HN->col-1] = tentativeDistance;
-                insert(h, HNArr[HN->row-1][HN->col-1]);
+                insert(h, HNArr[HN->row-1][HN->col-1]); //enque neighbour
             }
         }
-
-        heapRunCount++;
-        lastNode = h->arr[h->size-1];
-        //printWeightMap(weightArr);
+        //heapRunCount++;
     }
-
-
     killHeap(h);
 }
 
@@ -907,12 +887,6 @@ int main(int argc, char *argv[]){
     createMap(currX, currY, &wm);
     printf("(%d, %d)\n", currX-200, currY-200);
 
-    int wArr[NPCROW][NPCCOL];
-    
-    
-
-    dijkstras(wm.player->row, wm.player->col, wm.arr[200][200], wArr, 0);
-    printWeightMap(wArr);
 
     char userChar;
     //userChar = getchar();
