@@ -1,3 +1,192 @@
+commit 1b0aa6f2c3460624305a34933b5bc88cc2074826
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 22:59:05 2024 -0600
+
+    i think it works
+
+commit 4b47eb5e92f476e5619117e0ad703f18d12a009a
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 16:49:35 2024 -0600
+
+    changed file name
+
+commit 3c37aae8bc151dfcd1f7dd0f8cdd6e39d7be6669
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 16:48:36 2024 -0600
+
+    Fixed dijkstras
+
+commit 4153612e83c955222897a49dc5f61e29d849b30f
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 14:19:06 2024 -0600
+
+    algo somewhat working
+
+commit 43cceba9c2608e2787fc93bc5793f33622d73e25
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 14:00:08 2024 -0600
+
+    new dijkstras
+
+commit a0714480e9eabfec8ba1dd5efacb0afaceeb8809
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 13:45:46 2024 -0600
+
+    begin of new dijkstras algo
+
+commit 95df2935639137f5bc7c5d363d218d754be2082c
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 13:36:49 2024 -0600
+
+    Wikipedia sucks
+
+commit b3bbdb0e770d0dcee25d27a31a939a06b237ae5d
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 00:43:26 2024 -0600
+
+    print weight maps
+
+commit d3ce03e73a3b943dbcbe57df494e8c05fe20bcfe
+Author: Max P <maxmay@iastate.edu>
+Date:   Sun Feb 18 18:40:17 2024 -0600
+
+    trying my very hardest to debug
+
+commit 5aa64658623f90e07662a635b61adc61f8062c52
+Author: Max P <maxmay@iastate.edu>
+Date:   Sun Feb 18 17:59:21 2024 -0600
+
+    made heap node array initlaizer
+
+commit 1ef07725a7e76a1b7b75bf304bb31f444c0b485f
+Author: Max P <maxmay@iastate.edu>
+Date:   Fri Feb 16 12:58:52 2024 -0600
+
+    created heap node data
+
+commit e01437f315879947b0161e206d885b01c1349ecf
+Author: Max P <maxmay@iastate.edu>
+Date:   Fri Feb 16 12:44:25 2024 -0600
+
+    finished dijkstras
+
+commit 91873d2b79c8e0cd335791ef523cfd9572a33ea9
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Feb 15 13:27:18 2024 -0600
+
+    fixed excess element error
+
+commit 65b8f548f56320f525b34d7c17905d8fd97b6d98
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Feb 15 13:19:29 2024 -0600
+
+    fixed gates at borders
+
+commit 99b60bc1f389beeef6590e6b5b99edb65d4012d3
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 14 14:43:58 2024 -0600
+
+    working on removing gates at edges
+
+commit c195d866a9e36eda4ee3e3259c57163224ba41a7
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 14 14:29:21 2024 -0600
+
+    wieght map array added
+
+commit c9f3590edd9ace5af8f7b760791ab319f676e2f6
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 14 13:56:31 2024 -0600
+
+    fixed clacCost
+
+commit 486536926e91cd6b55efdf75110142ea793b7c5a
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 14 13:50:26 2024 -0600
+
+    calcCost func
+
+commit fec34cafa3cfde0a5dc833ae207ecd529427c628
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 14 12:05:44 2024 -0600
+
+    decalred dijkstras
+
+commit d2a0a04dbd182ee5b5e3368760c44cfb5a911f80
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 14 11:49:58 2024 -0600
+
+    edited heap
+
+commit 89c098ac4e216e4c931e24bf82edbd05740c60e2
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 14 11:48:01 2024 -0600
+
+    tuesday work
+
+commit b611394037dc444d539836421f7d3bea0b3a0fc9
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 13 18:53:07 2024 -0600
+
+    no vscode erros for heap
+
+commit d7fa70c0426e62e4087f204daad13aeaf4e506cf
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 13 18:05:14 2024 -0600
+
+    gg heap
+
+commit 8d7ca16e298e18d77a3d5d4257ba5f7f736d4c92
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 13 18:03:30 2024 -0600
+
+    idk how to revert
+
+commit 96ba436e4d313a9e9631380a139fc996716e8f9f
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 13 17:51:29 2024 -0600
+
+    added wrong heap
+
+commit 3d1a61b5c5a3c70e5b08072977555fa1138bdd47
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 13 17:40:46 2024 -0600
+
+    new heap added
+
+commit 482daae2f09803105a1b7e5aec163835584cac40
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 13 13:41:30 2024 -0600
+
+    added priority que; semi complete
+
+commit 57d7b05124c9eefa01fd40e2075602dcac03d0fb
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 12 10:44:39 2024 -0600
+
+    no gates at edeges
+
+commit 097babd691c06c67ad7d293d1b5bb2bc8981fbb4
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Feb 8 13:54:09 2024 -0600
+
+    cleaned code
+
+commit 5c3daf02e8008500fd6074b629364b8b546f63da
+Merge: ae47379 6a7c0eb
+Author: Max Mayer-Mader <119761775+maxmayermader@users.noreply.github.com>
+Date:   Thu Feb 8 12:47:20 2024 -0600
+
+    Merge pull request #7 from maxmayermader/Ass2
+    
+    Ass2
+
+commit 6a7c0ebeacf6b8637154cb6170b4950286335946
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 7 19:03:28 2024 -0600
+
+    git ignore
+
 commit c0cf9b636194e55df2575c5acd081416f43e2c2f
 Author: Max P <maxmay@iastate.edu>
 Date:   Wed Feb 7 18:54:29 2024 -0600
