@@ -1,5 +1,6 @@
 .gz
+.tar.gz
+.tar
 .vscode
 .tsr
 !*/bin/*.exe
-
