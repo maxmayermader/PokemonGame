@@ -10,9 +10,9 @@
 #define NPCCOL (COL - 2) //X 
 #define worldXSize 401
 #define worldYSize 401
-#define MAX_HEAP_SIZE 1482
+#define MAX_HEAP_SIZE 99999
 #define INFINTY 99999
-#define NPCS_PER_MAP 5
+#define NPCS_PER_MAP 10
 
 #define BOULDER '%'
 #define TREE '^'
@@ -30,8 +30,18 @@ typedef struct NPC{
     int symb;
     int row;
     int col;
-    int weightArr[NPCROW][NPCCOL];
+    int* weightArr[NPCROW][NPCCOL];
 }NPC;
+
+//NPC Enums
+typedef enum NPCSymb{
+    RIVAL,
+    HIKER,
+    PACER,
+    WANDERER,
+    SENTRIES, 
+    EXPLORERS
+}NPCSymb;
 
 //PC struct
 typedef struct PC{
@@ -51,6 +61,7 @@ typedef struct mapStruct{
 	char terrain[ROW][COL];
     NPC* npcArray[NPCS_PER_MAP];
     PC* playerT;
+    int NPCSInit; 
 }mapStruct;
 
 
@@ -128,27 +139,7 @@ heap* createHeap()
     }
     // set the values to size and capacity
     h->size = 0;
-    //h->capacity = capacity;
- 
-    // Allocating memory to array
-    //h->arr = (heapNode*)malloc(capacity * sizeof(heapNode));
- 
-    // Checking if memory is allocated to h or not
-    // if (h->arr == NULL) {
-    //     printf("Memory error");
-    //     return NULL;
-    // }
-    //int i=0;
-    // for (i = 0; i < capacity; i++) {
-    //     h->arr[i] = nodes[i];
-    // }
- 
-    //h->size = i;
-    // int i = (h->size - 2) / 2;
-    // while (i >= 0) {
-    //     heapify(h, i);
-    //     i--;
-    // }
+    
     return h;
 }
  
@@ -611,6 +602,7 @@ void setMap(mapStruct *map, int x, int y, worldMap *wm){
     }
 
     map->playerT = malloc(sizeof(PC));
+    map->NPCSInit = 0;
 
 }
 
@@ -717,7 +709,7 @@ int calcCost(int npc, char terrainType){
                  // 0   1   2   3   4   5   6   7 
                  // P   M   C   T   S   M   F   W   
     int costArr[2][8] = {{10, 50, 50, 15, 10, 15, 15, INFINTY},               //Hiker
-                         {10, 50, 50, 20, 10, INFINTY, INFINTY, INFINTY}};    //Rival
+                         {10, 50, 50, 20, 10, INFINTY, INFINTY, INFINTY},};    //Rival and other
 
     return costArr[npc][terrainTypeInt];
 }
@@ -877,6 +869,12 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
         //heapRunCount++;
     }
     killHeap(h);
+}
+
+
+
+void moveCharecters(worldMap *wm, mapStruct *terrainMap){
+
 }
 
 int main(int argc, char *argv[]){
