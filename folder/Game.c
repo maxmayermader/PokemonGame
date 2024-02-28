@@ -99,7 +99,6 @@ void printMap(mapStruct *map, PC *pc){
                 continue;
             } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
                 char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
-                int b;
                 printf("%c", symbs[map->npcArray[i-1][j-1]->symb]);
                 continue;
             }
@@ -800,10 +799,11 @@ int calcCost(int npc, char terrainType){
             printf("error. Uknown type of terrrain\n");
             break;
     }
-                 // 0   1   2   3   4   5   6   7 
-                 // P   M   C   T   S   M   F   W   
+                        // 0   1   2   3   4   5   6   7 
+                        // P   M   C   T   S   M   F   W   
     int costArr[2][8] = {{10, 50, 50, 15, 10, 15, 15, INFINTY},               //Hiker
-                         {10, 50, 50, 20, 10, INFINTY, INFINTY, INFINTY},};    //Rival and other
+                         {10, 50, 50, 20, 10, INFINTY, INFINTY, INFINTY},     //Rival and other
+                         {10, 10, 10, 20, 10, INFINTY, INFINTY, INFINTY}};    //PC
 
     return costArr[npc][terrainTypeInt];
 }
@@ -965,6 +965,56 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
     killHeap(h);
 }
 
+int canMove(worldMap *wm, mapStruct *terrainMap, int symb, int row, int col, int prevRow, int prevCol){
+    switch (symb) {
+        case HIKER:
+            if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
+            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[row-1][col-1]->weightArr[row-1][col-1] != INFINTY){//check if terrain not infinty
+                return 1;
+            } else {
+                return -1;
+            }
+        case RIVAL:
+            if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
+            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[row-1][col-1]->weightArr[row-1][col-1] != INFINTY){//check if terrain not infinty and is empty
+                return 1;
+            } else {
+                return -1;
+            }
+        case PACER:
+            if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
+            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[row-1][col-1]->weightArr[row-1][col-1] != INFINTY){//is empty
+                return 0;
+            } else {
+                return -1;
+            }
+        case WANDERER:
+            if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
+            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[row-1][col-1]->weightArr[row-1][col-1] != INFINTY && //is empty
+            terrainMap->terrain[row][col] == terrainMap->terrain[prevRow][prevCol]){ //same kind of terrain
+                return 0;
+            } else {
+                return -1;
+            }
+        case SENTRIES:
+            return 0;
+        case EXPLORERS:
+            if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
+            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[row-1][col-1]->weightArr[row-1][col-1] != INFINTY){//is empty
+                return 0;
+            } else {
+                return -1;
+            }
+        default: //PC
+            if (calcCost(terrainMap->terrain[row][col], 3) != INFINTY && //terrain not infinty
+            terrainMap->npcArray[row-1][col-1] == NULL){  //terrain is empty
+                return 0;
+            } else {
+                return -1;
+            }
+    }
+}
+
 void moveNPC(worldMap *wm, mapStruct *terrainMap, NPC* npc){
 
 }
@@ -1001,10 +1051,12 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
         }
     }
 
+    int pcMove = 0;
+
     while(h->size > 0){
         heapNode* hn = extractMin(h);
         if(hn->pc != NULL){
-
+            
         } else {
             moveNPC(wm, terrainMap, hn->npc);
         }
@@ -1018,12 +1070,12 @@ return;
 int main(int argc, char *argv[]){
 
     //srand(time(NULL));//random seed
-
+    srand(100);
    
     worldMap wm;
     int currX = 200;
     int currY = 200;
-    int numTrainers = 1100;
+    int numTrainers = 3;
 
 
     
