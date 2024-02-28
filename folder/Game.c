@@ -83,6 +83,7 @@ int getQueSize(){
     void moveCharecters(worldMap *wm, mapStruct *terrainMap, int numTrainers);
     int randomGenerator(int upper, int lower);
     int calcCost(int npc, char terrainType);
+    int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int prevCol);
     
 int randomGenerator(int upper, int lower){
   return (rand() % (upper - lower + 1)) + lower;
@@ -90,8 +91,11 @@ int randomGenerator(int upper, int lower){
 
 //Prints map out to the terminal
 void printMap(mapStruct *map, PC *pc){
-    int i;
-    int j;
+    int i, j;
+    for (j=0; j < COL; j++){
+        printf("%d", j % 10);
+    }
+    printf("\n");
     for (i=0; i < ROW; i++){
         for(j=0; j < COL; j++){
             if(pc->row == i && pc->col == j){
@@ -104,7 +108,9 @@ void printMap(mapStruct *map, PC *pc){
             }
             
             printf("%c", map->terrain[i][j]);
+
         }
+        printf("%d", i);
         printf("\n");
     }
 
@@ -801,7 +807,7 @@ int calcCost(int npc, char terrainType){
     }
                         // 0   1   2   3   4   5   6   7 
                         // P   M   C   T   S   M   F   W   
-    int costArr[2][8] = {{10, 50, 50, 15, 10, 15, 15, INFINTY},               //Hiker
+    int costArr[3][8] = {{10, 50, 50, 15, 10, 15, 15, INFINTY},               //Hiker
                          {10, 50, 50, 20, 10, INFINTY, INFINTY, INFINTY},     //Rival and other
                          {10, 10, 10, 20, 10, INFINTY, INFINTY, INFINTY}};    //PC
 
@@ -965,32 +971,73 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
     killHeap(h);
 }
 
-int canMove(worldMap *wm, mapStruct *terrainMap, int symb, int row, int col, int prevRow, int prevCol){
+void getNextSmallestMove(mapStruct *terrainMap, NPC* npc, int *row, int *col){
+    int minCost = INFINTY;
+
+    if(canMove(terrainMap, npc->symb, npc->row, npc->col+1, npc->row+1, npc->col+1) == 1){ //North
+        if (minCost > npc->weightArr[npc->row-1][npc->col] ){
+            minCost = npc->weightArr[npc->row-1][npc->col];
+            npc->row = npc->row-1;
+            npc->col = npc->col;
+        }
+    }
+}
+
+int moveHiker(mapStruct *terrainMap, NPC* hiker){
+    //int minCost = INFINTY;
+    int nextRow, nextCol;
+    int prevRow = hiker->row;
+    int prevCol = hiker->col;
+    getNextSmallestMove(terrainMap, hiker, &nextRow, &nextCol);
+    hiker->row = nextRow;
+    hiker->col = nextCol;
+    terrainMap->npcArray[nextRow][nextCol] = hiker;
+    terrainMap->npcArray[prevRow][prevCol] = NULL;
+    return 0;
+}
+
+void moveRival(){
+    
+}
+
+void movePacer(){
+    
+}
+
+void moveWanderer(){
+    
+}
+
+void moveExplorer(){
+    
+}
+/*fucntion for checking if next move is possibel. row and col is of ROW and COL size*/
+int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int prevCol){
     switch (symb) {
         case HIKER:
-            if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
-            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[row-1][col-1]->weightArr[row-1][col-1] != INFINTY){//check if terrain not infinty
+            if ( (row > 0 && row < ROW - 1 && col > 0 && col < COL-1)  && //check if in border 
+            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY){//check if terrain not infinty     
                 return 1;
             } else {
                 return -1;
             }
         case RIVAL:
             if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
-            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[row-1][col-1]->weightArr[row-1][col-1] != INFINTY){//check if terrain not infinty and is empty
+            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY){//check if terrain not infinty and is empty
                 return 1;
             } else {
                 return -1;
             }
         case PACER:
             if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
-            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[row-1][col-1]->weightArr[row-1][col-1] != INFINTY){//is empty
+            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY){//is empty
                 return 0;
             } else {
                 return -1;
             }
         case WANDERER:
             if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
-            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[row-1][col-1]->weightArr[row-1][col-1] != INFINTY && //is empty
+            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY && //is empty
             terrainMap->terrain[row][col] == terrainMap->terrain[prevRow][prevCol]){ //same kind of terrain
                 return 0;
             } else {
@@ -1000,14 +1047,14 @@ int canMove(worldMap *wm, mapStruct *terrainMap, int symb, int row, int col, int
             return 0;
         case EXPLORERS:
             if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
-            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[row-1][col-1]->weightArr[row-1][col-1] != INFINTY){//is empty
+            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY){//is empty
                 return 0;
             } else {
                 return -1;
             }
         default: //PC
             if (calcCost(terrainMap->terrain[row][col], 3) != INFINTY && //terrain not infinty
-            terrainMap->npcArray[row-1][col-1] == NULL){  //terrain is empty
+            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY){  //terrain is empty
                 return 0;
             } else {
                 return -1;
@@ -1015,9 +1062,7 @@ int canMove(worldMap *wm, mapStruct *terrainMap, int symb, int row, int col, int
     }
 }
 
-void moveNPC(worldMap *wm, mapStruct *terrainMap, NPC* npc){
 
-}
 
 void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
     /*
@@ -1055,10 +1100,39 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
 
     while(h->size > 0){
         heapNode* hn = extractMin(h);
+        int i, j;
+
         if(hn->pc != NULL){
             
+
+            for(i=0; i<NPCROW; i++){
+                for(j=0; j<NPCCOL; j++){
+                    if(terrainMap->npcArray[i][j] != NULL && (terrainMap->npcArray[i][j]->symb == HIKER || terrainMap->npcArray[i][j]->symb == RIVAL)){
+                        dijkstras(hn->pc->row, hn->pc->col, terrainMap, terrainMap->npcArray[i][j]->weightArr, terrainMap->npcArray[i][j]->symb);
+                    }
+                }
+            }
+            printMap(terrainMap, hn->pc);
         } else {
-            moveNPC(wm, terrainMap, hn->npc);
+            int type = hn->npc->symb;
+
+            switch(type){
+                case HIKER:
+                    int wt = moveHiker(terrainMap, hn->npc);
+                    hn->weight += wt;
+                    insert(h, hn);
+                    break;
+                case RIVAL:
+                    break;
+                case PACER:
+                    break;
+                case WANDERER:
+                    break;
+                case SENTRIES:
+                    break;
+                case EXPLORERS:
+                    break;
+            }
         }
     }
 
@@ -1075,7 +1149,7 @@ int main(int argc, char *argv[]){
     worldMap wm;
     int currX = 200;
     int currY = 200;
-    int numTrainers = 3;
+    int numTrainers = 1;
 
 
     
