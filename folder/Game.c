@@ -973,18 +973,26 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
 
 void getNextSmallestMove(mapStruct *terrainMap, NPC* npc, int *row, int *col){
     int minCost = INFINTY;
+    int i,j;
 
-    if(canMove(terrainMap, npc->symb, npc->row, npc->col+1, npc->row+1, npc->col+1) == 1){ //North
-        if (minCost > npc->weightArr[npc->row-1][npc->col] ){
-            minCost = npc->weightArr[npc->row-1][npc->col];
-            npc->row = npc->row-1;
-            npc->col = npc->col;
+    for(i=-1; i<=1; i++){
+        for(j=-1; j<=1; j++){
+            if(i != 0 && j != 0){
+                if(canMove(terrainMap, npc->symb, npc->row+1+i, npc->col+1+j, npc->row+1, npc->col+1) == 1){ //North
+                    if (minCost > npc->weightArr[npc->row+i][npc->col+j] ){
+                        minCost = npc->weightArr[npc->row+i][npc->col+j];
+                        *row = npc->row+i;
+                        *col = npc->col+j;
+                    }
+                }
+            }
         }
     }
+
+    
 }
 
 int moveHiker(mapStruct *terrainMap, NPC* hiker){
-    //int minCost = INFINTY;
     int nextRow, nextCol;
     int prevRow = hiker->row;
     int prevCol = hiker->col;
@@ -1112,6 +1120,16 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
                     }
                 }
             }
+            if (pcMove == 0){ //move pc right
+                
+            } else if(pcMove == 1){ //move pc down
+
+            } else if(pcMove == 2){ //move pc left
+                
+            } else if(pcMove == 3){ //move pc up
+                
+            }
+
             printMap(terrainMap, hn->pc);
         } else {
             int type = hn->npc->symb;
