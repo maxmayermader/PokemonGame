@@ -110,17 +110,16 @@ void printMap(mapStruct *map, PC *pc){
 
 }
 
-typedef struct npcHeapNode {
-    NPC* npc;
-    PC* pc;
-    int weight;
-} npcHeapNode;
 
 typedef struct heapNode {
+    int weight;
+    //for dijkstra
     int row;
     int col;
-    int weight;
     int visited;
+    //for moving
+    NPC* npc;
+    PC* pc;
 } heapNode;
 
 /*Begin heap implemantation*/
@@ -255,19 +254,6 @@ void insert(heap* h, heapNode* data){
     }
 }
 
-// Define a insert function
-void insertNPC(heap* h, npcHeapNode* data){
- 
-    // Checking if heap is full or not
-    if (h->size < MAX_HEAP_SIZE) {
-        // Inserting data into an array
-        h->arr[h->size] = data;
-        // Calling insertHelper function
-        insertHelper(h, h->size);
-        // Incrementing size of array
-        h->size++;
-    }
-}
  
 void printHeap(heap* h)
 {
@@ -987,20 +973,20 @@ void moveCharecters(worldMap *wm, mapStruct *terrainMap, int numTrainers){
     move player in square for now
     */
     heap* h = createHeap();
-    npcHeapNode* hnNPC = malloc(sizeof(npcHeapNode));
+    heapNode* hnNPC = malloc(sizeof(heapNode));
     hnNPC->npc=NULL;
     hnNPC->pc=wm->player;
     hnNPC->weight=0;
-    insertNPC(h, hnNPC);
+    insert(h, hnNPC);
     int i,j;
     for(i=0; i<NPCROW; i++){
         for(j=0; j<NPCCOL; j++){
             if(terrainMap->npcArray[i][j] != NULL){
-                npcHeapNode* hn = malloc(sizeof(npcHeapNode));
+                heapNode* hn = malloc(sizeof(heapNode));
                 hn->npc = terrainMap->npcArray[i][j];
                 hn->pc = NULL;
                 hn->weight = 0;
-                insertNPC(h, hn);
+                insert(h, hn);
             }
         }
     }
