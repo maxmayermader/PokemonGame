@@ -97,8 +97,9 @@ void printMap(mapStruct *map, PC *pc){
             if(pc->row == i && pc->col == j){
                 printf("%c", PLAYERCHAR);
                 continue;
-            } else if (i>0 && i<ROW-1 && j>0 && i<COL-1 && map->npcArray[i-1][j-1] != NULL){          
+            } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
                 char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
+                int b;
                 printf("%c", symbs[map->npcArray[i-1][j-1]->symb]);
                 continue;
             }
@@ -653,10 +654,10 @@ void spawnNPC(worldMap *wm, mapStruct *terrainMap, int npcType){
     npcType = npcType == HIKER ? HIKER : 1;
     while (canPlace == -1){
         int row = randomGenerator(NPCROW-1, 0);
-        int col = randomGenerator(NPCROW-1, 0);
-        if(calcCost(npcType, terrainMap->terrain[row+1][col+1]) != INFINTY){
-            if(terrainMap->npcArray[row+1][col+1] == NULL){
-                terrainMap->npcArray[row+1][col+1] = npc;
+        int col = randomGenerator(NPCCOL-1, 0);
+        if(calcCost(npcType, terrainMap->terrain[row+1][col+1]) != INFINTY){ //check of terrain is not infinty
+            if((terrainMap->npcArray[row][col] == NULL)){ //&& (terrainMap->terrain[row+1][col+1] != 'M') && (terrainMap->terrain[row+1][col+1] != 'C')){ 
+                terrainMap->npcArray[row][col] = npc;
                 npc->row = row;
                 npc->col = col;
                 canPlace = 0;
@@ -672,7 +673,14 @@ void placeNPCS(worldMap *wm, mapStruct *terrainMap, int npcNum){
     spawnNPC(wm, terrainMap, RIVAL);
     //if statements
     npcNum=npcNum-2;
-     while (npcNum>0){
+    while (npcNum>0){
+        if(npcNum == npcNum-100 || npcNum == 250-500 || npcNum == npcNum-750 || npcNum == npcNum-1000){
+            printf("hello %d\n", npcNum);
+        }
+        printf("npcNum %d\n", npcNum);
+        if(npcNum == 114){
+            printf("bruh\n");
+        }
       int npcType = randomGenerator(5,0);
       switch (npcType){
         case HIKER:
@@ -723,7 +731,7 @@ void createMap(int x, int y, worldMap *wm, int npcNum){
     newMap->playerT->col = wm->player->col;
 
     if(newMap->NPCSInit == 0){
-        placeNPCS(wm, newMap,npcNum);
+        placeNPCS(wm, newMap, npcNum);
         newMap->NPCSInit = 1;
     }
 
@@ -957,9 +965,11 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
     killHeap(h);
 }
 
+void moveNPC(worldMap *wm, mapStruct *terrainMap, NPC* npc){
 
+}
 
-void moveCharecters(worldMap *wm, mapStruct *terrainMap, int numTrainers){
+void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
     /*
     init heap
     add player to heap
@@ -991,6 +1001,15 @@ void moveCharecters(worldMap *wm, mapStruct *terrainMap, int numTrainers){
         }
     }
 
+    while(h->size > 0){
+        heapNode* hn = extractMin(h);
+        if(hn->pc != NULL){
+
+        } else {
+            moveNPC(wm, terrainMap, hn->npc);
+        }
+    }
+
     
 return;
    
@@ -1004,7 +1023,7 @@ int main(int argc, char *argv[]){
     worldMap wm;
     int currX = 200;
     int currY = 200;
-    int numTrainers = 3;
+    int numTrainers = 1100;
 
 
     
@@ -1013,7 +1032,7 @@ int main(int argc, char *argv[]){
     createMap(currX, currY, &wm, numTrainers);
     printf("(%d, %d)\n", currX-200, currY-200);
 
-    moveCharecters(&wm, wm.arr[200][200], numTrainers);
+    moveEveryone(&wm, wm.arr[200][200], numTrainers);
 
 
     // char userChar;
