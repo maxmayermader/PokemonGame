@@ -12,7 +12,6 @@
 #define worldYSize 401
 #define MAX_HEAP_SIZE 99999
 #define INFINTY 99999
-#define NPCS_PER_MAP 10
 
 #define BOULDER '%'
 #define TREE '^'
@@ -27,10 +26,10 @@
 
 //NPC struct
 typedef struct NPC{
-    int symb;
-    int row;
+    int symb; //NPC type: Rival, Hiker etc
+    int row; 
     int col;
-    int* weightArr[NPCROW][NPCCOL];
+    int weightArr[NPCROW][NPCCOL]; //weightMap. Might change it to pointer arr
 }NPC;
 
 //NPC Enums
@@ -59,7 +58,7 @@ typedef struct mapStruct{
 	int gateW;//left
 	int gateE;//right
 	char terrain[ROW][COL];
-    NPC* npcArray[NPCS_PER_MAP];
+    NPC* npcArray[NPCROW][NPCCOL];
     PC* playerT;
     int NPCSInit; 
 }mapStruct;
@@ -81,6 +80,7 @@ int getQueSize(){
     void createMap(int x, int y, worldMap *wm);
     void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NPCCOL], int type);
     void printWeightMap(int weightArr[NPCROW][NPCCOL]);
+    void moveCharecters(worldMap *wm, mapStruct *terrainMap, int numTrainers);
     
 
 //Prints map out to the terminal
@@ -101,6 +101,11 @@ void printMap(mapStruct *map, PC *pc){
 
 }
 
+typedef struct npcHeapNode {
+    NPC* npc;
+    PC* pc;
+    int weight;
+} npcHeapNode;
 
 typedef struct heapNode {
     int row;
@@ -602,6 +607,12 @@ void setMap(mapStruct *map, int x, int y, worldMap *wm){
     }
 
     map->playerT = malloc(sizeof(PC));
+    //set all NPCs to NULL
+    for(i=0; i<NPCROW; i++){
+        for(j=0; j<NPCCOL; j++){
+            map->npcArray[i][j] = NULL;
+        }
+    }
     map->NPCSInit = 0;
 
 }
@@ -625,6 +636,10 @@ void createWorldMap(worldMap *wm){
     wm->player->globalY = 200;
 }
 
+void spawnNPCS(worldMap *wm, mapStruct *terraiMap, int npcNum){
+    
+}
+
 
 /*Create a terrain map and add it to world map at position x y*/
 void createMap(int x, int y, worldMap *wm){
@@ -643,20 +658,20 @@ void createMap(int x, int y, worldMap *wm){
 
     printMap(newMap, wm->player); //print map and player
     
-    newMap->npcArray[0] = malloc(sizeof(NPC)); //Hiker
-    newMap->npcArray[1] = malloc(sizeof(NPC)); //Rival
+    newMap->npcArray[0][0] = malloc(sizeof(NPC)); //Hiker
+    newMap->npcArray[0][1] = malloc(sizeof(NPC)); //Rival
 
-    newMap->npcArray[0]->symb = 0;
-    newMap->npcArray[1]->symb = 1;
+    newMap->npcArray[0][0]->symb = 0;
+    newMap->npcArray[0][1]->symb = 1;
 
-    dijkstras(wm->player->row, wm->player->col, wm->arr[x][y], newMap->npcArray[0]->weightArr, newMap->npcArray[0]->symb); //dijkstras for hiker
-    dijkstras(wm->player->row, wm->player->col, wm->arr[x][y], newMap->npcArray[1]->weightArr, newMap->npcArray[1]->symb); //dijkstras for rival
+    dijkstras(wm->player->row, wm->player->col, wm->arr[x][y], newMap->npcArray[0][0]->weightArr, newMap->npcArray[0][0]->symb); //dijkstras for hiker
+    dijkstras(wm->player->row, wm->player->col, wm->arr[x][y], newMap->npcArray[0][1]->weightArr, newMap->npcArray[0][1]->symb); //dijkstras for rival
 
     printf("Weights for hiker\n");
-    printWeightMap(wm->arr[x][y]->npcArray[0]->weightArr);
+    printWeightMap(wm->arr[x][y]->npcArray[0][0]->weightArr);
 
     printf("Weights for rival\n");
-    printWeightMap(wm->arr[x][y]->npcArray[1]->weightArr);
+    printWeightMap(wm->arr[x][y]->npcArray[0][1]->weightArr);
 }
 
 /*Go to terrain map at x y*/
@@ -665,10 +680,10 @@ void fly(int x, int y, worldMap *wm){
         printMap(wm->arr[x][y], wm->arr[x][y]->playerT);
 
         printf("Weights for hiker\n");
-        printWeightMap(wm->arr[x][y]->npcArray[0]->weightArr);
+        printWeightMap(wm->arr[x][y]->npcArray[0][0]->weightArr);
 
         printf("Weights for rival\n");
-        printWeightMap(wm->arr[x][y]->npcArray[1]->weightArr);
+        printWeightMap(wm->arr[x][y]->npcArray[1][0]->weightArr);
     } else {
         createMap(x, y, wm);
     }
@@ -873,8 +888,20 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
 
 
 
-void moveCharecters(worldMap *wm, mapStruct *terrainMap){
+void moveCharecters(worldMap *wm, mapStruct *terrainMap, int numTrainers){
+    /*
+    init heap
+    add player to heap
+    init players if not
+        add players to que
 
+    move everyone based on move weight
+        get next position
+        get cost
+    print when players turn
+    move player in square for now
+    */
+   
 }
 
 int main(int argc, char *argv[]){
@@ -885,6 +912,7 @@ int main(int argc, char *argv[]){
     worldMap wm;
     int currX = 200;
     int currY = 200;
+    int numTrainers = 3;
 
 
     
@@ -893,86 +921,88 @@ int main(int argc, char *argv[]){
     createMap(currX, currY, &wm);
     printf("(%d, %d)\n", currX-200, currY-200);
 
+    moveCharecters(&wm, wm.arr[200][200], numTrainers);
 
-    char userChar;
-    //userChar = getchar();
-    printf("Move with 'e'ast, 'w'est, 'n'orth, 's'outh or 'f'ly x y.\n"
-                        "Quit with 'q'.  and 'h' print this help message.\n");
 
-    do{
-        if (scanf(" %c", &userChar) != 1) {
-            /* To handle EOF */
-            putchar('\n');
-            break;
-        }
-        switch (userChar) {
-            case 'n':
-                if(currY - 1 > -1){
-                    currY--;
-                    fly(currX, currY, &wm);
-                    printf("(%d, %d)\n", currX-200, currY-200);
-                } else {
-                    printf("Can't go that way\n");
-                }
-                break;
-            case 's':
-                if(currY + 1 <  worldYSize){
-                    currY++;
-                    fly(currX, currY, &wm);
-                    printf("(%d, %d)\n", currX-200, currY-200);
-                } else {
-                    printf("Can't go that way\n");
-                }
-                break;
-            case 'e':
-                if(currX + 1 < worldXSize){
-                    currX++;
-                    fly(currX, currY, &wm);
-                    printf("(%d, %d)\n", currX-200, currY-200);
-                } else {
-                    printf("Can't go that way\n");
-                }
-                break;
-            case 'w':
-                if(currX - 1 > -1){
-                    currX--;
-                    fly(currX, currY, &wm);
-                    printf("(%d, %d)\n", currX-200, currY-200);
-                } else {
-                    printf("Can't go that way\n");
-                }
-                break;
-            case 'q':
-                break;
-            case 'f':
-                int userX;
-                int userY;
-                printf("Enter x y coordinates\n");
-                if (scanf(" %d %d", &userX, &userY) != 1) {
-                    /* To handle EOF */
-                    putchar('\n');
-                    userX+=200;
-                    userY+=200;
-                    if(userX >= worldXSize || userX < 0 || userY >= worldYSize || userY < 0){
-                        printf("invalid coordinates\n");
-                    } else {
-                        currX = userX;
-                        currY = userY;
-                        fly(currX, currY, &wm);
-                    }
-                    printf("(%d, %d)\n", currX-200, currY-200);
-                    break;
-                }
-                break;
-            case 'h':
-                printf("Move with 'e'ast, 'w'est, 'n'orth, 's'outh or 'f'ly x y.\n"
-                        "Quit with 'q'.  and 'h' print this help message.\n");
-                break;
-            default:
-                fprintf(stderr, "%c: Invalid input.  Enter 'h' for help.\n", userChar);
-            break;
-        }
-    } while (userChar != 'q');
+    // char userChar;
+    // //userChar = getchar();
+    // printf("Move with 'e'ast, 'w'est, 'n'orth, 's'outh or 'f'ly x y.\n"
+    //                     "Quit with 'q'.  and 'h' print this help message.\n");
+
+    // do{
+    //     if (scanf(" %c", &userChar) != 1) {
+    //         /* To handle EOF */
+    //         putchar('\n');
+    //         break;
+    //     }
+    //     switch (userChar) {
+    //         case 'n':
+    //             if(currY - 1 > -1){
+    //                 currY--;
+    //                 fly(currX, currY, &wm);
+    //                 printf("(%d, %d)\n", currX-200, currY-200);
+    //             } else {
+    //                 printf("Can't go that way\n");
+    //             }
+    //             break;
+    //         case 's':
+    //             if(currY + 1 <  worldYSize){
+    //                 currY++;
+    //                 fly(currX, currY, &wm);
+    //                 printf("(%d, %d)\n", currX-200, currY-200);
+    //             } else {
+    //                 printf("Can't go that way\n");
+    //             }
+    //             break;
+    //         case 'e':
+    //             if(currX + 1 < worldXSize){
+    //                 currX++;
+    //                 fly(currX, currY, &wm);
+    //                 printf("(%d, %d)\n", currX-200, currY-200);
+    //             } else {
+    //                 printf("Can't go that way\n");
+    //             }
+    //             break;
+    //         case 'w':
+    //             if(currX - 1 > -1){
+    //                 currX--;
+    //                 fly(currX, currY, &wm);
+    //                 printf("(%d, %d)\n", currX-200, currY-200);
+    //             } else {
+    //                 printf("Can't go that way\n");
+    //             }
+    //             break;
+    //         case 'q':
+    //             break;
+    //         case 'f':
+    //             int userX;
+    //             int userY;
+    //             printf("Enter x y coordinates\n");
+    //             if (scanf(" %d %d", &userX, &userY) != 1) {
+    //                 /* To handle EOF */
+    //                 putchar('\n');
+    //                 userX+=200;
+    //                 userY+=200;
+    //                 if(userX >= worldXSize || userX < 0 || userY >= worldYSize || userY < 0){
+    //                     printf("invalid coordinates\n");
+    //                 } else {
+    //                     currX = userX;
+    //                     currY = userY;
+    //                     fly(currX, currY, &wm);
+    //                 }
+    //                 printf("(%d, %d)\n", currX-200, currY-200);
+    //                 break;
+    //             }
+    //             break;
+    //         case 'h':
+    //             printf("Move with 'e'ast, 'w'est, 'n'orth, 's'outh or 'f'ly x y.\n"
+    //                     "Quit with 'q'.  and 'h' print this help message.\n");
+    //             break;
+    //         default:
+    //             fprintf(stderr, "%c: Invalid input.  Enter 'h' for help.\n", userChar);
+    //         break;
+    //     }
+    // } while (userChar != 'q');
     
     
     return 0;
