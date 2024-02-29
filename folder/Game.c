@@ -802,7 +802,7 @@ int calcCost(int npc, char terrainType){
             terrainTypeInt = 7;
             break;
         default:
-            printf("error. Uknown type of terrrain\n");
+            printf("cost error. Uknown type of terrrain\n");
             break;
     }
                         // 0   1   2   3   4   5   6   7 
@@ -1001,7 +1001,7 @@ int moveHiker(mapStruct *terrainMap, NPC* hiker){
     hiker->col = nextCol;
     terrainMap->npcArray[nextRow][nextCol] = hiker;
     terrainMap->npcArray[prevRow][prevCol] = NULL;
-    return 0;
+    return calcCost(HIKER, terrainMap->terrain[hiker->row+1][hiker->col+1]);
 }
 
 void moveRival(){
@@ -1061,8 +1061,8 @@ int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int 
                 return -1;
             }
         default: //PC
-            if (calcCost(terrainMap->terrain[row][col], 3) != INFINTY && //terrain not infinty
-            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY){  //terrain is empty
+            if (calcCost(3, terrainMap->terrain[row][col]) != INFINTY && //terrain not infinty
+            terrainMap->npcArray[row-1][col-1] == NULL ){  //terrain is empty
                 return 0;
             } else {
                 return -1;
@@ -1121,13 +1121,34 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
                 }
             }
             if (pcMove == 0){ //move pc right
-                
+                if(canMove(terrainMap, 8, hn->pc->row, hn->pc->col+1, hn->pc->row, hn->pc->col)==0){
+                    hn->pc->col+=1;
+                    hn->weight += 10;
+                    pcMove++;
+                    insert(h, hn); 
+                }
             } else if(pcMove == 1){ //move pc down
-
+                if(canMove(terrainMap, 8, hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col) == 0){
+                    hn->pc->row+=1;
+                    hn->weight += 10;
+                    pcMove++;
+                    insert(h, hn); 
+                }
             } else if(pcMove == 2){ //move pc left
-                
+                if(canMove(terrainMap, 8, hn->pc->row, hn->pc->col-1, hn->pc->row, hn->pc->col)==0){
+                    hn->pc->col-=1;
+                    hn->weight += 10;
+                    pcMove++;
+                    insert(h, hn); 
+                }
             } else if(pcMove == 3){ //move pc up
-                
+                if(canMove(terrainMap, 8, hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col)==0){
+                    hn->pc->row-=1;
+                    hn->weight += 10;
+                    pcMove++;
+                    insert(h, hn); 
+                }
+                pcMove = 0;
             }
 
             printMap(terrainMap, hn->pc);
