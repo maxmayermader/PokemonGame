@@ -1377,63 +1377,112 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
                     }
                 }
             }
-            if (pcMove == 0){ //move pc right
-                if(canMove(terrainMap, 8, hn->pc->row, hn->pc->col+1, hn->pc->row, hn->pc->col)==1){
-                    
-                    
-                    newHN->pc = hn->pc;
-                    newHN->pc->col+=1;
-                    newHN->weight = hn->weight += 10;
-                    newHN->npc = NULL;
-                    pcMove++;
-                    insert(h, newHN); 
-                    free(hn);
-                }
-            } else if(pcMove == 1){ //move pc down
-                if(canMove(terrainMap, 8, hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col) == 1){
 
-                    newHN->pc = hn->pc;
-                    newHN->pc->row+=1;
-                    newHN->weight = hn->weight += 10;
-                    newHN->npc = NULL;
+            char in;
 
-                    pcMove++;
-                    insert(h, newHN); 
-                    free(hn);
-                }
-            } else if(pcMove == 2){ //move pc left
-                if(canMove(terrainMap, 8, hn->pc->row, hn->pc->col-1, hn->pc->row, hn->pc->col)==1){
+    while(in !='Q'){
+        printMap(terrainMap, pc);
+        //c = heap_remove_min(&world.cur_map->turn);
+            if (c == &world.pc) {
+                in = getchar();
+                    if(in=='7'||in=='y'){
+                        movePC(c,"UL");
+                        printMap(terrainMap, pc)();
+                    }else if (in=='8'||in=='k'){
+                        movePC(c,"UP");
+                        printMap(terrainMap, pc);
+                    }else if (in=='9'||in=='u'){
+                        movePC(c,"UR");
+                        printMap(terrainMap, pc);
+                    }else if (in=='6'||in=='l'){
+                        movePC(c,"R");
+                        printMap(terrainMap, pc);
+                    }else if (in=='3'||in=='n'){
+                        movePC(c,"LR");
+                        printMap(terrainMap, pc);
+                    }else if (in=='2'||in=='j'){
+                        movePC(c,"D");
+                        printMap(terrainMap, pc);
+                    }else if (in=='1'||in=='b'){
+                        movePC(c,"LL");
+                        printMap(terrainMap, pc);
+                    }else if (in=='4'||in=='h'){
+                        movePC(c,"L");
+                        printMap(terrainMap, pc);
+                    }else if (in=='t'){
+                      movePC(c,"t");
+                        printMap(terrainMap, pc);
+                    }else if (in=='>'){
+                      movePC(c,">");
+                        printMap(terrainMap, pc);
+                    }else if (in==' '||in=='.'||in=='5'){
+                        movePC(c,"5");  
+                        printMap(terrainMap, pc);
+                    }else{
+                       //printw("unknown character. Try again!");
 
-                    newHN->pc = hn->pc;
-                    newHN->pc->col-=1;
-                    newHN->weight = hn->weight += 10;
-                    newHN->npc = NULL;
-                    printf("rival row %d col %d\n", newHN->pc->row, newHN->pc->col);
-                    pcMove++;
-                    insert(h, newHN); 
-                    free(hn);
-                }
-            } else if(pcMove == 3){ //move pc up
-                if(canMove(terrainMap, 8, hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col)==1){
-
-                    newHN->pc = hn->pc;
-                    newHN->pc->row-=1;
-                    newHN->weight = hn->weight += 10;
-                    newHN->npc = NULL;
-                    pcMove++;
-                    insert(h, newHN); 
-                    free(hn);
-                }
-                pcMove = 0;
-            } else {
-                newHN->pc = hn->pc;
-                    //newHN->pc->col+=1;
-                    newHN->weight = hn->weight += 10;
-                    newHN->npc = NULL;
-                    //pcMove++;
-                    insert(h, newHN); 
-                    free(hn);
+                    }  
             }
+    }
+
+
+            // if (pcMove == 0){ //move pc right
+            //     if(canMove(terrainMap, 8, hn->pc->row, hn->pc->col+1, hn->pc->row, hn->pc->col)==1){
+                    
+                    
+            //         newHN->pc = hn->pc;
+            //         newHN->pc->col+=1;
+            //         newHN->weight = hn->weight += 10;
+            //         newHN->npc = NULL;
+            //         pcMove++;
+            //         insert(h, newHN); 
+            //         free(hn);
+            //     }
+            // } else if(pcMove == 1){ //move pc down
+            //     if(canMove(terrainMap, 8, hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col) == 1){
+
+            //         newHN->pc = hn->pc;
+            //         newHN->pc->row+=1;
+            //         newHN->weight = hn->weight += 10;
+            //         newHN->npc = NULL;
+
+            //         pcMove++;
+            //         insert(h, newHN); 
+            //         free(hn);
+            //     }
+            // } else if(pcMove == 2){ //move pc left
+            //     if(canMove(terrainMap, 8, hn->pc->row, hn->pc->col-1, hn->pc->row, hn->pc->col)==1){
+
+            //         newHN->pc = hn->pc;
+            //         newHN->pc->col-=1;
+            //         newHN->weight = hn->weight += 10;
+            //         newHN->npc = NULL;
+            //         printf("rival row %d col %d\n", newHN->pc->row, newHN->pc->col);
+            //         pcMove++;
+            //         insert(h, newHN); 
+            //         free(hn);
+            //     }
+            // } else if(pcMove == 3){ //move pc up
+            //     if(canMove(terrainMap, 8, hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col)==1){
+
+            //         newHN->pc = hn->pc;
+            //         newHN->pc->row-=1;
+            //         newHN->weight = hn->weight += 10;
+            //         newHN->npc = NULL;
+            //         pcMove++;
+            //         insert(h, newHN); 
+            //         free(hn);
+            //     }
+            //     pcMove = 0;
+            // } else {
+            //     newHN->pc = hn->pc;
+            //         //newHN->pc->col+=1;
+            //         newHN->weight = hn->weight += 10;
+            //         newHN->npc = NULL;
+            //         //pcMove++;
+            //         insert(h, newHN); 
+            //         free(hn);
+            // }
 
             printMap(terrainMap, hn->pc);
             usleep(1000000);
@@ -1506,11 +1555,7 @@ return;
    
 }
 
-void game(){
-    // character_t *c;
-    // pair_t d; 
-    char in;
-
+void movePC(mapStruct *terrainMap, PC *pc, int direc){
 
 }
 
@@ -1531,7 +1576,7 @@ int main(int argc, char *argv[]){
      } 
 
     printf("%d\n", numTrainers);
-    game();
+    
 
     
     
@@ -1539,91 +1584,9 @@ int main(int argc, char *argv[]){
     createMap(currX, currY, &wm, numTrainers);
     printf("(%d, %d)\n", currX-200, currY-200);
 
-    game();
+    game(wm.arr[200][200], wm.player);
 
     // moveEveryone(&wm, wm.arr[200][200], numTrainers);
-
-
-    // char userChar;
-    // //userChar = getchar();
-    // printf("Move with 'e'ast, 'w'est, 'n'orth, 's'outh or 'f'ly x y.\n"
-    //                     "Quit with 'q'.  and 'h' print this help message.\n");
-
-    // do{
-    //     if (scanf(" %c", &userChar) != 1) {
-    //         /* To handle EOF */
-    //         putchar('\n');
-    //         break;
-    //     }
-    //     switch (userChar) {
-    //         case 'n':
-    //             if(currY - 1 > -1){
-    //                 currY--;
-    //                 fly(currX, currY, &wm, numTrainers);
-    //                 printf("(%d, %d)\n", currX-200, currY-200);
-    //             } else {
-    //                 printf("Can't go that way\n");
-    //             }
-    //             break;
-    //         case 's':
-    //             if(currY + 1 <  worldYSize){
-    //                 currY++;
-    //                 fly(currX, currY, &wm, numTrainers);
-    //                 printf("(%d, %d)\n", currX-200, currY-200);
-    //             } else {
-    //                 printf("Can't go that way\n");
-    //             }
-    //             break;
-    //         case 'e':
-    //             if(currX + 1 < worldXSize){
-    //                 currX++;
-    //                 fly(currX, currY, &wm, numTrainers);
-    //                 printf("(%d, %d)\n", currX-200, currY-200);
-    //             } else {
-    //                 printf("Can't go that way\n");
-    //             }
-    //             break;
-    //         case 'w':
-    //             if(currX - 1 > -1){
-    //                 currX--;
-    //                 fly(currX, currY, &wm, numTrainers);
-    //                 printf("(%d, %d)\n", currX-200, currY-200);
-    //             } else {
-    //                 printf("Can't go that way\n");
-    //             }
-    //             break;
-    //         case 'q':
-    //             break;
-    //         case 'f':
-    //             int userX;
-    //             int userY;
-    //             printf("Enter x y coordinates\n");
-    //             if (scanf(" %d %d", &userX, &userY) != 1) {
-    //                 /* To handle EOF */
-    //                 putchar('\n');
-    //                 userX+=200;
-    //                 userY+=200;
-    //                 if(userX >= worldXSize || userX < 0 || userY >= worldYSize || userY < 0){
-    //                     printf("invalid coordinates\n");
-    //                 } else {
-    //                     currX = userX;
-    //                     currY = userY;
-    //                     fly(currX, currY, &wm, numTrainers);
-    //                 }
-    //                 printf("(%d, %d)\n", currX-200, currY-200);
-    //                 break;
-    //             }
-    //             break;
-    //         case 'h':
-    //             printf("Move with 'e'ast, 'w'est, 'n'orth, 's'outh or 'f'ly x y.\n"
-    //                     "Quit with 'q'.  and 'h' print this help message.\n");
-    //             break;
-    //         default:
-    //             fprintf(stderr, "%c: Invalid input.  Enter 'h' for help.\n", userChar);
-    //         break;
-    //     }
-    // } while (userChar != 'q');
-    
     
     return 0;
 }
