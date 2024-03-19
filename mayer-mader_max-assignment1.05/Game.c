@@ -2,6 +2,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define MAX_SIZE 100  
 #define ROW 21//21 //Y
@@ -29,6 +30,7 @@ typedef struct NPC{
     int symb; //NPC type: Rival, Hiker etc
     int row; 
     int col;
+    int direc;
     int weightArr[NPCROW][NPCCOL]; //weightMap. Might change it to pointer arr
 }NPC;
 
@@ -656,6 +658,7 @@ void spawnNPC(worldMap *wm, mapStruct *terrainMap, int npcType){
     int canPlace = -1;
     NPC* npc = malloc(sizeof(NPC));
     npc->symb = npcType;
+    npc->direc = 0;
     npcType = npcType == HIKER ? HIKER : 1;
     while (canPlace == -1){
         int row = randomGenerator(NPCROW-1, 0);
@@ -680,11 +683,13 @@ void placeNPCS(worldMap *wm, mapStruct *terrainMap, int npcNum){
     npcNum=npcNum-2;
     while (npcNum>0){
         if(npcNum == npcNum-100 || npcNum == 250-500 || npcNum == npcNum-750 || npcNum == npcNum-1000){
-            printf("hello %d\n", npcNum);
+            //printf("hello %d\n", npcNum);
         }
         printf("npcNum %d\n", npcNum);
-        if(npcNum == 114){
-            printf("bruh\n");
+        if (npcNum == 1){
+            spawnNPC(wm, terrainMap, PACER);
+            npcNum--;
+            continue;
         }
       int npcType = randomGenerator(5,0);
       switch (npcType){
@@ -978,7 +983,7 @@ void getNextSmallestMove(mapStruct *terrainMap, NPC* npc, int *row, int *col){
     for(i=-1; i<=1; i++){
         for(j=-1; j<=1; j++){
             if(i != 0 && j != 0){
-                if(canMove(terrainMap, npc->symb, npc->row+1+i, npc->col+1+j, npc->row+1, npc->col+1) == 1){ //North
+                if(canMove(terrainMap, npc->symb, npc->row+1+i, npc->col+1+j, npc->row+1, npc->col+1) == 1){ 
                     if (minCost > npc->weightArr[npc->row+i][npc->col+j] ){
                         minCost = npc->weightArr[npc->row+i][npc->col+j];
                         *row = npc->row+i;
@@ -1004,20 +1009,267 @@ int moveHiker(mapStruct *terrainMap, NPC* hiker){
     return calcCost(HIKER, terrainMap->terrain[hiker->row+1][hiker->col+1]);
 }
 
-void moveRival(){
-    
+int moveRival(mapStruct *terrainMap, NPC* rival){
+    int nextRow, nextCol;
+    int prevRow = rival->row;
+    int prevCol = rival->col;
+    getNextSmallestMove(terrainMap, rival, &nextRow, &nextCol);
+    rival->row = nextRow;
+    rival->col = nextCol;
+    //printf("get next smallest move row %d col %d\n", rival->row, rival->col);
+    terrainMap->npcArray[nextRow][nextCol] = rival;
+    terrainMap->npcArray[prevRow][prevCol] = NULL;
+    return calcCost(RIVAL, terrainMap->terrain[rival->row+1][rival->col+1]);
 }
 
-void movePacer(){
+int movePacer(mapStruct *terrainMap, NPC* pacer){
+    int nextRow, nextCol;
+    int prevRow = pacer->row;
+    int prevCol = pacer->col;
+    if(pacer->direc == 0){
+        if(canMove(terrainMap, pacer->symb, pacer->row+1, pacer->col+2, pacer->row+1, pacer->col+1) == 1){
+            nextRow = prevRow;
+            nextCol = prevCol + 1;
+            pacer->row = nextRow;
+            pacer->col = nextCol;
+            terrainMap->npcArray[nextRow][nextCol] = pacer;
+            terrainMap->npcArray[prevRow][prevCol] = NULL;
+        } else {
+            pacer->direc = 1;
+            nextRow = prevRow;
+            nextCol = prevCol;
+        }
+    } else{
+        if(canMove(terrainMap, pacer->symb, pacer->row+1, pacer->col, pacer->row+1, pacer->col+1) == 1){
+            nextRow = prevRow;
+            nextCol = prevCol - 1;
+            pacer->row = nextRow;
+            pacer->col = nextCol;
+            terrainMap->npcArray[nextRow][nextCol] = pacer;
+            terrainMap->npcArray[prevRow][prevCol] = NULL;
+        } else {
+            pacer->direc = 0;
+            nextRow = prevRow;
+            nextCol = prevCol;
+        }
+    }
     
+    
+    return calcCost(RIVAL, terrainMap->terrain[pacer->row+1][pacer->col+1]); 
 }
 
-void moveWanderer(){
+int moveWanderer(mapStruct *terrainMap, NPC* wanderer){
+    int nextRow, nextCol;
+    int prevRow = wanderer->row;
+    int prevCol = wanderer->col; 
+    nextRow = prevRow;
+    nextCol = prevCol;
     
+    
+    if(wanderer->direc == 0){ //move north
+        nextRow = wanderer->row-1;
+        nextCol = wanderer->col;
+        if (canMove(terrainMap, wanderer->symb, nextRow+1, nextCol+1, prevRow+1, prevCol+1) == 1){
+            wanderer->row = nextRow;
+            wanderer->col = nextCol;
+        } else{
+            wanderer->direc = randomGenerator(7,0);
+            return calcCost(RIVAL, terrainMap->terrain[wanderer->row+1][wanderer->col+1]);
+        }
+    }
+
+    else if(wanderer->direc == 1){ //move north west
+        nextRow = wanderer->row-1;
+        nextCol = wanderer->col+1;
+        if (canMove(terrainMap, wanderer->symb, nextRow+1, nextCol+1, prevRow+1, prevCol+1) == 1){
+            wanderer->row = nextRow;
+            wanderer->col = nextCol;
+        } else{
+            wanderer->direc = randomGenerator(7,0);
+            return calcCost(RIVAL, terrainMap->terrain[wanderer->row+1][wanderer->col+1]);
+        }
+    }
+
+    else if(wanderer->direc == 2){ //move west
+        nextRow = wanderer->row;
+        nextCol = wanderer->col+1;
+        if (canMove(terrainMap, wanderer->symb, nextRow+1, nextCol+1, prevRow+1, prevCol+1) == 1){
+            wanderer->row = nextRow;
+            wanderer->col = nextCol;
+        } else{
+            wanderer->direc = randomGenerator(7,0);
+            return calcCost(RIVAL, terrainMap->terrain[wanderer->row+1][wanderer->col+1]);
+        }
+    }
+
+    else if(wanderer->direc == 3){ //move south west
+        nextRow = wanderer->row+1;
+        nextCol = wanderer->col+1;
+        if (canMove(terrainMap, wanderer->symb, nextRow+1, nextCol+1, prevRow+1, prevCol+1) == 1){
+            wanderer->row = nextRow;
+            wanderer->col = nextCol;
+        } else{
+            wanderer->direc = randomGenerator(7,0);
+            return calcCost(RIVAL, terrainMap->terrain[wanderer->row+1][wanderer->col+1]);
+        }
+    }
+
+    else if(wanderer->direc == 4){ //move south
+        nextRow = wanderer->row+1;
+        nextCol = wanderer->col;
+        if (canMove(terrainMap, wanderer->symb, nextRow+1, nextCol+1, prevRow+1, prevCol+1) == 1){
+            wanderer->row = nextRow;
+            wanderer->col = nextCol;
+        } else{
+            wanderer->direc = randomGenerator(7,0);
+            return calcCost(RIVAL, terrainMap->terrain[wanderer->row+1][wanderer->col+1]);
+        }
+    }
+
+    else if(wanderer->direc == 5){ //move south east
+        nextRow = wanderer->row+1;
+        nextCol = wanderer->col-1;
+        if (canMove(terrainMap, wanderer->symb, nextRow+1, nextCol+1, prevRow+1, prevCol+1) == 1){
+            wanderer->row = nextRow;
+            wanderer->col = nextCol;
+        } else{
+            wanderer->direc = randomGenerator(7,0);
+            return calcCost(RIVAL, terrainMap->terrain[wanderer->row+1][wanderer->col+1]);
+        }
+    }
+
+    else if(wanderer->direc == 6){ //move east
+        nextRow = wanderer->row;
+        nextCol = wanderer->col-1;
+        if (canMove(terrainMap, wanderer->symb, nextRow+1, nextCol+1, prevRow+1, prevCol+1) == 1){
+            
+            wanderer->row = nextRow;
+            wanderer->col = nextCol;
+        } else{
+            wanderer->direc = randomGenerator(7,0);
+            return calcCost(RIVAL, terrainMap->terrain[wanderer->row+1][wanderer->col+1]);
+        }
+    }
+
+    else if(wanderer->direc == 7){ //move north east
+        nextRow = wanderer->row-1;
+        nextCol = wanderer->col-1;
+        if (canMove(terrainMap, wanderer->symb, nextRow+1, nextCol+1, prevRow+1, prevCol+1) == 1){
+            wanderer->row = nextRow;
+            wanderer->col = nextCol;
+        } else{
+            wanderer->direc = randomGenerator(7,0);
+            return calcCost(RIVAL, terrainMap->terrain[wanderer->row+1][wanderer->col+1]);
+        }
+    }
+
+
+    terrainMap->npcArray[prevRow][prevCol] = NULL;
+    terrainMap->npcArray[nextRow][nextCol] = wanderer;
+    return calcCost(RIVAL, terrainMap->terrain[wanderer->row+1][wanderer->col+1]);
 }
 
-void moveExplorer(){
+int moveExplorer(mapStruct *terrainMap, NPC* explorer){
+    int nextRow, nextCol;
+    int prevRow = explorer->row;
+    int prevCol = explorer->col; 
+    nextRow = prevRow;
+    nextCol = prevCol;
     
+    
+    if(explorer->direc == 0){ //move north
+        if (canMove(terrainMap, explorer->symb, explorer->row+1-1, explorer->col+1, prevRow+1, prevCol+1) == 1){
+            nextRow = explorer->row-1;
+            nextCol = explorer->col;
+            explorer->row = nextRow;
+            explorer->col = nextCol;
+        } else{
+            explorer->direc = randomGenerator(7,0);
+        }
+    }
+
+    else if(explorer->direc == 1){ //move north west
+        if (canMove(terrainMap, explorer->symb, explorer->row+1-1, explorer->col+1+1, prevRow+1, prevCol+1) == 1){
+            nextRow = explorer->row-1;
+            nextCol = explorer->col+1;
+            explorer->row = nextRow;
+            explorer->col = nextCol;
+        } else{
+            explorer->direc = randomGenerator(7,0);
+        }
+    }
+
+    else if(explorer->direc == 2){ //move west
+        if (canMove(terrainMap, explorer->symb, explorer->row+1, explorer->col+1+1, prevRow+1, prevCol+1) == 1){
+            nextRow = explorer->row;
+            nextCol = explorer->col+1;
+            explorer->row = nextRow;
+            explorer->col = nextCol;
+        } else{
+            explorer->direc = randomGenerator(7,0);
+        }
+    }
+
+    else if(explorer->direc == 3){ //move south west
+        if (canMove(terrainMap, explorer->symb, explorer->row+1+1, explorer->col+1+1, prevRow+1, prevCol+1) == 1){
+            nextRow = explorer->row+1;
+            nextCol = explorer->col+1;
+            explorer->row = nextRow;
+            explorer->col = nextCol;
+        } else{
+            explorer->direc = randomGenerator(7,0);
+        }
+    }
+
+    else if(explorer->direc == 4){ //move south
+        if (canMove(terrainMap, explorer->symb, explorer->row+1+1, explorer->col+1, prevRow+1, prevCol+1) == 1){
+            nextRow = explorer->row+1;
+            nextCol = explorer->col;
+            explorer->row = nextRow;
+            explorer->col = nextCol;
+        } else{
+            explorer->direc = randomGenerator(7,0);
+        }
+    }
+
+    else if(explorer->direc == 5){ //move south east
+        if (canMove(terrainMap, explorer->symb, explorer->row+1+1, explorer->col+1-1, prevRow+1, prevCol+1) == 1){
+            nextRow = explorer->row+1;
+            nextCol = explorer->col-1;
+            explorer->row = nextRow;
+            explorer->col = nextCol;
+        } else{
+            explorer->direc = randomGenerator(7,0);
+        }
+    }
+
+    else if(explorer->direc == 6){ //move east
+        if (canMove(terrainMap, explorer->symb, explorer->row+1, explorer->col+1-1, prevRow+1, prevCol+1) == 1){
+            nextRow = explorer->row;
+            nextCol = explorer->col-1;
+            explorer->row = nextRow;
+            explorer->col = nextCol;
+        } else{
+            explorer->direc = randomGenerator(7,0);
+        }
+    }
+
+    else if(explorer->direc == 7){ //move north east
+        if (canMove(terrainMap, explorer->symb, explorer->row+1-1, explorer->col+1-1, prevRow+1, prevCol+1) == 1){
+            nextRow = explorer->row-1;
+            nextCol = explorer->col-1;
+            explorer->row = nextRow;
+            explorer->col = nextCol;
+        } else{
+            explorer->direc = randomGenerator(7,0);
+        }
+    }
+
+
+    
+    terrainMap->npcArray[prevRow][prevCol] = NULL;
+    terrainMap->npcArray[nextRow][nextCol] = explorer;
+    return calcCost(RIVAL, terrainMap->terrain[explorer->row+1][explorer->col+1]); 
 }
 /*fucntion for checking if next move is possibel. row and col is of ROW and COL size*/
 int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int prevCol){
@@ -1031,15 +1283,19 @@ int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int 
             }
         case RIVAL:
             if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
-            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY){//check if terrain not infinty and is empty
+            terrainMap->npcArray[row-1][col-1] == NULL){
+                if (terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY){//check if terrain not infinty and is empty
                 return 1;
+                } else{
+                    return -1;
+                }
             } else {
                 return -1;
             }
         case PACER:
             if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
-            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY){//is empty
-                return 0;
+            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY ){//is empty //calcCost(terrainMap->terrain[prevRow][prevCol], 1) != INFINTY
+                return 1;
             } else {
                 return -1;
             }
@@ -1047,23 +1303,23 @@ int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int 
             if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
             terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY && //is empty
             terrainMap->terrain[row][col] == terrainMap->terrain[prevRow][prevCol]){ //same kind of terrain
-                return 0;
+                return 1;
             } else {
                 return -1;
             }
         case SENTRIES:
-            return 0;
+            return 1;
         case EXPLORERS:
             if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
             terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY){//is empty
-                return 0;
+                return 1;
             } else {
                 return -1;
             }
         default: //PC
             if (calcCost(3, terrainMap->terrain[row][col]) != INFINTY && //terrain not infinty
             terrainMap->npcArray[row-1][col-1] == NULL ){  //terrain is empty
-                return 0;
+                return 1;
             } else {
                 return -1;
             }
@@ -1111,6 +1367,7 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
         int i, j;
 
         if(hn->pc != NULL){
+            heapNode* newHN = malloc(sizeof(heapNode));
             
 
             for(i=0; i<NPCROW; i++){
@@ -1121,55 +1378,124 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
                 }
             }
             if (pcMove == 0){ //move pc right
-                if(canMove(terrainMap, 8, hn->pc->row, hn->pc->col+1, hn->pc->row, hn->pc->col)==0){
-                    hn->pc->col+=1;
-                    hn->weight += 10;
+                if(canMove(terrainMap, 8, hn->pc->row, hn->pc->col+1, hn->pc->row, hn->pc->col)==1){
+                    
+                    
+                    newHN->pc = hn->pc;
+                    newHN->pc->col+=1;
+                    newHN->weight = hn->weight += 10;
+                    newHN->npc = NULL;
                     pcMove++;
-                    insert(h, hn); 
+                    insert(h, newHN); 
+                    free(hn);
                 }
             } else if(pcMove == 1){ //move pc down
-                if(canMove(terrainMap, 8, hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col) == 0){
-                    hn->pc->row+=1;
-                    hn->weight += 10;
+                if(canMove(terrainMap, 8, hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col) == 1){
+
+                    newHN->pc = hn->pc;
+                    newHN->pc->row+=1;
+                    newHN->weight = hn->weight += 10;
+                    newHN->npc = NULL;
+
                     pcMove++;
-                    insert(h, hn); 
+                    insert(h, newHN); 
+                    free(hn);
                 }
             } else if(pcMove == 2){ //move pc left
-                if(canMove(terrainMap, 8, hn->pc->row, hn->pc->col-1, hn->pc->row, hn->pc->col)==0){
-                    hn->pc->col-=1;
-                    hn->weight += 10;
+                if(canMove(terrainMap, 8, hn->pc->row, hn->pc->col-1, hn->pc->row, hn->pc->col)==1){
+
+                    newHN->pc = hn->pc;
+                    newHN->pc->col-=1;
+                    newHN->weight = hn->weight += 10;
+                    newHN->npc = NULL;
+                    printf("rival row %d col %d\n", newHN->pc->row, newHN->pc->col);
                     pcMove++;
-                    insert(h, hn); 
+                    insert(h, newHN); 
+                    free(hn);
                 }
             } else if(pcMove == 3){ //move pc up
-                if(canMove(terrainMap, 8, hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col)==0){
-                    hn->pc->row-=1;
-                    hn->weight += 10;
+                if(canMove(terrainMap, 8, hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col)==1){
+
+                    newHN->pc = hn->pc;
+                    newHN->pc->row-=1;
+                    newHN->weight = hn->weight += 10;
+                    newHN->npc = NULL;
                     pcMove++;
-                    insert(h, hn); 
+                    insert(h, newHN); 
+                    free(hn);
                 }
                 pcMove = 0;
+            } else {
+                newHN->pc = hn->pc;
+                    //newHN->pc->col+=1;
+                    newHN->weight = hn->weight += 10;
+                    newHN->npc = NULL;
+                    //pcMove++;
+                    insert(h, newHN); 
+                    free(hn);
             }
 
             printMap(terrainMap, hn->pc);
+            usleep(1000000);
         } else {
             int type = hn->npc->symb;
+            int wt = INFINTY;
+            heapNode* newHN = malloc(sizeof(NPC));
 
             switch(type){
                 case HIKER:
-                    int wt = moveHiker(terrainMap, hn->npc);
-                    hn->weight += wt;
-                    insert(h, hn);
+                    wt = moveHiker(terrainMap, hn->npc);
+                    //heapNode* newHN = malloc(sizeof(NPC));
+                    newHN->weight = hn->weight + wt;
+                    newHN->npc = hn->npc;
+                    newHN->pc = NULL;
+                    insert(h, newHN);
+                    free(hn);
                     break;
                 case RIVAL:
+                    wt = moveRival(terrainMap, hn->npc);
+                    //heapNode* newHN = malloc(sizeof(NPC));
+                    newHN->weight = hn->weight + wt;
+                    newHN->npc = hn->npc;
+                    newHN->pc = NULL;
+                    insert(h, newHN);
+                    free(hn);
                     break;
                 case PACER:
+                    printf("moving pacer\n");
+                    wt = movePacer(terrainMap, hn->npc);
+                    //heapNode* newHN = malloc(sizeof(NPC));
+                    newHN->weight = hn->weight + wt;
+                    newHN->npc = hn->npc;
+                    newHN->pc = NULL;
+                    insert(h, newHN);
+                    free(hn);
                     break;
                 case WANDERER:
+                    wt = moveWanderer(terrainMap, hn->npc);
+                    //heapNode* newHN = malloc(sizeof(NPC));
+                    newHN->weight = hn->weight + wt;
+                    newHN->npc = hn->npc;
+                    newHN->pc = NULL;
+                    insert(h, newHN);
+                    free(hn);
                     break;
                 case SENTRIES:
+                    //heapNode* newHN = malloc(sizeof(NPC));
+                    newHN->weight = hn->weight + 10;
+                    newHN->npc = hn->npc;
+                    newHN->pc = NULL;
+                    insert(h, newHN);
+                    free(hn);
                     break;
                 case EXPLORERS:
+                    wt = moveExplorer(terrainMap, hn->npc);
+                    //heapNode* newHN = malloc(sizeof(NPC));
+                    newHN->weight = hn->weight + wt;
+                    newHN->npc = hn->npc;
+                    newHN->pc = NULL;
+                    insert(h, newHN);
+                    free(hn);
                     break;
             }
         }
@@ -1180,16 +1506,32 @@ return;
    
 }
 
+void game(){
+    // character_t *c;
+    // pair_t d; 
+    char in;
+
+
+}
+
 int main(int argc, char *argv[]){
 
     //srand(time(NULL));//random seed
-    srand(100);
+    srand(100); //11223344
    
     worldMap wm;
     int currX = 200;
     int currY = 200;
-    int numTrainers = 1;
+    int numTrainers = 15;
 
+    
+
+    if (argc >= 3 && strcmp(argv[1], "--numtrainers") == 0) {
+        numTrainers = atoi(argv[2]);
+     } 
+
+    printf("%d\n", numTrainers);
+    game();
 
     
     
@@ -1197,7 +1539,9 @@ int main(int argc, char *argv[]){
     createMap(currX, currY, &wm, numTrainers);
     printf("(%d, %d)\n", currX-200, currY-200);
 
-    moveEveryone(&wm, wm.arr[200][200], numTrainers);
+    game();
+
+    // moveEveryone(&wm, wm.arr[200][200], numTrainers);
 
 
     // char userChar;
