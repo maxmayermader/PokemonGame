@@ -1,0 +1,3 @@
+/Volumes/maxmay/cs327/PokemonGame/JB/cmake-build-debug/CMakeFiles/JB.dir
+/Volumes/maxmay/cs327/PokemonGame/JB/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Volumes/maxmay/cs327/PokemonGame/JB/cmake-build-debug/CMakeFiles/rebuild_cache.dir
