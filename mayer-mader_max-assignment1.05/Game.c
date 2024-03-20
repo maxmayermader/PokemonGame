@@ -107,29 +107,53 @@ int randomGenerator(int upper, int lower){
 
 //Prints map out to the terminal
 void printMap(mapStruct *map, PC *pc){
+    // int i, j;
+    // for (j=0; j < COL; j++){
+    //     mvprintw(1, j, "%d", j % 10);
+    // }
+    // //mvprintw(1, 80, "\n");
+    // for (i=0; i < ROW; i++){
+    //     for(j=0; j < COL; j++){
+    //         if(pc->row == i && pc->col == j){
+    //             mvprintw(i+2,j,"%c", PLAYERCHAR);
+    //             continue;
+    //         } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
+    //             char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
+    //             mvprintw(i+2,j,"%c", symbs[map->npcArray[i-1][j-1]->symb]);
+    //             continue;
+    //         }
+            
+    //         mvprintw(i+2,j,"%c", map->terrain[i][j]);
+
+    //     }
+    //     mvprintw(i+2,COL,"%d", i);
+    //     //mvprintw(i,COL+1,"\n");
+    // }
+    // refresh();
+
     int i, j;
     for (j=0; j < COL; j++){
-        mvprintw(1, j, "%d", j % 10);
+        printf("%d", j % 10);
     }
-    //mvprintw(1, 80, "\n");
+    printf("\n");
     for (i=0; i < ROW; i++){
         for(j=0; j < COL; j++){
             if(pc->row == i && pc->col == j){
-                mvprintw(i+2,j,"%c", PLAYERCHAR);
+                printf("%c", PLAYERCHAR);
                 continue;
             } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
                 char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
-                mvprintw(i+2,j,"%c", symbs[map->npcArray[i-1][j-1]->symb]);
+                printf("%c", symbs[map->npcArray[i-1][j-1]->symb]);
                 continue;
             }
             
-            mvprintw(i+2,j,"%c", map->terrain[i][j]);
+            printf("%c", map->terrain[i][j]);
 
         }
-        mvprintw(i+2,COL,"%d", i);
-        //mvprintw(i,COL+1,"\n");
+        printf("%d", i);
+        printf("\n");
     }
-    refresh();
+
 
 }
 
@@ -1332,8 +1356,9 @@ int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int 
                 return -1;
             }
         default: //PC
-            if (calcCost(3, terrainMap->terrain[row][col]) != INFINTY && //terrain not infinty
-            terrainMap->npcArray[row-1][col-1] == NULL ){  //terrain is empty
+            if (calcCost(2, terrainMap->terrain[row][col]) != INFINTY && //terrain not infinty
+            terrainMap->npcArray[row-1][col-1] == NULL && //terrain is empty
+            row > 0 && row < ROW-1 && col > 0 && col < COL-1){  //bounds checking
                 return 1;
             } else {
                 return -1;
@@ -1412,6 +1437,7 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                 if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1)
                     movePC(wm, terrainMap, hn->pc, NW);
                 printMap(terrainMap, hn->pc);
+
             }else if (in=='6'||in=='l'){ //W
                 if(canMove(terrainMap, 6 ,hn->pc->row, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1)
                     movePC(wm, terrainMap, hn->pc, W);
@@ -1436,11 +1462,13 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                 //movePC(c,"t");
                 printMap(terrainMap, hn->pc);
             }else if (in=='>'){
+                if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'C' || terrainMap->terrain[hn->pc->row][hn->pc->col] == 'M')
+
                 // movePC(wm, terrainMap, hn->pc, "NW");
                 // printMap(terrainMap, hn->pc);
             }else if (in==' '||in=='.'||in=='5'){
                 // movePC(wm, terrainMap, hn->pc, "5"); 
-                // printMap(terrainMap, hn->pc);
+                printMap(terrainMap, hn->pc); //Dont forget to add pc to PQ based and add weight
             } else if (in == 'Q'){
                 return;
             }else{
@@ -1580,6 +1608,10 @@ return;
    
 }
 
+void enterBuilding(){
+    
+}
+
 void movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc){
 
     switch(direc){
@@ -1634,18 +1666,18 @@ int main(int argc, char *argv[]){
 
     printf("%d\n", numTrainers);
     
-    //I am testing vs code
     
     
+    //initscr();
     createWorldMap(&wm);
     createMap(currX, currY, &wm, numTrainers);
     printf("(%d, %d)\n", currX-200, currY-200);
 
     heap* h = createHeap();
 
-    initscr();
+    
     moveEveryone(&wm, wm.arr[200][200], numTrainers, h);
     
-    endwin();
+    //endwin();
     return 0;
 }
