@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <ncurses.h>
 
 #define MAX_SIZE 100  
 #define ROW 21//21 //Y
@@ -108,26 +109,27 @@ int randomGenerator(int upper, int lower){
 void printMap(mapStruct *map, PC *pc){
     int i, j;
     for (j=0; j < COL; j++){
-        printf("%d", j % 10);
+        mvprintw(1, j, "%d", j % 10);
     }
-    printf("\n");
+    //mvprintw(1, 80, "\n");
     for (i=0; i < ROW; i++){
         for(j=0; j < COL; j++){
             if(pc->row == i && pc->col == j){
-                printf("%c", PLAYERCHAR);
+                mvprintw(i+2,j,"%c", PLAYERCHAR);
                 continue;
             } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
                 char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
-                printf("%c", symbs[map->npcArray[i-1][j-1]->symb]);
+                mvprintw(i+2,j,"%c", symbs[map->npcArray[i-1][j-1]->symb]);
                 continue;
             }
             
-            printf("%c", map->terrain[i][j]);
+            mvprintw(i+2,j,"%c", map->terrain[i][j]);
 
         }
-        printf("%d", i);
-        printf("\n");
+        mvprintw(i+2,COL,"%d", i);
+        //mvprintw(i,COL+1,"\n");
     }
+    refresh();
 
 }
 
@@ -1341,7 +1343,7 @@ int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int 
 
 
 
-void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
+void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h){
     /*
     init heap
     add player to heap
@@ -1354,7 +1356,7 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
     print when players turn
     move player in square for now
     */
-    heap* h = createHeap();
+    
     heapNode* hnNPC = malloc(sizeof(heapNode));
     hnNPC->npc=NULL;
     hnNPC->pc=wm->player;
@@ -1399,35 +1401,35 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
             
         in = getchar();
             if(in=='7'||in=='y'){ //NE
-                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col) == 1)
                     movePC(wm, terrainMap, hn->pc, NE);
                 printMap(terrainMap, hn->pc);
             }else if (in=='8'||in=='k'){ //N
-                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col) == 1)
                     movePC(wm, terrainMap, hn->pc, N);
                 printMap(terrainMap, hn->pc);
             }else if (in=='9'||in=='u'){ //NW
-                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1)
                     movePC(wm, terrainMap, hn->pc, NW);
                 printMap(terrainMap, hn->pc);
             }else if (in=='6'||in=='l'){ //W
-                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                if(canMove(terrainMap, 6 ,hn->pc->row, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1)
                     movePC(wm, terrainMap, hn->pc, W);
                 printMap(terrainMap, hn->pc);
             }else if (in=='3'||in=='n'){ //SW
-                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                if(canMove(terrainMap, 6 ,hn->pc->row+1, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1)
                     movePC(wm, terrainMap, hn->pc, SW);
                 printMap(terrainMap, hn->pc);
             }else if (in=='2'||in=='j'){ //S
-                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                if(canMove(terrainMap, 6 ,hn->pc->row+1, hn->pc->col, hn->pc->row, hn->pc->col) == 1)
                     movePC(wm, terrainMap, hn->pc, S);
                 printMap(terrainMap, hn->pc);
             }else if (in=='1'||in=='b'){ //SE
-                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                if(canMove(terrainMap, 6 ,hn->pc->row+1, hn->pc->col-1, hn->pc->row, hn->pc->col) == 1)
                     movePC(wm, terrainMap, hn->pc, SE);
                 printMap(terrainMap, hn->pc);
             }else if (in=='4'||in=='h'){ //E
-                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                if(canMove(terrainMap, 6 ,hn->pc->row, hn->pc->col-1, hn->pc->row, hn->pc->col) == 1)
                     movePC(wm, terrainMap, hn->pc, E);
                 printMap(terrainMap, hn->pc);
             }else if (in=='t'){
@@ -1508,7 +1510,7 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
             // }
 
             printMap(terrainMap, hn->pc);
-            usleep(1000000);
+            //usleep(1000000);
         } else {
             int type = hn->npc->symb;
             int wt = INFINTY;
@@ -1639,8 +1641,11 @@ int main(int argc, char *argv[]){
     createMap(currX, currY, &wm, numTrainers);
     printf("(%d, %d)\n", currX-200, currY-200);
 
+    heap* h = createHeap();
 
-    moveEveryone(&wm, wm.arr[200][200], numTrainers);
+    initscr();
+    moveEveryone(&wm, wm.arr[200][200], numTrainers, h);
     
+    endwin();
     return 0;
 }
