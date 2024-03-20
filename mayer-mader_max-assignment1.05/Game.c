@@ -109,52 +109,52 @@ int randomGenerator(int upper, int lower){
 
 //Prints map out to the terminal
 void printMap(mapStruct *map, PC *pc){
-    // int i, j;
-    // for (j=0; j < COL; j++){
-    //     mvprintw(1, j, "%d", j % 10);
-    // }
-    // //mvprintw(1, 80, "\n");
-    // for (i=0; i < ROW; i++){
-    //     for(j=0; j < COL; j++){
-    //         if(pc->row == i && pc->col == j){
-    //             mvprintw(i+2,j,"%c", PLAYERCHAR);
-    //             continue;
-    //         } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
-    //             char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
-    //             mvprintw(i+2,j,"%c", symbs[map->npcArray[i-1][j-1]->symb]);
-    //             continue;
-    //         }
-            
-    //         mvprintw(i+2,j,"%c", map->terrain[i][j]);
-
-    //     }
-    //     mvprintw(i+2,COL,"%d", i);
-    //     //mvprintw(i,COL+1,"\n");
-    // }
-    // refresh();
-
     int i, j;
     for (j=0; j < COL; j++){
-        printf("%d", j % 10);
+        mvprintw(1, j, "%d", j % 10);
     }
-    printf("\n");
+    //mvprintw(1, 80, "\n");
     for (i=0; i < ROW; i++){
         for(j=0; j < COL; j++){
             if(pc->row == i && pc->col == j){
-                printf("%c", PLAYERCHAR);
+                mvprintw(i+2,j,"%c", PLAYERCHAR);
                 continue;
             } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
                 char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
-                printf("%c", symbs[map->npcArray[i-1][j-1]->symb]);
+                mvprintw(i+2,j,"%c", symbs[map->npcArray[i-1][j-1]->symb]);
                 continue;
             }
             
-            printf("%c", map->terrain[i][j]);
+            mvprintw(i+2,j,"%c", map->terrain[i][j]);
 
         }
-        printf("%d", i);
-        printf("\n");
+        mvprintw(i+2,COL,"%d", i);
+        //mvprintw(i,COL+1,"\n");
     }
+    refresh();
+
+    // int i, j;
+    // for (j=0; j < COL; j++){
+    //     printf("%d", j % 10);
+    // }
+    // printf("\n");
+    // for (i=0; i < ROW; i++){
+    //     for(j=0; j < COL; j++){
+    //         if(pc->row == i && pc->col == j){
+    //             printf("%c", PLAYERCHAR);
+    //             continue;
+    //         } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
+    //             char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
+    //             printf("%c", symbs[map->npcArray[i-1][j-1]->symb]);
+    //             continue;
+    //         }
+            
+    //         printf("%c", map->terrain[i][j]);
+
+    //     }
+    //     printf("%d", i);
+    //     printf("\n");
+    // }
 
 
 }
@@ -1461,7 +1461,7 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                     movePC(wm, terrainMap, hn->pc, E);
                 printMap(terrainMap, hn->pc);
             }else if (in=='t'){
-                //movePC(c,"t");
+                trainerList(terrainMap, hn->pc);
                 printMap(terrainMap, hn->pc);
             }else if (in=='>'){
                 if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'C' || terrainMap->terrain[hn->pc->row][hn->pc->col] == 'M')
@@ -1471,7 +1471,7 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
             }else if (in==' '||in=='.'||in=='5'){
                 // movePC(wm, terrainMap, hn->pc, "5"); 
                 printMap(terrainMap, hn->pc); //Dont forget to add pc to PQ based and add weight
-            } else if (in == 'Q'){
+            } else if (in == 'Q' || in == 'q'){
                 return;
             }else{
                 //printw("unknown character. Try again!");
@@ -1613,14 +1613,147 @@ return;
 void enterBuilding(){
     clear();
     mvprintw(1,1, "You entered a building");
+    refresh();
     char in='m';
     while(in != '<'){
         in = getchar();
     }
 }
 
-void trainerList(mapStruct *terrainMap, PC *pc){
+void copy_to_screen(char buffer[1000][80], char c, char ns, char ew, int x, int y, int i) {
+  if (ns == 'n') {
+    if (ew == 'e') {
+      snprintf(buffer[i], sizeof(buffer[i]), "%c, %i north and %i east", c, x, y);
+    } else {
+      snprintf(buffer[i], sizeof(buffer[i]), "%c, %i north and %i west", c, x, y);
+    }
+  } else {
+    if (ew == 'e') {
+      snprintf(buffer[i], sizeof(buffer[i]), "%c, %i south and %i east", c, x, y);
+    } else {
+      snprintf(buffer[i], sizeof(buffer[i]), "%c, %i south and %i west", c, x, y);
+    }
+  }
+}
 
+void trainerList(mapStruct *terrainMap, PC *pc){
+ clear();
+  char buffer[1000][80];
+  int i = 0;
+  char to_print = 'x';
+  char ns = 'x';
+  int difY = 0;
+  int difX = 0;
+  char ew = 'x';
+
+  scrollok(stdscr, TRUE); // Enable scrolling
+  snprintf(buffer[i], sizeof(buffer[i]), "Trainer List! (press 'esc' to close)\n");
+  mvprintw(i, 0, buffer[i]);
+  i++;
+  refresh();
+
+  int start_row = 0;
+  int end_row = 20;
+
+  int pc_row = pc->row -1;
+  int pc_col = pc->col -1;
+
+  for (int row = 0; row < NPCROW; row++) {
+    for (int col = 0; col < NPCCOL; col++) {
+
+        NPC *npc = terrainMap->npcArray[row][col];
+
+      if (!npc) {continue;}
+
+      if (npc->symb == HIKER) {
+        to_print = 'h';
+        //snprintf(buffer[i], sizeof(buffer[i]), "h, ");
+
+      } else if (npc->symb == RIVAL) {
+        //snprintf(buffer[i], sizeof(buffer[i]), "r, ");
+        to_print ='r';
+
+      } else if (npc->symb == WANDERER) {
+        //snprintf(buffer[i], sizeof(buffer[i]), "w, ");
+        to_print ='w';
+
+      } else if (npc->symb == EXPLORERS) {
+        //snprintf(buffer[i], sizeof(buffer[i]), "e, ");
+        to_print ='e';
+
+      } else if (npc->symb == PACER) {
+        //snprintf(buffer[i], sizeof(buffer[i]), "p, ");
+        to_print ='p';
+
+    //   } else if (npc->symb == M) {
+    //     //snprintf(buffer[i], sizeof(buffer[i]), "m, ");
+    //     to_print ='m';
+
+    //   
+    } else if (npc->symb == SENTRIES) {
+        //snprintf(buffer[i], sizeof(buffer[i]), "s, ");
+        to_print = 's';
+
+      }
+
+      if (row > pc_row) {
+        //snprintf(buffer[i], sizeof(buffer[i]), "%d south and ", abs(pc_row - row));
+        //strcpy(ns, (abs(pc_row - row) + "south and "));
+        difY = abs(pc_row - row);
+        ns = 's';
+      } else {
+        //snprintf(buffer[i], sizeof(buffer[i]), "%d north and ", (pc_row - row));
+        //strcpy(ns, ((pc_row - row) + "north and "));
+        ns = 'n';
+        difY = (pc_row - row);
+      }
+
+      if (col > pc_col) {
+        //snprintf(buffer[i], sizeof(buffer[i]), "%c, %s %d east\n", to_print, ns, abs(pc_col - col));
+        ew = 'e';
+        difX = abs(pc_col - col);
+      } else {
+        //snprintf(buffer[i], sizeof(buffer[i]), "%c, %s %d west\n", to_print, ns, (pc_col - col));
+        ew = 'w';
+        difX = pc_col - col;
+      }
+
+      copy_to_screen(buffer, to_print, ns, ew, difY, difX, i);
+      refresh();
+      i++;
+    }
+  }
+
+  for (int f = 0; f < end_row; f++) {
+    mvprintw(f, 0, buffer[f]);
+  }
+
+  int ch;
+    while ((ch = getch()) != 27) {
+        switch(ch) {
+            case KEY_UP:
+                if (start_row > 0) {
+                    start_row--;
+                    end_row--;
+                }
+                break;
+            case KEY_DOWN:
+                if (end_row < 999) {
+                    start_row++;
+                    end_row++;
+                }
+                break;
+        }
+
+        // Redraw visible content
+        clear();
+        for (int x = start_row; x < end_row; x++) {
+            mvprintw(x - start_row, 0, buffer[x]);
+        }
+        refresh();
+    }
+
+  clear();
 }
 
 void movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc){
@@ -1679,7 +1812,7 @@ int main(int argc, char *argv[]){
     
     
     
-    //initscr();
+    initscr();
     createWorldMap(&wm);
     createMap(currX, currY, &wm, numTrainers);
     printf("(%d, %d)\n", currX-200, currY-200);
@@ -1689,6 +1822,6 @@ int main(int argc, char *argv[]){
     
     moveEveryone(&wm, wm.arr[200][200], numTrainers, h);
     
-    //endwin();
+    endwin();
     return 0;
 }
