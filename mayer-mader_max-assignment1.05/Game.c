@@ -100,6 +100,8 @@ int getQueSize(){
     int calcCost(int npc, char terrainType);
     int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int prevCol);
     void movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc);
+    void enterBuilding();
+    void trainerList(mapStruct *terrainMap, PC *pc);
     
 int randomGenerator(int upper, int lower){
   return (rand() % (upper - lower + 1)) + lower;
@@ -1463,9 +1465,9 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                 printMap(terrainMap, hn->pc);
             }else if (in=='>'){
                 if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'C' || terrainMap->terrain[hn->pc->row][hn->pc->col] == 'M')
-
+                    enterBuilding();
                 // movePC(wm, terrainMap, hn->pc, "NW");
-                // printMap(terrainMap, hn->pc);
+                printMap(terrainMap, hn->pc);
             }else if (in==' '||in=='.'||in=='5'){
                 // movePC(wm, terrainMap, hn->pc, "5"); 
                 printMap(terrainMap, hn->pc); //Dont forget to add pc to PQ based and add weight
@@ -1609,7 +1611,16 @@ return;
 }
 
 void enterBuilding(){
-    
+    clear();
+    mvprintw(1,1, "You entered a building");
+    char in='m';
+    while(in != '<'){
+        in = getchar();
+    }
+}
+
+void trainerList(mapStruct *terrainMap, PC *pc){
+
 }
 
 void movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc){
