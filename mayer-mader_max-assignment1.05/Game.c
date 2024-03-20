@@ -99,7 +99,7 @@ int getQueSize(){
     int randomGenerator(int upper, int lower);
     int calcCost(int npc, char terrainType);
     int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int prevCol);
-    void movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc);
+    int movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc);
     void enterBuilding();
     void trainerList(mapStruct *terrainMap, PC *pc);
     void enterBattle();
@@ -1429,9 +1429,16 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
             
         in = getchar();
             if(in=='7'||in=='y'){ //NE
-                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col) == 1)
-                    movePC(wm, terrainMap, hn->pc, NE);
+                int wt = hn->weight;
+                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col) == 1){
+                    wt += movePC(wm, terrainMap, hn->pc, NE);
+                    newHN->pc = hn->pc;
+                    newHN->weight = wt;
+                    insert(h, newHN);
+                    free(hn);
+                }
                 printMap(terrainMap, hn->pc);
+                break;
             }else if (in=='8'||in=='k'){ //N
                 if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col) == 1)
                     movePC(wm, terrainMap, hn->pc, N);
@@ -1478,6 +1485,8 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                 //printw("unknown character. Try again!");
 
             }  
+
+            
             
     }
 
@@ -1754,7 +1763,7 @@ void enterBattle() {
   clear();
 }
 
-void movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc){
+int movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc){
 
     switch(direc){
         case NE:
@@ -1788,6 +1797,7 @@ void movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc){
         case SKIP:
             break;
     }
+    return calcCost(2, terrainMap->terrain[pc->row][pc->col]);
 }
 
 int main(int argc, char *argv[]){
