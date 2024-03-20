@@ -44,6 +44,18 @@ typedef enum NPCSymb{
     EXPLORERS
 }NPCSymb;
 
+typedef enum PCMOV{
+    NE,
+    N,
+    NW,
+    W,
+    SW,
+    S,
+    SE,
+    E,
+    SKIP
+}PCMOV;
+
 //PC struct
 typedef struct PC{
     int symb;
@@ -86,6 +98,7 @@ int getQueSize(){
     int randomGenerator(int upper, int lower);
     int calcCost(int npc, char terrainType);
     int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int prevCol);
+    void movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc);
     
 int randomGenerator(int upper, int lower){
   return (rand() % (upper - lower + 1)) + lower;
@@ -1360,7 +1373,7 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
         }
     }
 
-    int pcMove = 0;
+    //int pcMove = 0;
 
     while(h->size > 0){
         heapNode* hn = extractMin(h);
@@ -1381,48 +1394,58 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers){
             char in;
 
     while(in !='Q'){
-        printMap(terrainMap, pc);
+        //printMap(terrainMap, pc);
         //c = heap_remove_min(&world.cur_map->turn);
-            if (c == &world.pc) {
-                in = getchar();
-                    if(in=='7'||in=='y'){
-                        movePC(c,"UL");
-                        printMap(terrainMap, pc)();
-                    }else if (in=='8'||in=='k'){
-                        movePC(c,"UP");
-                        printMap(terrainMap, pc);
-                    }else if (in=='9'||in=='u'){
-                        movePC(c,"UR");
-                        printMap(terrainMap, pc);
-                    }else if (in=='6'||in=='l'){
-                        movePC(c,"R");
-                        printMap(terrainMap, pc);
-                    }else if (in=='3'||in=='n'){
-                        movePC(c,"LR");
-                        printMap(terrainMap, pc);
-                    }else if (in=='2'||in=='j'){
-                        movePC(c,"D");
-                        printMap(terrainMap, pc);
-                    }else if (in=='1'||in=='b'){
-                        movePC(c,"LL");
-                        printMap(terrainMap, pc);
-                    }else if (in=='4'||in=='h'){
-                        movePC(c,"L");
-                        printMap(terrainMap, pc);
-                    }else if (in=='t'){
-                      movePC(c,"t");
-                        printMap(terrainMap, pc);
-                    }else if (in=='>'){
-                      movePC(c,">");
-                        printMap(terrainMap, pc);
-                    }else if (in==' '||in=='.'||in=='5'){
-                        movePC(c,"5");  
-                        printMap(terrainMap, pc);
-                    }else{
-                       //printw("unknown character. Try again!");
+            
+        in = getchar();
+            if(in=='7'||in=='y'){ //NE
+                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                    movePC(wm, terrainMap, hn->pc, NE);
+                printMap(terrainMap, hn->pc);
+            }else if (in=='8'||in=='k'){ //N
+                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                    movePC(wm, terrainMap, hn->pc, N);
+                printMap(terrainMap, hn->pc);
+            }else if (in=='9'||in=='u'){ //NW
+                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                    movePC(wm, terrainMap, hn->pc, NW);
+                printMap(terrainMap, hn->pc);
+            }else if (in=='6'||in=='l'){ //W
+                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                    movePC(wm, terrainMap, hn->pc, W);
+                printMap(terrainMap, hn->pc);
+            }else if (in=='3'||in=='n'){ //SW
+                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                    movePC(wm, terrainMap, hn->pc, SW);
+                printMap(terrainMap, hn->pc);
+            }else if (in=='2'||in=='j'){ //S
+                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                    movePC(wm, terrainMap, hn->pc, S);
+                printMap(terrainMap, hn->pc);
+            }else if (in=='1'||in=='b'){ //SE
+                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                    movePC(wm, terrainMap, hn->pc, SE);
+                printMap(terrainMap, hn->pc);
+            }else if (in=='4'||in=='h'){ //E
+                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col))
+                    movePC(wm, terrainMap, hn->pc, E);
+                printMap(terrainMap, hn->pc);
+            }else if (in=='t'){
+                //movePC(c,"t");
+                printMap(terrainMap, hn->pc);
+            }else if (in=='>'){
+                // movePC(wm, terrainMap, hn->pc, "NW");
+                // printMap(terrainMap, hn->pc);
+            }else if (in==' '||in=='.'||in=='5'){
+                // movePC(wm, terrainMap, hn->pc, "5"); 
+                // printMap(terrainMap, hn->pc);
+            } else if (in == 'Q'){
+                return;
+            }else{
+                //printw("unknown character. Try again!");
 
-                    }  
-            }
+            }  
+            
     }
 
 
@@ -1555,8 +1578,40 @@ return;
    
 }
 
-void movePC(mapStruct *terrainMap, PC *pc, int direc){
+void movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc){
 
+    switch(direc){
+        case NE:
+            pc->row-=1;
+            pc->col-=1;
+            break;
+        case N:
+            pc->row-=1;
+            break;
+        case NW:
+            pc->row-=1;
+            pc->col+=1;
+            break;
+        case W:
+            pc->col+=1;
+            break;
+        case SW:
+            pc->row+=1;
+            pc->col+=1;
+            break;
+        case S:
+            pc->col+=1;
+            break;
+        case SE:
+            pc->row+=1;
+            pc->col-=1;
+            break;
+        case E:
+            pc->col-=1;
+            break;
+        case SKIP:
+            break;
+    }
 }
 
 int main(int argc, char *argv[]){
@@ -1584,9 +1639,8 @@ int main(int argc, char *argv[]){
     createMap(currX, currY, &wm, numTrainers);
     printf("(%d, %d)\n", currX-200, currY-200);
 
-    game(wm.arr[200][200], wm.player);
 
-    // moveEveryone(&wm, wm.arr[200][200], numTrainers);
+    moveEveryone(&wm, wm.arr[200][200], numTrainers);
     
     return 0;
 }
