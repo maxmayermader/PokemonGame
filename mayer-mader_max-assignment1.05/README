@@ -12,5 +12,7 @@ Bugs:
 
     Sometimes PC and NPC will chase each other and will enter a battle even if you try to move on its space
 
+    after entering a battle u need to hit escape key and then you can move the player
+
 Description:
     ncurses map and menus

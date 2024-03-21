@@ -111,52 +111,52 @@ int randomGenerator(int upper, int lower){
 
 //Prints map out to the terminal
 void printMap(mapStruct *map, PC *pc){
-    // int i, j;
-    // for (j=0; j < COL; j++){
-    //     mvprintw(1, j, "%d", j % 10);
-    // }
-    // //mvprintw(1, 80, "\n");
-    // for (i=0; i < ROW; i++){
-    //     for(j=0; j < COL; j++){
-    //         if(pc->row == i && pc->col == j){
-    //             mvprintw(i+2,j,"%c", PLAYERCHAR);
-    //             continue;
-    //         } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
-    //             char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
-    //             mvprintw(i+2,j,"%c", symbs[map->npcArray[i-1][j-1]->symb]);
-    //             continue;
-    //         }
-            
-    //         mvprintw(i+2,j,"%c", map->terrain[i][j]);
-
-    //     }
-    //     mvprintw(i+2,COL,"%d", i);
-    //     //mvprintw(i,COL+1,"\n");
-    // }
-    // refresh();
-
     int i, j;
     for (j=0; j < COL; j++){
-        printf("%d", j % 10);
+        mvprintw(1, j, "%d", j % 10);
     }
-    printf("\n");
+    //mvprintw(1, 80, "\n");
     for (i=0; i < ROW; i++){
         for(j=0; j < COL; j++){
             if(pc->row == i && pc->col == j){
-                printf("%c", PLAYERCHAR);
+                mvprintw(i+2,j,"%c", PLAYERCHAR);
                 continue;
             } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
                 char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
-                printf("%c", symbs[map->npcArray[i-1][j-1]->symb]);
+                mvprintw(i+2,j,"%c", symbs[map->npcArray[i-1][j-1]->symb]);
                 continue;
             }
             
-            printf("%c", map->terrain[i][j]);
+            mvprintw(i+2,j,"%c", map->terrain[i][j]);
 
         }
-        printf("%d", i);
-        printf("\n");
+        mvprintw(i+2,COL,"%d", i);
+        //mvprintw(i,COL+1,"\n");
     }
+    refresh();
+
+    // int i, j;
+    // for (j=0; j < COL; j++){
+    //     printf("%d", j % 10);
+    // }
+    // printf("\n");
+    // for (i=0; i < ROW; i++){
+    //     for(j=0; j < COL; j++){
+    //         if(pc->row == i && pc->col == j){
+    //             printf("%c", PLAYERCHAR);
+    //             continue;
+    //         } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
+    //             char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
+    //             printf("%c", symbs[map->npcArray[i-1][j-1]->symb]);
+    //             continue;
+    //         }
+            
+    //         printf("%c", map->terrain[i][j]);
+
+    //     }
+    //     printf("%d", i);
+    //     printf("\n");
+    // }
 
 }
 
@@ -1041,6 +1041,9 @@ void getNextSmallestMove(mapStruct *terrainMap, NPC* npc, int *row, int *col){
 }
 
 int moveHiker(mapStruct *terrainMap, NPC* hiker){
+    if (hiker->defeated == 1){
+        return calcCost(HIKER, terrainMap->terrain[hiker->row+1][hiker->col+1]);
+    }
     int nextRow, nextCol;
     int prevRow = hiker->row;
     int prevCol = hiker->col;
@@ -1053,6 +1056,9 @@ int moveHiker(mapStruct *terrainMap, NPC* hiker){
 }
 
 int moveRival(mapStruct *terrainMap, NPC* rival){
+    if (rival->defeated == 1){
+        return calcCost(RIVAL, terrainMap->terrain[rival->row+1][rival->col+1]);
+    }
     int nextRow, nextCol;
     int prevRow = rival->row;
     int prevCol = rival->col;
@@ -1320,7 +1326,7 @@ int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int 
         case HIKER:
             if ( (row > 0 && row < ROW - 1 && col > 0 && col < COL-1)  && //check if in border 
             terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY//check if terrain not infinty     
-            && terrainMap->npcArray[row-1][col-1]->defeated == 0){   //not defeated
+            && terrainMap->npcArray[prevRow-1][prevCol-1]->defeated == 0){   //not defeated
                 return 1;
             } else {
                 return -1;
@@ -1329,7 +1335,7 @@ int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int 
             if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
             terrainMap->npcArray[row-1][col-1] == NULL){
                 if (terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY//check if terrain not infinty and is empty
-                && terrainMap->npcArray[row-1][col-1]->defeated == 0){   //not defeated
+                && terrainMap->npcArray[prevRow-1][prevCol-1]->defeated == 0){   //not defeated
                     return 1;
                 } else{
                     return -1;
@@ -1561,7 +1567,7 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                     newHN->weight = hn->weight + wt;
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
-                    if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col){
+                    if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
                         enterBattle(newHN->npc);
                     }
                     insert(h, newHN);
@@ -1573,16 +1579,22 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                     newHN->weight = hn->weight + wt;
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
+                    if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
+                        enterBattle(newHN->npc);
+                    }
                     insert(h, newHN);
                     free(hn);
                     break;
                 case PACER:
-                    printf("moving pacer\n");
+                    //printf("moving pacer\n");
                     wt = movePacer(terrainMap, hn->npc);
                     //heapNode* newHN = malloc(sizeof(NPC));
                     newHN->weight = hn->weight + wt;
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
+                    if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
+                        enterBattle(newHN->npc);
+                    }
                     insert(h, newHN);
                     free(hn);
                     break;
@@ -1592,6 +1604,9 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                     newHN->weight = hn->weight + wt;
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
+                    if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
+                        enterBattle(newHN->npc);
+                    }
                     insert(h, newHN);
                     free(hn);
                     break;
@@ -1600,6 +1615,9 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                     newHN->weight = hn->weight + 10;
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
+                    if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
+                        enterBattle(newHN->npc);
+                    }
                     insert(h, newHN);
                     free(hn);
                     break;
@@ -1609,6 +1627,9 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                     newHN->weight = hn->weight + wt;
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
+                    if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
+                        enterBattle(newHN->npc);
+                    }
                     insert(h, newHN);
                     free(hn);
                     break;
@@ -1622,147 +1643,143 @@ return;
 }
 
 void enterBuilding(){
-    // clear();
-    // mvprintw(1,1, "You entered a building");
-    // refresh();
-    // char in='m';
-    // while(in != '<'){
-    //     in = getchar();
-    // }
+    clear();
+    mvprintw(1,1, "You entered a building");
+    refresh();
+    char in='m';
+    while(in != '<'){
+        in = getchar();
+    }
 }
 
 void copyToScreen(char buffer[1000][80], char c, char ns, char ew, int row, int col, int i) {
-//   if (ns == 'n') {
-//     if (ew == 'e') {
-//       snprintf(buffer[i], sizeof(buffer[i]), "%c, %i North and %i East", c, row, col);
-//     } else {
-//       snprintf(buffer[i], sizeof(buffer[i]), "%c, %i North and %i West", c, row, col);
-//     }
-//   } else {
-//     if (ew == 'e') {
-//       snprintf(buffer[i], sizeof(buffer[i]), "%c, %i South and %i East", c, row, col);
-//     } else {
-//       snprintf(buffer[i], sizeof(buffer[i]), "%c, %i South and %i West", c, row, col);
-//     }
-//   }
+  if (ns == 'n') {
+    if (ew == 'e') {
+      snprintf(buffer[i], sizeof(buffer[i]), "%c, %i North and %i East", c, row, col);
+    } else {
+      snprintf(buffer[i], sizeof(buffer[i]), "%c, %i North and %i West", c, row, col);
+    }
+  } else {
+    if (ew == 'e') {
+      snprintf(buffer[i], sizeof(buffer[i]), "%c, %i South and %i East", c, row, col);
+    } else {
+      snprintf(buffer[i], sizeof(buffer[i]), "%c, %i South and %i West", c, row, col);
+    }
+  }
 }
 
 void trainerList(mapStruct *terrainMap, PC *pc){
-//  clear();
-//   char buffer[1000][80];
-//   int i = 0;
-//   char toPrint = 'x';
-//   char ns = 'x';
-//   int difY = 0;
-//   int difX = 0;
-//   char ew = 'x';
+ clear();
+  char buffer[1000][80];
+  int i = 0;
+  char toPrint = 'x';
+  char ns = 'x';
+  int difY = 0;
+  int difX = 0;
+  char ew = 'x';
 
-//   scrollok(stdscr, TRUE); // Enable scrolling
-//   snprintf(buffer[i], sizeof(buffer[i]), "Trainer List! (press 'esc' to close)\n");
-//   mvprintw(i, 0, buffer[i]);
-//   i++;
-//   refresh();
+  scrollok(stdscr, TRUE); // Enable scrolling
+  snprintf(buffer[i], sizeof(buffer[i]), "Trainer List! (press 'esc' to close)\n");
+  mvprintw(i, 0, buffer[i]);
+  i++;
+  refresh();
 
-//   int startRow = 0;
-//   int endRow = 20;
+  int startRow = 0;
+  int endRow = 20;
 
-//   int pcRow = pc->row -1;
-//   int pcCol = pc->col -1;
+  int pcRow = pc->row -1;
+  int pcCol = pc->col -1;
 
-//   for (int row = 0; row < NPCROW; row++) {
-//     for (int col = 0; col < NPCCOL; col++) {
+  for (int row = 0; row < NPCROW; row++) {
+    for (int col = 0; col < NPCCOL; col++) {
 
-//         NPC *npc = terrainMap->npcArray[row][col];
+        NPC *npc = terrainMap->npcArray[row][col];
 
-//       if (!npc) {continue;}
+      if (!npc) {continue;}
 
-//       if (npc->symb == HIKER) {
-//         toPrint = 'h';
-//       } else if (npc->symb == RIVAL) {
-//         toPrint ='r';
-//       } else if (npc->symb == WANDERER) {
-//         toPrint ='w';
-//       } else if (npc->symb == EXPLORERS) {
-//         toPrint ='e';
-//       } else if (npc->symb == PACER) {
-//         toPrint ='p';
-//       } else if (npc->symb == SENTRIES) {
-//         toPrint = 's';
-//       }
+      if (npc->symb == HIKER) {
+        toPrint = 'h';
+      } else if (npc->symb == RIVAL) {
+        toPrint ='r';
+      } else if (npc->symb == WANDERER) {
+        toPrint ='w';
+      } else if (npc->symb == EXPLORERS) {
+        toPrint ='e';
+      } else if (npc->symb == PACER) {
+        toPrint ='p';
+      } else if (npc->symb == SENTRIES) {
+        toPrint = 's';
+      }
 
-//       if (row > pcRow) {
-//         difY = abs(pcRow - row);
-//         ns = 's';
-//       } else {
-//         ns = 'n';
-//         difY = (pcRow - row);
-//       }
+      if (row > pcRow) {
+        difY = abs(pcRow - row);
+        ns = 's';
+      } else {
+        ns = 'n';
+        difY = (pcRow - row);
+      }
 
-//       if (col > pcCol) {
-//         ew = 'e';
-//         difX = abs(pcCol - col);
-//       } else {
-//         ew = 'w';
-//         difX = pcCol - col;
-//       }
+      if (col > pcCol) {
+        ew = 'e';
+        difX = abs(pcCol - col);
+      } else {
+        ew = 'w';
+        difX = pcCol - col;
+      }
 
-//       copyToScreen(buffer, toPrint, ns, ew, difY, difX, i);
-//       refresh();
-//       i++;
-//     }
-//   }
+      copyToScreen(buffer, toPrint, ns, ew, difY, difX, i);
+      refresh();
+      i++;
+    }
+  }
 
-//   for (int f = 0; f < endRow; f++) {
-//     mvprintw(f, 0, buffer[f]);
-//   }
-//     keypad(stdscr, TRUE);
-//   int ch;
-//     while ((ch = getch()) != 27) {
-//         //mvprintw(10, 10, (char) ch);
+  for (int f = 0; f < endRow; f++) {
+    mvprintw(f, 0, buffer[f]);
+  }
+    keypad(stdscr, TRUE);
+  int ch;
+    while ((ch = getch()) != 27) {
+        //mvprintw(10, 10, (char) ch);
         
         
-//         switch(ch) {
-//             case KEY_UP:
-//                 if (startRow > 0) {
-//                     startRow--;
-//                     endRow--;
-//                 }
-//                 break;
-//             case KEY_DOWN:
-//                 if (endRow < 999) {
-//                     startRow++;
-//                     endRow++;
-//                 }
-//                 break;
-//         }
+        switch(ch) {
+            case KEY_UP:
+                if (startRow > 0) {
+                    startRow--;
+                    endRow--;
+                }
+                break;
+            case KEY_DOWN:
+                if (endRow < 999) {
+                    startRow++;
+                    endRow++;
+                }
+                break;
+        }
 
-//         // Redraw visible content
-//         clear();
-//         for (int x = startRow; x < endRow; x++) {
-//             mvprintw(x - startRow, 0, buffer[x]);
-//         }
-//         refresh();
-//     }
+        // Redraw visible content
+        clear();
+        for (int x = startRow; x < endRow; x++) {
+            mvprintw(x - startRow, 0, buffer[x]);
+        }
+        refresh();
+    }
 
-//   clear();
+  clear();
 }
 
 void enterBattle(NPC *npc) {
-//   clear();
-//   int input;
+  clear();
+  int input;
     npc->defeated = 1;
-    printf("u win");
-//   mvprintw(11, 18, "Trainer Defeated! Press 'esc' to exit!");
+    // printf("u win");
+  mvprintw(11, 18, "Trainer Defeated! Press 'esc' to exit!");
+input = getch();
+  while ((input = getch()) != 27) {
+  
+  }
 
-//   while (1) {
-//     input = getch();
-
-//     if (input == 27) {
-//       break;
-//     }
-//   }
-
-//   clear();
+  clear();
 }
 
 int movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc){
@@ -1812,7 +1829,7 @@ int main(int argc, char *argv[]){
     worldMap wm;
     int currX = 200;
     int currY = 200;
-    int numTrainers = 1;
+    int numTrainers = 15;
 
     
 
@@ -1824,7 +1841,7 @@ int main(int argc, char *argv[]){
     
     
     
-    // initscr();
+    initscr();
     createWorldMap(&wm);
     createMap(currX, currY, &wm, numTrainers);
     printf("(%d, %d)\n", currX-200, currY-200);
@@ -1834,6 +1851,6 @@ int main(int argc, char *argv[]){
     
     moveEveryone(&wm, wm.arr[200][200], numTrainers, h);
     
-    // endwin();
+    endwin();
     return 0;
 }
