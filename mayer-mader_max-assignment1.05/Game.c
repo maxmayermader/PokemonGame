@@ -33,6 +33,7 @@ typedef struct NPC{
     int col;
     int direc;
     int weightArr[NPCROW][NPCCOL]; //weightMap. Might change it to pointer arr
+    int defeated;
 }NPC;
 
 //NPC Enums
@@ -102,7 +103,7 @@ int getQueSize(){
     int movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc);
     void enterBuilding();
     void trainerList(mapStruct *terrainMap, PC *pc);
-    void enterBattle();
+    void enterBattle(NPC *npc);
     
 int randomGenerator(int upper, int lower){
   return (rand() % (upper - lower + 1)) + lower;
@@ -110,53 +111,52 @@ int randomGenerator(int upper, int lower){
 
 //Prints map out to the terminal
 void printMap(mapStruct *map, PC *pc){
-    int i, j;
-    for (j=0; j < COL; j++){
-        mvprintw(1, j, "%d", j % 10);
-    }
-    //mvprintw(1, 80, "\n");
-    for (i=0; i < ROW; i++){
-        for(j=0; j < COL; j++){
-            if(pc->row == i && pc->col == j){
-                mvprintw(i+2,j,"%c", PLAYERCHAR);
-                continue;
-            } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
-                char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
-                mvprintw(i+2,j,"%c", symbs[map->npcArray[i-1][j-1]->symb]);
-                continue;
-            }
-            
-            mvprintw(i+2,j,"%c", map->terrain[i][j]);
-
-        }
-        mvprintw(i+2,COL,"%d", i);
-        //mvprintw(i,COL+1,"\n");
-    }
-    refresh();
-
     // int i, j;
     // for (j=0; j < COL; j++){
-    //     printf("%d", j % 10);
+    //     mvprintw(1, j, "%d", j % 10);
     // }
-    // printf("\n");
+    // //mvprintw(1, 80, "\n");
     // for (i=0; i < ROW; i++){
     //     for(j=0; j < COL; j++){
     //         if(pc->row == i && pc->col == j){
-    //             printf("%c", PLAYERCHAR);
+    //             mvprintw(i+2,j,"%c", PLAYERCHAR);
     //             continue;
     //         } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
     //             char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
-    //             printf("%c", symbs[map->npcArray[i-1][j-1]->symb]);
+    //             mvprintw(i+2,j,"%c", symbs[map->npcArray[i-1][j-1]->symb]);
     //             continue;
     //         }
             
-    //         printf("%c", map->terrain[i][j]);
+    //         mvprintw(i+2,j,"%c", map->terrain[i][j]);
 
     //     }
-    //     printf("%d", i);
-    //     printf("\n");
+    //     mvprintw(i+2,COL,"%d", i);
+    //     //mvprintw(i,COL+1,"\n");
     // }
+    // refresh();
 
+    int i, j;
+    for (j=0; j < COL; j++){
+        printf("%d", j % 10);
+    }
+    printf("\n");
+    for (i=0; i < ROW; i++){
+        for(j=0; j < COL; j++){
+            if(pc->row == i && pc->col == j){
+                printf("%c", PLAYERCHAR);
+                continue;
+            } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
+                char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
+                printf("%c", symbs[map->npcArray[i-1][j-1]->symb]);
+                continue;
+            }
+            
+            printf("%c", map->terrain[i][j]);
+
+        }
+        printf("%d", i);
+        printf("\n");
+    }
 
 }
 
@@ -701,6 +701,7 @@ void spawnNPC(worldMap *wm, mapStruct *terrainMap, int npcType){
     NPC* npc = malloc(sizeof(NPC));
     npc->symb = npcType;
     npc->direc = 0;
+    npc->defeated=0;
     npcType = npcType == HIKER ? HIKER : 1;
     while (canPlace == -1){
         int row = randomGenerator(NPCROW-1, 0);
@@ -727,7 +728,7 @@ void placeNPCS(worldMap *wm, mapStruct *terrainMap, int npcNum){
         if(npcNum == npcNum-100 || npcNum == 250-500 || npcNum == npcNum-750 || npcNum == npcNum-1000){
             //printf("hello %d\n", npcNum);
         }
-        printf("npcNum %d\n", npcNum);
+        //printf("npcNum %d\n", npcNum);
         if (npcNum == 1){
             spawnNPC(wm, terrainMap, PACER);
             npcNum--;
@@ -1318,7 +1319,8 @@ int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int 
     switch (symb) {
         case HIKER:
             if ( (row > 0 && row < ROW - 1 && col > 0 && col < COL-1)  && //check if in border 
-            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY){//check if terrain not infinty     
+            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY//check if terrain not infinty     
+            && terrainMap->npcArray[row-1][col-1]->defeated == 0){   //not defeated
                 return 1;
             } else {
                 return -1;
@@ -1326,8 +1328,9 @@ int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int 
         case RIVAL:
             if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
             terrainMap->npcArray[row-1][col-1] == NULL){
-                if (terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY){//check if terrain not infinty and is empty
-                return 1;
+                if (terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY//check if terrain not infinty and is empty
+                && terrainMap->npcArray[row-1][col-1]->defeated == 0){   //not defeated
+                    return 1;
                 } else{
                     return -1;
                 }
@@ -1360,7 +1363,7 @@ int canMove(mapStruct *terrainMap, int symb, int row, int col, int prevRow, int 
             }
         default: //PC
             if (calcCost(2, terrainMap->terrain[row][col]) != INFINTY && //terrain not infinty
-            terrainMap->npcArray[row-1][col-1] == NULL && //terrain is empty
+            //terrainMap->npcArray[row-1][col-1] == NULL && //terrain is empty
             row > 0 && row < ROW-1 && col > 0 && col < COL-1){  //bounds checking
                 return 1;
             } else {
@@ -1427,47 +1430,96 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
         //printMap(terrainMap, pc);
         //c = heap_remove_min(&world.cur_map->turn);
             
-        in = getchar();
+            in = getchar();
             if(in=='7'||in=='y'){ //NE
-                int wt = hn->weight;
                 if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col) == 1){
+                    int wt = hn->weight;
                     wt += movePC(wm, terrainMap, hn->pc, NE);
                     newHN->pc = hn->pc;
                     newHN->weight = wt;
                     insert(h, newHN);
                     free(hn);
-                }
-                printMap(terrainMap, hn->pc);
+                    printMap(terrainMap, newHN->pc);
                 break;
+                }
+                
             }else if (in=='8'||in=='k'){ //N
-                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col) == 1)
-                    movePC(wm, terrainMap, hn->pc, N);
-                printMap(terrainMap, hn->pc);
+                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col) == 1){
+                    int wt = hn->weight;
+                    wt += movePC(wm, terrainMap, hn->pc, N);
+                    newHN->pc = hn->pc;
+                    newHN->weight = wt;
+                    insert(h, newHN);
+                    free(hn);
+                    printMap(terrainMap, newHN->pc);
+                break;
+                }
             }else if (in=='9'||in=='u'){ //NW
-                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1)
-                    movePC(wm, terrainMap, hn->pc, NW);
-                printMap(terrainMap, hn->pc);
-
+                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1){
+                    int wt = hn->weight;
+                    wt += movePC(wm, terrainMap, hn->pc, NW);
+                    newHN->pc = hn->pc;
+                    newHN->weight = wt;
+                    insert(h, newHN);
+                    free(hn);
+                    printMap(terrainMap, newHN->pc);
+                break;
+                }
             }else if (in=='6'||in=='l'){ //W
-                if(canMove(terrainMap, 6 ,hn->pc->row, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1)
-                    movePC(wm, terrainMap, hn->pc, W);
-                printMap(terrainMap, hn->pc);
+                if(canMove(terrainMap, 6 ,hn->pc->row, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1){
+                    int wt = hn->weight;
+                    wt += movePC(wm, terrainMap, hn->pc, W);
+                    newHN->pc = hn->pc;
+                    newHN->weight = wt;
+                    insert(h, newHN);
+                    free(hn);
+                    printMap(terrainMap, newHN->pc);
+                break;
+                }
             }else if (in=='3'||in=='n'){ //SW
-                if(canMove(terrainMap, 6 ,hn->pc->row+1, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1)
-                    movePC(wm, terrainMap, hn->pc, SW);
-                printMap(terrainMap, hn->pc);
+                if(canMove(terrainMap, 6 ,hn->pc->row+1, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1){
+                    int wt = hn->weight;
+                    wt += movePC(wm, terrainMap, hn->pc, SW);
+                    newHN->pc = hn->pc;
+                    newHN->weight = wt;
+                    insert(h, newHN);
+                    free(hn);
+                    printMap(terrainMap, newHN->pc);
+                break;
+                }
             }else if (in=='2'||in=='j'){ //S
-                if(canMove(terrainMap, 6 ,hn->pc->row+1, hn->pc->col, hn->pc->row, hn->pc->col) == 1)
-                    movePC(wm, terrainMap, hn->pc, S);
-                printMap(terrainMap, hn->pc);
+                if(canMove(terrainMap, 6 ,hn->pc->row+1, hn->pc->col, hn->pc->row, hn->pc->col) == 1){
+                    int wt = hn->weight;
+                    wt += movePC(wm, terrainMap, hn->pc, S);
+                    newHN->pc = hn->pc;
+                    newHN->weight = wt;
+                    insert(h, newHN);
+                    free(hn);
+                    printMap(terrainMap, newHN->pc);
+                break;
+                }
             }else if (in=='1'||in=='b'){ //SE
-                if(canMove(terrainMap, 6 ,hn->pc->row+1, hn->pc->col-1, hn->pc->row, hn->pc->col) == 1)
-                    movePC(wm, terrainMap, hn->pc, SE);
-                printMap(terrainMap, hn->pc);
+                if(canMove(terrainMap, 6 ,hn->pc->row+1, hn->pc->col-1, hn->pc->row, hn->pc->col) == 1){
+                    int wt = hn->weight;
+                    wt += movePC(wm, terrainMap, hn->pc, SE);
+                    newHN->pc = hn->pc;
+                    newHN->weight = wt;
+                    insert(h, newHN);
+                    free(hn);
+                    printMap(terrainMap, newHN->pc);
+                break;
+                }
             }else if (in=='4'||in=='h'){ //E
-                if(canMove(terrainMap, 6 ,hn->pc->row, hn->pc->col-1, hn->pc->row, hn->pc->col) == 1)
-                    movePC(wm, terrainMap, hn->pc, E);
-                printMap(terrainMap, hn->pc);
+                if(canMove(terrainMap, 6 ,hn->pc->row, hn->pc->col-1, hn->pc->row, hn->pc->col) == 1){
+                    int wt = hn->weight;
+                    wt += movePC(wm, terrainMap, hn->pc, E);
+                    newHN->pc = hn->pc;
+                    newHN->weight = wt;
+                    insert(h, newHN);
+                    free(hn);
+                    printMap(terrainMap, newHN->pc);
+                break;
+                }
             }else if (in=='t'){
                 trainerList(terrainMap, hn->pc);
                 printMap(terrainMap, hn->pc);
@@ -1478,7 +1530,14 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                 printMap(terrainMap, hn->pc);
             }else if (in==' '||in=='.'||in=='5'){
                 // movePC(wm, terrainMap, hn->pc, "5"); 
-                printMap(terrainMap, hn->pc); //Dont forget to add pc to PQ based and add weight
+                int wt = hn->weight;
+                wt += movePC(wm, terrainMap, hn->pc, SKIP);
+                newHN->pc = hn->pc;
+                newHN->weight = wt;
+                insert(h, newHN);
+                free(hn);
+                printMap(terrainMap, newHN->pc); //Dont forget to add pc to PQ based and add weight
+                break;
             } else if (in == 'Q' || in == 'q'){
                 return;
             }else{
@@ -1489,67 +1548,6 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
             
             
     }
-
-
-            // if (pcMove == 0){ //move pc right
-            //     if(canMove(terrainMap, 8, hn->pc->row, hn->pc->col+1, hn->pc->row, hn->pc->col)==1){
-                    
-                    
-            //         newHN->pc = hn->pc;
-            //         newHN->pc->col+=1;
-            //         newHN->weight = hn->weight += 10;
-            //         newHN->npc = NULL;
-            //         pcMove++;
-            //         insert(h, newHN); 
-            //         free(hn);
-            //     }
-            // } else if(pcMove == 1){ //move pc down
-            //     if(canMove(terrainMap, 8, hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col) == 1){
-
-            //         newHN->pc = hn->pc;
-            //         newHN->pc->row+=1;
-            //         newHN->weight = hn->weight += 10;
-            //         newHN->npc = NULL;
-
-            //         pcMove++;
-            //         insert(h, newHN); 
-            //         free(hn);
-            //     }
-            // } else if(pcMove == 2){ //move pc left
-            //     if(canMove(terrainMap, 8, hn->pc->row, hn->pc->col-1, hn->pc->row, hn->pc->col)==1){
-
-            //         newHN->pc = hn->pc;
-            //         newHN->pc->col-=1;
-            //         newHN->weight = hn->weight += 10;
-            //         newHN->npc = NULL;
-            //         printf("rival row %d col %d\n", newHN->pc->row, newHN->pc->col);
-            //         pcMove++;
-            //         insert(h, newHN); 
-            //         free(hn);
-            //     }
-            // } else if(pcMove == 3){ //move pc up
-            //     if(canMove(terrainMap, 8, hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col)==1){
-
-            //         newHN->pc = hn->pc;
-            //         newHN->pc->row-=1;
-            //         newHN->weight = hn->weight += 10;
-            //         newHN->npc = NULL;
-            //         pcMove++;
-            //         insert(h, newHN); 
-            //         free(hn);
-            //     }
-            //     pcMove = 0;
-            // } else {
-            //     newHN->pc = hn->pc;
-            //         //newHN->pc->col+=1;
-            //         newHN->weight = hn->weight += 10;
-            //         newHN->npc = NULL;
-            //         //pcMove++;
-            //         insert(h, newHN); 
-            //         free(hn);
-            // }
-
-            printMap(terrainMap, hn->pc);
             //usleep(1000000);
         } else {
             int type = hn->npc->symb;
@@ -1563,6 +1561,9 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                     newHN->weight = hn->weight + wt;
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
+                    if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col){
+                        enterBattle(newHN->npc);
+                    }
                     insert(h, newHN);
                     free(hn);
                     break;
@@ -1621,146 +1622,147 @@ return;
 }
 
 void enterBuilding(){
-    clear();
-    mvprintw(1,1, "You entered a building");
-    refresh();
-    char in='m';
-    while(in != '<'){
-        in = getchar();
-    }
+    // clear();
+    // mvprintw(1,1, "You entered a building");
+    // refresh();
+    // char in='m';
+    // while(in != '<'){
+    //     in = getchar();
+    // }
 }
 
 void copyToScreen(char buffer[1000][80], char c, char ns, char ew, int row, int col, int i) {
-  if (ns == 'n') {
-    if (ew == 'e') {
-      snprintf(buffer[i], sizeof(buffer[i]), "%c, %i North and %i East", c, row, col);
-    } else {
-      snprintf(buffer[i], sizeof(buffer[i]), "%c, %i North and %i West", c, row, col);
-    }
-  } else {
-    if (ew == 'e') {
-      snprintf(buffer[i], sizeof(buffer[i]), "%c, %i South and %i East", c, row, col);
-    } else {
-      snprintf(buffer[i], sizeof(buffer[i]), "%c, %i South and %i West", c, row, col);
-    }
-  }
+//   if (ns == 'n') {
+//     if (ew == 'e') {
+//       snprintf(buffer[i], sizeof(buffer[i]), "%c, %i North and %i East", c, row, col);
+//     } else {
+//       snprintf(buffer[i], sizeof(buffer[i]), "%c, %i North and %i West", c, row, col);
+//     }
+//   } else {
+//     if (ew == 'e') {
+//       snprintf(buffer[i], sizeof(buffer[i]), "%c, %i South and %i East", c, row, col);
+//     } else {
+//       snprintf(buffer[i], sizeof(buffer[i]), "%c, %i South and %i West", c, row, col);
+//     }
+//   }
 }
 
 void trainerList(mapStruct *terrainMap, PC *pc){
- clear();
-  char buffer[1000][80];
-  int i = 0;
-  char toPrint = 'x';
-  char ns = 'x';
-  int difY = 0;
-  int difX = 0;
-  char ew = 'x';
+//  clear();
+//   char buffer[1000][80];
+//   int i = 0;
+//   char toPrint = 'x';
+//   char ns = 'x';
+//   int difY = 0;
+//   int difX = 0;
+//   char ew = 'x';
 
-  scrollok(stdscr, TRUE); // Enable scrolling
-  snprintf(buffer[i], sizeof(buffer[i]), "Trainer List! (press 'esc' to close)\n");
-  mvprintw(i, 0, buffer[i]);
-  i++;
-  refresh();
+//   scrollok(stdscr, TRUE); // Enable scrolling
+//   snprintf(buffer[i], sizeof(buffer[i]), "Trainer List! (press 'esc' to close)\n");
+//   mvprintw(i, 0, buffer[i]);
+//   i++;
+//   refresh();
 
-  int startRow = 0;
-  int endRow = 20;
+//   int startRow = 0;
+//   int endRow = 20;
 
-  int pcRow = pc->row -1;
-  int pcCol = pc->col -1;
+//   int pcRow = pc->row -1;
+//   int pcCol = pc->col -1;
 
-  for (int row = 0; row < NPCROW; row++) {
-    for (int col = 0; col < NPCCOL; col++) {
+//   for (int row = 0; row < NPCROW; row++) {
+//     for (int col = 0; col < NPCCOL; col++) {
 
-        NPC *npc = terrainMap->npcArray[row][col];
+//         NPC *npc = terrainMap->npcArray[row][col];
 
-      if (!npc) {continue;}
+//       if (!npc) {continue;}
 
-      if (npc->symb == HIKER) {
-        toPrint = 'h';
-      } else if (npc->symb == RIVAL) {
-        toPrint ='r';
-      } else if (npc->symb == WANDERER) {
-        toPrint ='w';
-      } else if (npc->symb == EXPLORERS) {
-        toPrint ='e';
-      } else if (npc->symb == PACER) {
-        toPrint ='p';
-      } else if (npc->symb == SENTRIES) {
-        toPrint = 's';
-      }
+//       if (npc->symb == HIKER) {
+//         toPrint = 'h';
+//       } else if (npc->symb == RIVAL) {
+//         toPrint ='r';
+//       } else if (npc->symb == WANDERER) {
+//         toPrint ='w';
+//       } else if (npc->symb == EXPLORERS) {
+//         toPrint ='e';
+//       } else if (npc->symb == PACER) {
+//         toPrint ='p';
+//       } else if (npc->symb == SENTRIES) {
+//         toPrint = 's';
+//       }
 
-      if (row > pcRow) {
-        difY = abs(pcRow - row);
-        ns = 's';
-      } else {
-        ns = 'n';
-        difY = (pcRow - row);
-      }
+//       if (row > pcRow) {
+//         difY = abs(pcRow - row);
+//         ns = 's';
+//       } else {
+//         ns = 'n';
+//         difY = (pcRow - row);
+//       }
 
-      if (col > pcCol) {
-        ew = 'e';
-        difX = abs(pcCol - col);
-      } else {
-        ew = 'w';
-        difX = pcCol - col;
-      }
+//       if (col > pcCol) {
+//         ew = 'e';
+//         difX = abs(pcCol - col);
+//       } else {
+//         ew = 'w';
+//         difX = pcCol - col;
+//       }
 
-      copyToScreen(buffer, toPrint, ns, ew, difY, difX, i);
-      refresh();
-      i++;
-    }
-  }
+//       copyToScreen(buffer, toPrint, ns, ew, difY, difX, i);
+//       refresh();
+//       i++;
+//     }
+//   }
 
-  for (int f = 0; f < endRow; f++) {
-    mvprintw(f, 0, buffer[f]);
-  }
-    keypad(stdscr, TRUE);
-  int ch;
-    while ((ch = getch()) != 27) {
-        //mvprintw(10, 10, (char) ch);
+//   for (int f = 0; f < endRow; f++) {
+//     mvprintw(f, 0, buffer[f]);
+//   }
+//     keypad(stdscr, TRUE);
+//   int ch;
+//     while ((ch = getch()) != 27) {
+//         //mvprintw(10, 10, (char) ch);
         
         
-        switch(ch) {
-            case KEY_UP:
-                if (startRow > 0) {
-                    startRow--;
-                    endRow--;
-                }
-                break;
-            case KEY_DOWN:
-                if (endRow < 999) {
-                    startRow++;
-                    endRow++;
-                }
-                break;
-        }
+//         switch(ch) {
+//             case KEY_UP:
+//                 if (startRow > 0) {
+//                     startRow--;
+//                     endRow--;
+//                 }
+//                 break;
+//             case KEY_DOWN:
+//                 if (endRow < 999) {
+//                     startRow++;
+//                     endRow++;
+//                 }
+//                 break;
+//         }
 
-        // Redraw visible content
-        clear();
-        for (int x = startRow; x < endRow; x++) {
-            mvprintw(x - startRow, 0, buffer[x]);
-        }
-        refresh();
-    }
+//         // Redraw visible content
+//         clear();
+//         for (int x = startRow; x < endRow; x++) {
+//             mvprintw(x - startRow, 0, buffer[x]);
+//         }
+//         refresh();
+//     }
 
-  clear();
+//   clear();
 }
 
-void enterBattle() {
-  clear();
-  int input;
+void enterBattle(NPC *npc) {
+//   clear();
+//   int input;
+    npc->defeated = 1;
+    printf("u win");
+//   mvprintw(11, 18, "Trainer Defeated! Press 'esc' to exit!");
 
-  mvprintw(11, 18, "Trainer Defeated! Press 'esc' to exit!");
+//   while (1) {
+//     input = getch();
 
-  while (1) {
-    input = getch();
+//     if (input == 27) {
+//       break;
+//     }
+//   }
 
-    if (input == 27) {
-      break;
-    }
-  }
-
-  clear();
+//   clear();
 }
 
 int movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc){
@@ -1797,6 +1799,8 @@ int movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc){
         case SKIP:
             break;
     }
+    if (terrainMap->npcArray[pc->row-1][pc->col-1] != NULL && terrainMap->npcArray[pc->row-1][pc->col-1]->defeated == 0)
+        enterBattle(terrainMap->npcArray[pc->row-1][pc->col-1]);
     return calcCost(2, terrainMap->terrain[pc->row][pc->col]);
 }
 
@@ -1808,7 +1812,7 @@ int main(int argc, char *argv[]){
     worldMap wm;
     int currX = 200;
     int currY = 200;
-    int numTrainers = 20;
+    int numTrainers = 1;
 
     
 
@@ -1820,7 +1824,7 @@ int main(int argc, char *argv[]){
     
     
     
-    initscr();
+    // initscr();
     createWorldMap(&wm);
     createMap(currX, currY, &wm, numTrainers);
     printf("(%d, %d)\n", currX-200, currY-200);
@@ -1830,6 +1834,6 @@ int main(int argc, char *argv[]){
     
     moveEveryone(&wm, wm.arr[200][200], numTrainers, h);
     
-    endwin();
+    // endwin();
     return 0;
 }

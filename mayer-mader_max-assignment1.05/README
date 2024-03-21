@@ -1,0 +1,16 @@
+***Assignemnt1.05***
+
+How to run:
+    make
+    ./Game
+
+
+Bugs:
+    if PC doesn't spawn on road it is possible that the weight map wont be able to reach to the player
+
+    if you ask for a lot of pcs there will be an infinte loop because there are no more places left to put it. you can have at leat 500 npcs depending on the map.
+
+    Sometimes PC and NPC will chase each other and will enter a battle even if you try to move on its space
+
+Description:
+    ncurses map and menus
