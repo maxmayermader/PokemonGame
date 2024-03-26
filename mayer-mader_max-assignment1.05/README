@@ -1,4 +1,4 @@
-***Assignemnt1.03***
+***Assignemnt1.05***
 
 How to run:
     make
@@ -10,9 +10,9 @@ Bugs:
 
     if you ask for a lot of pcs there will be an infinte loop because there are no more places left to put it. you can have at leat 500 npcs depending on the map.
 
-Description:
-    Dijkstras NPC path weights
-    Move with 'e'ast, 'w'est, 'n'orth, 's'outh or 'f'ly x y.
-    to fly press f then you will be prompted to enter x and y coordinates
+    Sometimes PC and NPC will chase each other and will enter a battle even if you try to move on its space
 
-    shows weights for npc to get PC
+    after entering a battle u need to hit escape key and then you can move the player
+
+Description:
+    ncurses map and menus
