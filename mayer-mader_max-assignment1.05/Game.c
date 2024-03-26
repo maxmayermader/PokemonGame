@@ -1804,7 +1804,7 @@ int movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc){
             pc->col+=1;
             break;
         case S:
-            pc->col+=1;
+            pc->row+=1;
             break;
         case SE:
             pc->row+=1;
