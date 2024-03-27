@@ -157,6 +157,7 @@ void printMap(mapStruct *map, PC *pc){
         mvprintw(i+2,COL,"%d", i);
         //mvprintw(i,COL+1,"\n");
     }
+    mvprintw(ROW+1, COL+1, "(%d, %d)", pc->globalX, pc->globalY);
     refresh();
 
     // int i, j;
@@ -785,8 +786,9 @@ void createMap(int x, int y, worldMap *wm, int npcNum){
     wm->arr[x][y] = newMap; //add new terrain map to world map
 
     //TODO : fix later
-    newMap->playerT->row = wm->player->row;
-    newMap->playerT->col = wm->player->col;
+    newMap->playerT = wm->player;
+    // newMap->playerT->row = wm->player->row;
+    // newMap->playerT->col = wm->player->col;
 
     if(newMap->NPCSInit == 0){
         placeNPCS(wm, newMap, npcNum);
@@ -796,7 +798,7 @@ void createMap(int x, int y, worldMap *wm, int npcNum){
     heap* h = createHeap();
     newMap->terrainHeap = h;
 
-    printMap(newMap, wm->player); //print map and player
+    //printMap(newMap, wm->player); //print map and player
     
 //     newMap->npcArray[0][0] = malloc(sizeof(NPC)); //Hiker
 //     newMap->npcArray[0][1] = malloc(sizeof(NPC)); //Rival
@@ -815,17 +817,36 @@ void createMap(int x, int y, worldMap *wm, int npcNum){
 }
 
 /*Go to terrain map at x y*/
-void fly(int row, int col, worldMap *wm, int npcNum){
+void fly(int row, int col, worldMap *wm, int npcNum, int gate){
     if (wm->arr[row][col] != NULL){
-        //printMap(wm->arr[row][y], wm->arr[row][y]->playerT);
-        moveEveryone(wm, wm->arr[row][col], npcNum, wm->arr[row][col]->terrainHeap);
-        // printf("Weights for hiker\n");
-        // printWeightMap(wm->arr[row][y]->npcArray[0][0]->weightArr);
+        if (gate == N){
+            wm->player->row = ROW - 2;
+            wm->player-> col = wm->arr[row][col]->gateS; 
+            printMap(wm->arr[row][col], wm->player);
+            refresh();
+        } else if (gate == E){
 
-        // printf("Weights for rival\n");
-        // printWeightMap(wm->arr[row][y]->npcArray[1][0]->weightArr);
+        } else if (gate == S){
+
+        } else if (gate == W){
+
+        }
+
+        moveEveryone(wm, wm->arr[row][col], npcNum, wm->arr[row][col]->terrainHeap);
     } else {
         createMap(row, col, wm, npcNum);
+        if (gate == N){
+            wm->player->row = ROW - 2;
+            wm->player-> col = wm->arr[row][col]->gateS; 
+            printMap(wm->arr[row][col], wm->player);
+            refresh();
+        } else if (gate == E){
+
+        } else if (gate == S){
+
+        } else if (gate == W){
+
+        }
         moveEveryone(wm, wm->arr[row][col], npcNum, wm->arr[row][col]->terrainHeap);
     }
 }
@@ -1840,7 +1861,7 @@ void moveOnGate(worldMap *wm, mapStruct *terrainMap, PC *pc, int newRow, int new
         case N:
             if (newCol == terrainMap->gateN && newRow == 0){
                 clear();
-                fly(--pc->globalX, pc->globalY, wm, npcNum);
+                fly(--pc->globalX, pc->globalY, wm, npcNum, N);
             }
             break;
         case E:
@@ -1886,11 +1907,9 @@ int main(int argc, char *argv[]){
     initscr();
     createWorldMap(&wm);
     createMap(currX, currY, &wm, numTrainers);
-    printf("(%d, %d)\n", currX-200, currY-200);
+    //lprintf("(%d, %d)\n", currX-200, currY-200);
 
-    
-
-    
+    printMap(wm.arr[200][200], wm.player);
     moveEveryone(&wm, wm.arr[200][200], numTrainers, wm.arr[200][200]->terrainHeap);
     
     endwin();
