@@ -1049,7 +1049,7 @@ void dijkstras(int row, int col, mapStruct* terrainMap, int weightArr[NPCROW][NP
     killHeap(h);
 }
 
-void getNextSmallestMove(mapStruct *terrainMap, NPC* npc, int *row, int *col){
+int getNextSmallestMove(mapStruct *terrainMap, NPC* npc, int *row, int *col){
     int minCost = INFINTY;
     int i,j;
 
@@ -1066,8 +1066,9 @@ void getNextSmallestMove(mapStruct *terrainMap, NPC* npc, int *row, int *col){
             }
         }
     }
-
-    
+    mvprintw(ROW+6, 20, "small new row %d, new col %d min cost=%d", *row, *col, minCost);
+    refresh();
+    return minCost;
 }
 
 int moveHiker(mapStruct *terrainMap, NPC* hiker){
@@ -1077,12 +1078,22 @@ int moveHiker(mapStruct *terrainMap, NPC* hiker){
     int nextRow, nextCol;
     int prevRow = hiker->row;
     int prevCol = hiker->col;
-    getNextSmallestMove(terrainMap, hiker, &nextRow, &nextCol);
-    hiker->row = nextRow;
-    hiker->col = nextCol;
-    terrainMap->npcArray[nextRow][nextCol] = hiker;
-    terrainMap->npcArray[prevRow][prevCol] = NULL;
-    return calcCost(HIKER, terrainMap->terrain[hiker->row+1][hiker->col+1]);
+    nextRow = prevRow;
+    nextCol = prevCol;
+    int minCost = getNextSmallestMove(terrainMap, hiker, &nextRow, &nextCol);
+    mvprintw(ROW+4, 20, "Hiker move");
+        refresh();
+    if (minCost != INFINTY){
+        hiker->row = nextRow;
+        hiker->col = nextCol;
+        terrainMap->npcArray[nextRow][nextCol] = hiker;
+        terrainMap->npcArray[prevRow][prevCol] = NULL;
+        return calcCost(HIKER, terrainMap->terrain[hiker->row+1][hiker->col+1]);
+    } else {
+        return calcCost(HIKER, terrainMap->terrain[hiker->row+1][hiker->col+1]);
+    mvprintw(ROW+5, 20, "new row %d, new col %d", nextRow, nextCol);
+    refresh();
+    }  
 }
 
 int moveRival(mapStruct *terrainMap, NPC* rival){
@@ -1092,13 +1103,20 @@ int moveRival(mapStruct *terrainMap, NPC* rival){
     int nextRow, nextCol;
     int prevRow = rival->row;
     int prevCol = rival->col;
-    getNextSmallestMove(terrainMap, rival, &nextRow, &nextCol);
-    rival->row = nextRow;
-    rival->col = nextCol;
+    nextRow = prevRow;
+    nextCol = prevCol;
+    int minCost = getNextSmallestMove(terrainMap, rival, &nextRow, &nextCol);
+    if (minCost != INFINTY){
+        rival->row = nextRow;
+        rival->col = nextCol;
+        terrainMap->npcArray[nextRow][nextCol] = rival;
+        terrainMap->npcArray[prevRow][prevCol] = NULL;
+        return calcCost(RIVAL, terrainMap->terrain[rival->row+1][rival->col+1]);
+    }
     //printf("get next smallest move row %d col %d\n", rival->row, rival->col);
-    terrainMap->npcArray[nextRow][nextCol] = rival;
-    terrainMap->npcArray[prevRow][prevCol] = NULL;
-    return calcCost(RIVAL, terrainMap->terrain[rival->row+1][rival->col+1]);
+    else{
+        return calcCost(RIVAL, terrainMap->terrain[rival->row+1][rival->col+1]);
+    }
 }
 
 int movePacer(mapStruct *terrainMap, NPC* pacer){
@@ -1423,6 +1441,8 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
     print when players turn
     move player in square for now
     */
+
+   int npcRow = ROW+2;
     
     heapNode* hnNPC = malloc(sizeof(heapNode));
     hnNPC->npc=NULL;
@@ -1580,7 +1600,9 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
             } else if (in == 'f'){
                 //print message then enter cords then fly
             } else if (in == 'Q' || in == 'q'){
-                return;
+                endwin();
+                exit(0);
+                //return;
             }else{
                 //printw("unknown character. Try again!");
 
@@ -1594,7 +1616,8 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
             int type = hn->npc->symb;
             int wt = INFINTY;
             heapNode* newHN = malloc(sizeof(NPC));
-
+            mvprintw(npcRow, 0, "npc %d", hn->npc->symb);
+            refresh();
             switch(type){
                 case HIKER:
                     wt = moveHiker(terrainMap, hn->npc);
@@ -1610,6 +1633,7 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                     break;
                 case RIVAL:
                     wt = moveRival(terrainMap, hn->npc);
+                    
                     //heapNode* newHN = malloc(sizeof(NPC));
                     newHN->weight = hn->weight + wt;
                     newHN->npc = hn->npc;
@@ -1669,6 +1693,7 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                     free(hn);
                     break;
             }
+            ++npcRow;
         }
     }
 
