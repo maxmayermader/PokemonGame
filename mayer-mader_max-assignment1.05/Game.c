@@ -67,6 +67,27 @@ typedef struct PC{
     int globalY;
 }PC;
 
+typedef struct heapNode {
+    int weight;
+    //for dijkstra
+    int row;
+    int col;
+    int visited;
+    //for moving
+    NPC* npc;
+    PC* pc;
+} heapNode;
+
+/*Begin heap implemantation*/
+// Declare a heap structure
+struct Heap {
+    heapNode* arr[MAX_HEAP_SIZE];
+    int size;
+    //int capacity;
+};
+ // define the struct Heap name
+typedef struct Heap heap;
+
 //map struct for terrain. 21x80 map
 typedef struct mapStruct{
 	int gateN;//top
@@ -77,6 +98,7 @@ typedef struct mapStruct{
     NPC* npcArray[NPCROW][NPCCOL];
     PC* playerT;
     int NPCSInit; 
+    heap* terrainHeap;
 }mapStruct;
 
 
@@ -104,6 +126,8 @@ int getQueSize(){
     void enterBuilding();
     void trainerList(mapStruct *terrainMap, PC *pc);
     void enterBattle(NPC *npc);
+    void moveOnGate(worldMap *wm, mapStruct *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum);
+    void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h);
     
 int randomGenerator(int upper, int lower){
   return (rand() % (upper - lower + 1)) + lower;
@@ -161,26 +185,7 @@ void printMap(mapStruct *map, PC *pc){
 }
 
 
-typedef struct heapNode {
-    int weight;
-    //for dijkstra
-    int row;
-    int col;
-    int visited;
-    //for moving
-    NPC* npc;
-    PC* pc;
-} heapNode;
 
-/*Begin heap implemantation*/
-// Declare a heap structure
-struct Heap {
-    heapNode* arr[MAX_HEAP_SIZE];
-    int size;
-    //int capacity;
-};
- // define the struct Heap name
-typedef struct Heap heap;
  
 // forward declarations
 heap* createHeap();
@@ -707,7 +712,7 @@ void spawnNPC(worldMap *wm, mapStruct *terrainMap, int npcType){
         int row = randomGenerator(NPCROW-1, 0);
         int col = randomGenerator(NPCCOL-1, 0);
         if(calcCost(npcType, terrainMap->terrain[row+1][col+1]) != INFINTY){ //check of terrain is not infinty
-            if((terrainMap->npcArray[row][col] == NULL)){ //&& (terrainMap->terrain[row+1][col+1] != 'M') && (terrainMap->terrain[row+1][col+1] != 'C')){ 
+            if(terrainMap->npcArray[row][col] == NULL){ //&& (terrainMap->terrain[row+1][col+1] != 'M') && (terrainMap->terrain[row+1][col+1] != 'C')){ 
                 terrainMap->npcArray[row][col] = npc;
                 npc->row = row;
                 npc->col = col;
@@ -788,6 +793,9 @@ void createMap(int x, int y, worldMap *wm, int npcNum){
         newMap->NPCSInit = 1;
     }
 
+    heap* h = createHeap();
+    newMap->terrainHeap = h;
+
     printMap(newMap, wm->player); //print map and player
     
 //     newMap->npcArray[0][0] = malloc(sizeof(NPC)); //Hiker
@@ -807,17 +815,18 @@ void createMap(int x, int y, worldMap *wm, int npcNum){
 }
 
 /*Go to terrain map at x y*/
-void fly(int x, int y, worldMap *wm, int npcNum){
-    if (wm->arr[x][y] != NULL){
-        printMap(wm->arr[x][y], wm->arr[x][y]->playerT);
+void fly(int row, int col, worldMap *wm, int npcNum){
+    if (wm->arr[row][col] != NULL){
+        //printMap(wm->arr[row][y], wm->arr[row][y]->playerT);
+        moveEveryone(wm, wm->arr[row][col], npcNum, wm->arr[row][col]->terrainHeap);
+        // printf("Weights for hiker\n");
+        // printWeightMap(wm->arr[row][y]->npcArray[0][0]->weightArr);
 
-        printf("Weights for hiker\n");
-        printWeightMap(wm->arr[x][y]->npcArray[0][0]->weightArr);
-
-        printf("Weights for rival\n");
-        printWeightMap(wm->arr[x][y]->npcArray[1][0]->weightArr);
+        // printf("Weights for rival\n");
+        // printWeightMap(wm->arr[row][y]->npcArray[1][0]->weightArr);
     } else {
-        createMap(x, y, wm, npcNum);
+        createMap(row, col, wm, npcNum);
+        moveEveryone(wm, wm->arr[row][col], npcNum, wm->arr[row][col]->terrainHeap);
     }
 }
 
@@ -1544,6 +1553,8 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                 free(hn);
                 printMap(terrainMap, newHN->pc); //Dont forget to add pc to PQ based and add weight
                 break;
+            } else if (in == 'f'){
+                //print message then enter cords then fly
             } else if (in == 'Q' || in == 'q'){
                 return;
             }else{
@@ -1821,6 +1832,33 @@ int movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc){
     return calcCost(2, terrainMap->terrain[pc->row][pc->col]);
 }
 
+void moveOnGate(worldMap *wm, mapStruct *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum){
+    switch (direc){
+        case N:
+            if (newCol == terrainMap->gateN && newRow == 0){
+                fly(--pc->globalX, pc->globalY, wm, npcNum);
+            }
+            break;
+        case E:
+            if (newCol == COL - 1 && newRow == terrainMap->gateE ){
+
+            }
+            break;
+
+        case S:
+            if (newCol == terrainMap->gateS && newRow == ROW-1){
+
+            }
+            break;
+
+        case W:
+            if (newCol == 0 && newRow == terrainMap->gateW){
+                
+            }
+            break;
+    }
+}
+
 int main(int argc, char *argv[]){
 
     //srand(time(NULL));//random seed
@@ -1846,10 +1884,10 @@ int main(int argc, char *argv[]){
     createMap(currX, currY, &wm, numTrainers);
     printf("(%d, %d)\n", currX-200, currY-200);
 
-    heap* h = createHeap();
+    
 
     
-    moveEveryone(&wm, wm.arr[200][200], numTrainers, h);
+    moveEveryone(&wm, wm.arr[200][200], numTrainers, wm.arr[200][200]->terrainHeap);
     
     endwin();
     return 0;
