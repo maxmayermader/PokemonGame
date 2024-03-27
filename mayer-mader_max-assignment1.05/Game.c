@@ -1447,7 +1447,7 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
             
             in = getchar();
             if(in=='7'||in=='y'){ //NE
-                moveOnGate(wm, terrainMap, hn->pc, hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col, N,numTrainers);
+                
                 if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col) == 1){
                     int wt = hn->weight;
                     wt += movePC(wm, terrainMap, hn->pc, NE);
@@ -1460,7 +1460,8 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                 }
                 
             }else if (in=='8'||in=='k'){ //N
-
+                moveOnGate(wm, terrainMap, hn->pc, hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col, N,numTrainers);
+                mvprintw(0, 0, "row: %d, col %d", hn->pc->row, hn->pc->col);
                 if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col, hn->pc->row, hn->pc->col) == 1){
                     int wt = hn->weight;
                     wt += movePC(wm, terrainMap, hn->pc, N);
@@ -1838,6 +1839,7 @@ void moveOnGate(worldMap *wm, mapStruct *terrainMap, PC *pc, int newRow, int new
     switch (direc){
         case N:
             if (newCol == terrainMap->gateN && newRow == 0){
+                clear();
                 fly(--pc->globalX, pc->globalY, wm, npcNum);
             }
             break;
