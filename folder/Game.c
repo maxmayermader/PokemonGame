@@ -159,7 +159,7 @@ void printMap(mapStruct *map, PC *pc){
         mvprintw(i+2,COL,"%d", i);
         //mvprintw(i,COL+1,"\n");
     }
-    mvprintw(ROW+1, COL+1, "(%d, %d)", pc->globalX, pc->globalY);
+    mvprintw(ROW+1, COL+1, "(%d, %d)", pc->globalX-200, pc->globalY-200);
     refresh();
 
     // int i, j;
@@ -477,11 +477,11 @@ void makeRoads(mapStruct *map, int distanceFromCenter, int x, int y, worldMap* w
     if (y == 0)
         map->terrain[entranceX1[0]][entranceX1[1]] = '%';
     if(y == worldYSize-1)
-        map->terrain[entranceX2[0]][entranceX2[1]] = '%';
+        map->terrain[entranceY2[0]][entranceY2[1]] = '%';
     if (x == 0)
         map->terrain[entranceY1[0]][entranceY1[1]] = '%';
     if(x == worldXSize-1)
-        map->terrain[entranceY2[0]][entranceY2[1]] = '%';
+        map->terrain[entranceX2[0]][entranceX2[1]] = '%';
 
 
     int oddsForBuilding = ((-45*distanceFromCenter)/200 + 50);
@@ -857,8 +857,8 @@ void fly(int row, int col, worldMap *wm, int npcNum, int gate){
         if (gate == N){
             wm->player->row = ROW - 2;
             wm->player-> col = wm->arr[row][col]->gateS; 
-            printMap(wm->arr[row][col], wm->player);
-            refresh();
+            // printMap(wm->arr[row][col], wm->player);
+            // refresh();
         } else if (gate == E){
             wm->player->row = wm->arr[row][col]->gateW;
             wm->player-> col = 1; 
@@ -870,7 +870,8 @@ void fly(int row, int col, worldMap *wm, int npcNum, int gate){
         } else if (gate == W){
             wm->player->row = wm->arr[row][col]->gateE;
             wm->player-> col = COL-2; 
-            printMap(wm->arr[row][col], wm->player);
+            mvprintw(0, 20, "bb");
+            //printMap(wm->arr[row][col], wm->player);
         } else {
             if(row > 0 && col > 0){
                 wm->player->row = wm->arr[row][col]->connection1[0];
@@ -1102,7 +1103,7 @@ int getNextSmallestMove(mapStruct *terrainMap, NPC* npc, int *row, int *col){
             }
         }
     }
-    mvprintw(ROW+6, 20, "small new row %d, new col %d min cost=%d", *row, *col, minCost);
+    //mvprintw(ROW+6, 20, "small new row %d, new col %d min cost=%d", *row, *col, minCost);
     refresh();
     return minCost;
 }
@@ -1117,7 +1118,7 @@ int moveHiker(mapStruct *terrainMap, NPC* hiker){
     nextRow = prevRow;
     nextCol = prevCol;
     int minCost = getNextSmallestMove(terrainMap, hiker, &nextRow, &nextCol);
-    mvprintw(ROW+4, 20, "Hiker move");
+    //mvprintw(ROW+4, 20, "Hiker move");
         refresh();
     if (minCost != INFINTY){
         hiker->row = nextRow;
@@ -1127,7 +1128,7 @@ int moveHiker(mapStruct *terrainMap, NPC* hiker){
         return calcCost(HIKER, terrainMap->terrain[hiker->row+1][hiker->col+1]);
     } else {
         return calcCost(HIKER, terrainMap->terrain[hiker->row+1][hiker->col+1]);
-    mvprintw(ROW+5, 20, "new row %d, new col %d", nextRow, nextCol);
+    //mvprintw(ROW+5, 20, "new row %d, new col %d", nextRow, nextCol);
     refresh();
     }  
 }
@@ -1523,11 +1524,11 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
         //c = heap_remove_min(&world.cur_map->turn);
             
             in = getchar();
-            if(in=='7'||in=='y'){ //NE
-                moveOnGate(wm, terrainMap, hn->pc, hn->pc->row-1, hn->pc->col+1, hn->pc->row, hn->pc->col, NE,numTrainers);
+            if(in=='7'||in=='y'){ //NW
+                moveOnGate(wm, terrainMap, hn->pc, hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col, NW,numTrainers);
                 if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col) == 1){
                     int wt = hn->weight;
-                    wt += movePC(wm, terrainMap, hn->pc, NE);
+                    wt += movePC(wm, terrainMap, hn->pc, NW);
                     newHN->pc = hn->pc;
                     newHN->weight = wt;
                     insert(h, newHN);
@@ -1549,11 +1550,11 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                     printMap(terrainMap, newHN->pc);
                 break;
                 }
-            }else if (in=='9'||in=='u'){ //NW
-                moveOnGate(wm, terrainMap, hn->pc, hn->pc->row-1, hn->pc->col-1, hn->pc->row, hn->pc->col, NW,numTrainers);
-                if(canMove(terrainMap, 6 ,hn->pc->row-1, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1){
+            }else if (in=='9'||in=='u'){ //NE
+                moveOnGate(wm, terrainMap, hn->pc, hn->pc->row-1, hn->pc->col+1, hn->pc->row, hn->pc->col, NE,numTrainers);
+                if(canMove(terrainMap, 6 , hn->pc->row-1, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1){
                     int wt = hn->weight;
-                    wt += movePC(wm, terrainMap, hn->pc, NW);
+                    wt += movePC(wm, terrainMap, hn->pc, NE);
                     newHN->pc = hn->pc;
                     newHN->weight = wt;
                     insert(h, newHN);
@@ -1561,11 +1562,11 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                     printMap(terrainMap, newHN->pc);
                 break;
                 }
-            }else if (in=='6'||in=='l'){ //W
-                moveOnGate(wm, terrainMap, hn->pc, hn->pc->row, hn->pc->col-1, hn->pc->row, hn->pc->col, W,numTrainers);
+            }else if (in=='6'||in=='l'){ //E
+                moveOnGate(wm, terrainMap, hn->pc, hn->pc->row, hn->pc->col+1, hn->pc->row, hn->pc->col, E,numTrainers);
                 if(canMove(terrainMap, 6 ,hn->pc->row, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1){
                     int wt = hn->weight;
-                    wt += movePC(wm, terrainMap, hn->pc, W);
+                    wt += movePC(wm, terrainMap, hn->pc, E);
                     newHN->pc = hn->pc;
                     newHN->weight = wt;
                     insert(h, newHN);
@@ -1573,11 +1574,11 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                     printMap(terrainMap, newHN->pc);
                 break;
                 }
-            }else if (in=='3'||in=='n'){ //SW
-                moveOnGate(wm, terrainMap, hn->pc, hn->pc->row+1, hn->pc->col-1, hn->pc->row, hn->pc->col, SW,numTrainers);
+            }else if (in=='3'||in=='n'){ //SE
+                moveOnGate(wm, terrainMap, hn->pc, hn->pc->row+1, hn->pc->col+1, hn->pc->row, hn->pc->col, SE,numTrainers);
                 if(canMove(terrainMap, 6 ,hn->pc->row+1, hn->pc->col+1, hn->pc->row, hn->pc->col) == 1){
                     int wt = hn->weight;
-                    wt += movePC(wm, terrainMap, hn->pc, SW);
+                    wt += movePC(wm, terrainMap, hn->pc, SE);
                     newHN->pc = hn->pc;
                     newHN->weight = wt;
                     insert(h, newHN);
@@ -1597,11 +1598,11 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                     printMap(terrainMap, newHN->pc);
                 break;
                 }
-            }else if (in=='1'||in=='b'){ //SE
+            }else if (in=='1'||in=='b'){ //SW
                 moveOnGate(wm, terrainMap, hn->pc, hn->pc->row+1, hn->pc->col-1, hn->pc->row, hn->pc->col, SW,numTrainers);
                 if(canMove(terrainMap, 6 ,hn->pc->row+1, hn->pc->col-1, hn->pc->row, hn->pc->col) == 1){
                     int wt = hn->weight;
-                    wt += movePC(wm, terrainMap, hn->pc, SE);
+                    wt += movePC(wm, terrainMap, hn->pc, SW);
                     newHN->pc = hn->pc;
                     newHN->weight = wt;
                     insert(h, newHN);
@@ -1609,10 +1610,11 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
                     printMap(terrainMap, newHN->pc);
                 break;
                 }
-            }else if (in=='4'||in=='h'){ //E
+            }else if (in=='4'||in=='h'){ //W
+                moveOnGate(wm, terrainMap, hn->pc, hn->pc->row, hn->pc->col-1, hn->pc->row, hn->pc->col, W,numTrainers);
                 if(canMove(terrainMap, 6 ,hn->pc->row, hn->pc->col-1, hn->pc->row, hn->pc->col) == 1){
                     int wt = hn->weight;
-                    wt += movePC(wm, terrainMap, hn->pc, E);
+                    wt += movePC(wm, terrainMap, hn->pc, W);
                     newHN->pc = hn->pc;
                     newHN->weight = wt;
                     insert(h, newHN);
@@ -1674,7 +1676,7 @@ void moveEveryone(worldMap *wm, mapStruct *terrainMap, int numTrainers, heap *h)
             int type = hn->npc->symb;
             int wt = INFINTY;
             heapNode* newHN = malloc(sizeof(NPC));
-            mvprintw(npcRow, 0, "npc %d", hn->npc->symb);
+            //mvprintw(npcRow, 0, "npc %d", hn->npc->symb);
             refresh();
             switch(type){
                 case HIKER:
@@ -1905,31 +1907,31 @@ int movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc){
     switch(direc){
         case NE:
             pc->row-=1;
-            pc->col-=1;
+            pc->col+=1;
             break;
         case N:
             pc->row-=1;
             break;
         case NW:
             pc->row-=1;
-            pc->col+=1;
+            pc->col-=1;
             break;
         case W:
-            pc->col+=1;
+            pc->col-=1;
             break;
         case SW:
             pc->row+=1;
-            pc->col+=1;
+            pc->col-=1;
             break;
         case S:
             pc->row+=1;
             break;
         case SE:
             pc->row+=1;
-            pc->col-=1;
+            pc->col+=1;
             break;
         case E:
-            pc->col-=1;
+            pc->col+=1; 
             break;
         case SKIP:
             break;
@@ -1940,66 +1942,57 @@ int movePC(worldMap *wm, mapStruct *terrainMap, PC *pc, int direc){
 }
 
 void moveOnGate(worldMap *wm, mapStruct *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum){
+    mvprintw(ROW+2, 0, "new row %d, new col %d", newRow, newCol);
     switch (direc){
         case N:
             if ((newCol == terrainMap->gateN && newRow == 0) && (pc->globalX != 0)){
-                clear();
                 fly(--pc->globalX, pc->globalY, wm, npcNum, N);
             }
             break;
         case E:
             if ((newCol == COL - 1 && newRow == terrainMap->gateE) && (pc->globalY != worldYSize-1) ){
-                clear();
                 fly(pc->globalX, ++pc->globalY, wm, npcNum, E);
             }
             break;
 
         case S:
-            if (newCol == terrainMap->gateS && newRow == ROW-1 && pc->globalX != worldXSize){
-                clear();
+            if (newCol == terrainMap->gateS && newRow == ROW-1 && pc->globalX != worldXSize-1){
                 fly(++pc->globalX, pc->globalY, wm, npcNum, S);
             }
             break;
         case W:
             if (newCol == 0 && newRow == terrainMap->gateW && pc->globalY != 0){
-                clear();
+                mvprintw(0, 10, " Move W");
+                refresh();
                 fly(pc->globalX, --pc->globalY, wm, npcNum, W);
             }
             break;
             
         case NE:
             if ((newCol == terrainMap->gateN && newRow == 0) && (pc->globalX != 0)){ //north gate
-                clear();
                 fly(--pc->globalX, pc->globalY, wm, npcNum, N);
-            } else if ((newCol == COL - 1 && newRow == terrainMap->gateE) && (pc->globalY != 0)){ //East gate
-                clear();
+            } else if ((newCol == COL - 1 && newRow == terrainMap->gateE) && (pc->globalY != worldYSize-1)){ //East gate
                 fly(pc->globalX, ++pc->globalY, wm, npcNum, E);
             }
             break;
         case NW:
             if ((newCol == terrainMap->gateN && newRow == 0) && (pc->globalX != 0)){ // north gate
-                    clear();
-                    fly(--pc->globalX, pc->globalY, wm, npcNum, N);
-            } else if (newCol == 0 && newRow == terrainMap->gateW && pc->globalY != worldYSize-1) { //west gate
-                clear();
+                fly(--pc->globalX, pc->globalY, wm, npcNum, N);
+            } else if (newCol == 0 && newRow == terrainMap->gateW && pc->globalY != 0) { //west gate
                 fly(pc->globalX, --pc->globalY, wm, npcNum, W);
             }
             break;
         case SW:
-            if (newCol == terrainMap->gateS && newRow == ROW-1 && pc->globalX != pc->globalX -1){ //South gate
-                clear();
+            if (newCol == terrainMap->gateS && newRow == ROW-1 && pc->globalX != worldXSize-1){ //South gate
                 fly(++pc->globalX, pc->globalY, wm, npcNum, S);
-            } else if (newCol == 0 && newRow == terrainMap->gateW && pc->globalY != worldYSize -1){ //west gate
-                clear();
+            } else if (newCol == 0 && newRow == terrainMap->gateW && pc->globalY != 0){ //west gate
                 fly(pc->globalX, --pc->globalY, wm, npcNum, W);
             }
             break;
         case SE:
-            if (newCol == terrainMap->gateS && newRow == ROW-1 && pc->globalX != pc->globalX -1){
-                clear();
+            if (newCol == terrainMap->gateS && newRow == ROW-1 && pc->globalX != worldXSize-1){
                 fly(++pc->globalX, pc->globalY, wm, npcNum, S);
-            } else if ((newCol == COL - 1 && newRow == terrainMap->gateE) && (pc->globalY != 0)){
-                clear();
+            } else if ((newCol == COL - 1 && newRow == terrainMap->gateE) && (pc->globalY != worldYSize-1)){
                 fly(pc->globalX, ++pc->globalY, wm, npcNum, E);
             }
             break;
@@ -2014,7 +2007,7 @@ int main(int argc, char *argv[]){
     worldMap wm;
     int currX = 200;
     int currY = 200;
-    int numTrainers = 15;
+    int numTrainers = 0;
 
     
 
