@@ -144,22 +144,81 @@ int randomGenerator(int upper, int lower){
 //Prints map out to the terminal
 void printMap(mapclass *map, PC *pc){
     int i, j;
+    start_color();
+
+    init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK); //NPCs
+    init_pair(COLOR_BLUE, COLOR_BLUE, COLOR_BLACK); //Water
+    init_pair(COLOR_YELLOW, COLOR_YELLOW, COLOR_BLACK); //Road
+    init_pair(COLOR_MAGENTA, COLOR_MAGENTA, COLOR_BLACK);  //BOULDER
+    init_pair(COLOR_CYAN, COLOR_CYAN, COLOR_BLACK); 
+    //init_pair(COLOR_ORANGE, COLOR_ORANGE, COLOR_WHITE);
+    init_pair(COLOR_WHITE, COLOR_WHITE, COLOR_BLACK);
+    init_pair(COLOR_GREEN, COLOR_GREEN, COLOR_BLACK);
+
     for (j=0; j < COL; j++){
         mvprintw(1, j, "%d", j % 10);
     }
     //mvprintw(1, 80, "\n");
     for (i=0; i < ROW; i++){
         for(j=0; j < COL; j++){
+            
             if(pc->row == i && pc->col == j){
+                attron(COLOR_PAIR(COLOR_MAGENTA));
                 mvprintw(i+2,j,"%c", PLAYERCHAR);
+                attroff(COLOR_PAIR(COLOR_MAGENTA));
                 continue;
             } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
                 char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
+                attron(COLOR_PAIR(COLOR_RED));
                 mvprintw(i+2,j,"%c", symbs[map->npcArray[i-1][j-1]->symb]);
+                attroff(COLOR_PAIR(COLOR_RED));
                 continue;
+            } else {
+                char terrain = map->terrain[i][j];
+                switch(terrain){
+                    case (BOULDER):
+                        attron(COLOR_PAIR(COLOR_WHITE));
+                        mvprintw(i+2,j,"%c", map->terrain[i][j]);
+                        attroff(COLOR_PAIR(COLOR_WHITE));
+                        break;
+                    case (TREE):
+                        attron(COLOR_PAIR(COLOR_GREEN));
+                        mvprintw(i+2,j,"%c", map->terrain[i][j]);
+                        attroff(COLOR_PAIR(COLOR_GREEN));
+                        break;
+                    case (ROAD):
+                        attron(COLOR_PAIR(COLOR_YELLOW));
+                        mvprintw(i+2,j,"%c", map->terrain[i][j]);
+                        attroff(COLOR_PAIR(COLOR_YELLOW));
+                        break;
+                    case (MART):
+                        attron(COLOR_PAIR(COLOR_RED));
+                        mvprintw(i+2,j,"%c", map->terrain[i][j]);
+                        attroff(COLOR_PAIR(COLOR_RED));
+                        break;
+                    case (CENTER):
+                        attron(COLOR_PAIR(COLOR_RED));
+                        mvprintw(i+2,j,"%c", map->terrain[i][j]);
+                        attroff(COLOR_PAIR(COLOR_RED));
+                        break;
+                    case (GRASS):
+                        attron(COLOR_PAIR(COLOR_GREEN));
+                        mvprintw(i+2,j,"%c", map->terrain[i][j]);
+                        attroff(COLOR_PAIR(COLOR_GREEN));
+                        break;
+                    case (WATER):
+                        attron(COLOR_PAIR(COLOR_CYAN));
+                        mvprintw(i+2,j,"%c", map->terrain[i][j]);
+                        attroff(COLOR_PAIR(COLOR_CYAN));
+                        break;
+                    case (CLEARING):
+                        attron(COLOR_PAIR(COLOR_WHITE));
+                        mvprintw(i+2,j,"%c", map->terrain[i][j]);
+                        attroff(COLOR_PAIR(COLOR_WHITE));
+                        break;
+                }
+                
             }
-            
-            mvprintw(i+2,j,"%c", map->terrain[i][j]);
 
         }
         mvprintw(i+2,COL,"%d", i);
@@ -167,30 +226,6 @@ void printMap(mapclass *map, PC *pc){
     }
     mvprintw(ROW+1, COL+1, "(%d, %d)", pc->globalX-200, pc->globalY-200);
     refresh();
-
-    // int i, j;
-    // for (j=0; j < COL; j++){
-    //     printf("%d", j % 10);
-    // }
-    // printf("\n");
-    // for (i=0; i < ROW; i++){
-    //     for(j=0; j < COL; j++){
-    //         if(pc->row == i && pc->col == j){
-    //             printf("%c", PLAYERCHAR);
-    //             continue;
-    //         } else if (i>0 && i<ROW-1 && j>0 && j<COL-1 && map->npcArray[i-1][j-1] != NULL){          
-    //             char symbs[6] = {'h', 'r', 'p', 'w', 's', 'e'};
-    //             printf("%c", symbs[map->npcArray[i-1][j-1]->symb]);
-    //             continue;
-    //         }
-            
-    //         printf("%c", map->terrain[i][j]);
-
-    //     }
-    //     printf("%d", i);
-    //     printf("\n");
-    // }
-
 }
 
 
@@ -1412,6 +1447,7 @@ int moveExplorer(mapclass *terrainMap, NPC* explorer){
     terrainMap->npcArray[nextRow][nextCol] = explorer;
     return calcCost(RIVAL, terrainMap->terrain[explorer->row+1][explorer->col+1]); 
 }
+
 /*fucntion for checking if next move is possibel. row and col is of ROW and COL size*/
 int canMove(mapclass *terrainMap, int symb, int row, int col, int prevRow, int prevCol){
     switch (symb) {
