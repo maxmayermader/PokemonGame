@@ -1,9 +1,15 @@
-#include <stdio.h>
+#include <vector>
+#include <vector>
+#include <cstdio>
 #include <time.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <ncurses.h>
+#include <fstream>
+#include <iostream>
+#include <climits>
+#include <vector>
 
 #define MAX_SIZE 100  
 #define ROW 21//21 //Y
@@ -148,7 +154,7 @@ int randomGenerator(int upper, int lower){
 */
 
 /*Pokemon Class*/
-class PokemonFile{
+class Pokemon{
     public:
     int id;
     char identifier[50];
@@ -2061,8 +2067,72 @@ void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newC
     }
 }
 
-void parsePokemonFile(){
+// void printFile(vector<> printVector){
+//     for (int i = 0; i < printVector.size(); i++){
+//         printf("%s\n", printVector[i]);
+//     }
 
+// }
+
+void parsePokemonFile(){
+    std::vector<Pokemon> pokemonVector;
+    int i = 0;
+    char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon.csv";
+    char *home = getenv("HOME");
+
+    FILE *file = fopen(path, "r");
+    if (file == NULL){
+        strcat(home, "/.poke327/pokedex/pokedex/data/csv/pokemon.csv");
+        file = fopen(home, "r");
+    }
+
+    if (file != NULL){
+        char line[100];
+
+        while (fgets(line, sizeof(line), file)) { 
+          Pokemon pokemon;
+            char *token = strtok(line, ","); 
+            pokemon.id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            if (token != NULL) {
+                strcpy( pokemon.identifier, token);
+            } else {
+                 strcpy( pokemon.identifier , "");
+            }
+            token = strtok(NULL, ",");
+            pokemon.species_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemon.height = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemon.weight = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemon.base_experience = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemon.order = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemon.is_default = (token != NULL) ? atoi(token) : INT_MAX;
+
+            pokemonVector.push_back(pokemon);
+            i++;
+  
+        }
+        for (int j = 0; j < pokemonVector.size(); j++){
+            printf("%d,", pokemonVector[j].id != INT_MAX ? pokemonVector[j].id : '-1');
+            printf("%s, ", strcmp(pokemonVector[j].identifier, "") != 0 ? pokemonVector[j].identifier : "_");
+            printf("%d, ", pokemonVector[j].species_id != INT_MAX ? pokemonVector[j].species_id : '_');
+            printf("%d, ", pokemonVector[j].height != INT_MAX ? pokemonVector[j].height : '_');
+            printf("%d, ", pokemonVector[j].weight != INT_MAX ? pokemonVector[j].weight : '_');
+            printf("%d, ", pokemonVector[j].base_experience != INT_MAX ? pokemonVector[j].base_experience : '_');
+            printf("%d, ", pokemonVector[j].order != INT_MAX ? pokemonVector[j].order: '_');
+            printf("%d", pokemonVector[j].is_default != INT_MAX ? pokemonVector[j].is_default: '_');
+            printf("\n");
+        }
+        fclose(file);
+    } 
+    else {
+        printf("File not found: pokemon.csv\n");
+    }
+    printf("i is bruh %d", i);
 }
 
 int main(int argc, char *argv[]){
@@ -2075,7 +2145,7 @@ int main(int argc, char *argv[]){
     int currY = 200;
     int numTrainers = 8;
 
-    
+    parsePokemonFile();
     if (argc >= 2 ){
         if (argc >= 3 && strcmp(argv[1], "--numtrainers") == 0) {
                 numTrainers = atoi(argv[2]);

@@ -6,20 +6,12 @@ How to run:
 
 
 Bugs:
-    if PC doesn't spawn on road it is possible that the weight map wont be able to reach to the player
-
-    if you ask for a lot of pcs there will be an infinte loop because there are no more places left to put it. you can have at leat 500 npcs depending on the map.
-
-    Sometimes PC and NPC will chase each other and will enter a battle even if you try to move on its space
-
-    after entering a battle u need to hit escape key and then you can move the player
-
-    when entering coordinates you will be prompted to enter coordinates you should enter like -200 -200. You wont see what you type.
-    press enter
+    
 
 
 Description:
-    fly, gates and c++
+    Parse files in C++
+    I've used -1 as a palce holder for INT_MAX
 
 ignore:
     git log > CHANGELOG
