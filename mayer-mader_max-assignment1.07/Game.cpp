@@ -166,6 +166,105 @@ class Pokemon{
     int is_default;
 };
 
+/*moves class*/
+class Moves{
+    public:
+    int id;
+    char identifier[50];
+    int generation_id;
+    int type_id;
+    int power;
+    int pp;
+    int accuracy;
+    int priority;
+    int target_id;
+    int damage_class_id;
+    int effect_id;
+    int effect_chance;
+    int contest_type_id;
+    int contest_effect_id;
+    int super_contest_effect_id;
+};
+
+/*Pokemon Moves Class*/
+class PokemonMoves{
+    public:
+    int pokemon_id;
+    int version_group_id;
+    int move_id;
+    int pokemon_move_method_id;
+    int level;
+    int order;
+};
+
+/*Pokemon Species Class*/
+class PokemonSpecies{
+    int id;
+    char identifier[50];
+    int generation_id;
+    int evolves_from_species_id;
+    int evolution_chain_id;
+    int color_id;
+    int shape_id;
+    int habitat_id;
+    int gender_rate;
+    int capture_rate;
+    int base_happiness;
+    int is_baby;
+    int hatch_counter;
+    int has_gender_differences;
+    int growth_rate_id;
+    int forms_switchable;
+    int is_legendary;
+    int is_mythical;
+    int order;
+    int conquest_order;
+}
+
+/*Experince Class*/
+class Experience{
+    public:
+    int growth_rate_id;
+    int level;
+    int experience;
+};
+
+/*type names class*/
+class TypeNames{
+    public:
+    int type_id;
+    int local_language_id;
+    char name[50];
+};
+
+/*Pokemon Stats class*/
+class PokemonStats{
+    public:
+    int pokemon_id;
+    int stat_id;
+    int base_stat;
+    int effort;
+};
+
+/*Stats class*/
+class Stats{
+    public:
+    int id;
+    char identifier[50];
+    int damage_class_id;
+    int is_battle_only;
+    int game_index;
+};
+
+/*Pokemon Types class*/
+class PokemonTypes{
+    public:
+    int pokemon_id;
+    int type_id;
+    int slot;
+};
+
+
 //Prints map out to the terminal
 void printMap(mapclass *map, PC *pc){
     int i, j;
