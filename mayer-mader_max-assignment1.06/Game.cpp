@@ -141,6 +141,25 @@ int randomGenerator(int upper, int lower){
   return (rand() % (upper - lower + 1)) + lower;
 }
 
+/*TODO
+1. Make class for each file to parse
+2. Use vector
+3. parse files with scanner. Lots of switch cases
+*/
+
+/*Pokemon Class*/
+class PokemonFile{
+    public:
+    int id;
+    char identifier[50];
+    int species_id;
+    int height;
+    int weight;
+    int base_experience;
+    int order;
+    int is_default;
+};
+
 //Prints map out to the terminal
 void printMap(mapclass *map, PC *pc){
     int i, j;
@@ -2042,6 +2061,10 @@ void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newC
     }
 }
 
+void parsePokemonFile(){
+
+}
+
 int main(int argc, char *argv[]){
 
     //srand(time(NULL));//random seed
@@ -2053,14 +2076,22 @@ int main(int argc, char *argv[]){
     int numTrainers = 8;
 
     
-
-    if (argc >= 3 && strcmp(argv[1], "--numtrainers") == 0) {
-        numTrainers = atoi(argv[2]);
-     } 
+    if (argc >= 2 ){
+        if (argc >= 3 && strcmp(argv[1], "--numtrainers") == 0) {
+                numTrainers = atoi(argv[2]);
+            } 
+        else if(strcmp(argv[1], "pokemon") == 0){
+            parsePokemonFile();
+        } else {
+            
+        }
+    }
+    
 
     printf("%d\n", numTrainers);
+
     
-    
+    return 0;
     
     initscr();
     createWorldMap(&wm);
