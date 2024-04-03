@@ -219,7 +219,7 @@ class PokemonSpecies{
     int is_mythical;
     int order;
     int conquest_order;
-}
+};
 
 /*Experince Class*/
 class Experience{
