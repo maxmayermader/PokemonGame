@@ -2178,10 +2178,12 @@ void parsePokemonFile(){
     int i = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon.csv";
     char *home = getenv("HOME");
-
+    
     FILE *file = fopen(path, "r");
+    file = NULL;
     if (file == NULL){
         strcat(home, "/.poke327/pokedex/pokedex/data/csv/pokemon.csv");
+        printf("home is %s\n", home);
         file = fopen(home, "r");
     }
 
@@ -2217,13 +2219,13 @@ void parsePokemonFile(){
         }
         for (int j = 0; j < pokemonVector.size(); j++){
             printf("%d,", pokemonVector[j].id != INT_MAX ? pokemonVector[j].id : '-1');
-            printf("%s, ", strcmp(pokemonVector[j].identifier, "") != 0 ? pokemonVector[j].identifier : "_");
-            printf("%d, ", pokemonVector[j].species_id != INT_MAX ? pokemonVector[j].species_id : '_');
-            printf("%d, ", pokemonVector[j].height != INT_MAX ? pokemonVector[j].height : '_');
-            printf("%d, ", pokemonVector[j].weight != INT_MAX ? pokemonVector[j].weight : '_');
-            printf("%d, ", pokemonVector[j].base_experience != INT_MAX ? pokemonVector[j].base_experience : '_');
-            printf("%d, ", pokemonVector[j].order != INT_MAX ? pokemonVector[j].order: '_');
-            printf("%d", pokemonVector[j].is_default != INT_MAX ? pokemonVector[j].is_default: '_');
+            printf("%s, ", strcmp(pokemonVector[j].identifier, "") != 0 ? pokemonVector[j].identifier : "-1");
+            printf("%d, ", pokemonVector[j].species_id != INT_MAX ? pokemonVector[j].species_id : '-1');
+            printf("%d, ", pokemonVector[j].height != INT_MAX ? pokemonVector[j].height : '-1');
+            printf("%d, ", pokemonVector[j].weight != INT_MAX ? pokemonVector[j].weight : '-1');
+            printf("%d, ", pokemonVector[j].base_experience != INT_MAX ? pokemonVector[j].base_experience : '-1');
+            printf("%d, ", pokemonVector[j].order != INT_MAX ? pokemonVector[j].order: '-1');
+            printf("%d", pokemonVector[j].is_default != INT_MAX ? pokemonVector[j].is_default: '-1');
             printf("\n");
         }
         fclose(file);
@@ -2231,7 +2233,85 @@ void parsePokemonFile(){
     else {
         printf("File not found: pokemon.csv\n");
     }
-    printf("i is bruh %d", i);
+}
+
+void parseMovesFile(){
+    std::vector<Moves> movesVector;
+    int i = 0;
+    char path[300] = "/share/cs327/pokedex/pokedex/data/csv/moves.csv";
+    char *home = getenv("HOME");
+    
+    FILE *file = fopen(path, "r");
+    file = NULL;
+    if (file == NULL){
+        strcat(home, "/.poke327/pokedex/pokedex/data/csv/moves.csv");
+        printf("home is %s\n", home);
+        file = fopen(home, "r");
+    }
+
+    if (file != NULL){
+        char line[100];
+
+        while (fgets(line, sizeof(line), file)) { 
+          Moves moves;
+            char *token = strtok(line, ","); 
+            moves.id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            if (token != NULL) {
+                strcpy( moves.identifier, token);
+            } else {
+                 strcpy( moves.identifier , "");
+            }
+            token = strtok(NULL, ",");
+            moves.generation_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.type_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.power = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.pp = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.accuracy = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.priority = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.target_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.damage_class_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.effect_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.effect_chance = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.contest_type_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.contest_effect_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.super_contest_effect_id = (token != NULL) ? atoi(token) : INT_MAX;
+        }
+        for(int k=0; k<movesVector.size(); k++){
+            printf("%d,", movesVector[k].id != INT_MAX ? movesVector[k].id : '-1');
+            printf("%s, ", strcmp(movesVector[k].identifier, "") != 0 ? movesVector[k].identifier : "_");
+            printf("%d, ", movesVector[k].generation_id != INT_MAX ? movesVector[k].generation_id : '_');
+            printf("%d, ", movesVector[k].type_id != INT_MAX ? movesVector[k].type_id : '_');
+            printf("%d, ", movesVector[k].power != INT_MAX ? movesVector[k].power : '_');
+            printf("%d, ", movesVector[k].pp != INT_MAX ? movesVector[k].pp : '_');
+            printf("%d, ", movesVector[k].accuracy != INT_MAX ? movesVector[k].accuracy : '_');
+            printf("%d, ", movesVector[k].priority != INT_MAX ? movesVector[k].priority : '_');
+            printf("%d, ", movesVector[k].target_id != INT_MAX ? movesVector[k].target_id : '_');
+            printf("%d, ", movesVector[k].damage_class_id != INT_MAX ? movesVector[k].damage_class_id : '_');
+            printf("%d, ", movesVector[k].effect_id != INT_MAX ? movesVector[k].effect_id : '_');
+            printf("%d, ", movesVector[k].effect_chance != INT_MAX ? movesVector[k].effect_chance : '_');
+            printf("%d, ", movesVector[k].contest_type_id != INT_MAX ? movesVector[k].contest_type_id : '_');
+            printf("%d, ", movesVector[k].contest_effect_id != INT_MAX ? movesVector[k].contest_effect_id : '_');
+            printf("%d", movesVector[k].super_contest_effect_id != INT_MAX ? movesVector[k].super_contest_effect_id : '_');
+            printf("\n");
+        }
+        fclose(file);
+    } 
+    else {
+        printf("File not found: moves.csv\n");
+    }
 }
 
 int main(int argc, char *argv[]){
@@ -2244,16 +2324,30 @@ int main(int argc, char *argv[]){
     int currY = 200;
     int numTrainers = 8;
 
-    parsePokemonFile();
+    
     if (argc >= 2 ){
         if (argc >= 3 && strcmp(argv[1], "--numtrainers") == 0) {
                 numTrainers = atoi(argv[2]);
             } 
         else if(strcmp(argv[1], "pokemon") == 0){
             parsePokemonFile();
-        } else {
+        } else if(strcmp(argv[1], "moves") == 0) {
+
+        } else if(strcmp(argv[1], "pokemon_moves") == 0){
+
+        } else if(strcmp(argv[1], "pokemon_species")){
+
+        } else if(strcmp(argv[1], "experience")){
+
+        } else if(strcmp(argv[1], "type_names")){
+
+        } else if(strcmp(argv[1], "pokemon_stats")){
+
+        } else if(strcmp(argv[1], " stats")){
             
-        }
+        } else if(strcmp(argv[1], "pokemon_type")){
+            
+        } 
     }
     
 
