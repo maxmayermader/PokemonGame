@@ -2286,7 +2286,7 @@ void parseMovesFile(){
             movesVector.push_back(moves);
             size++;
         }
-        printf("%d",movesVector.size());
+        //printf("%d",movesVector.size());
         for(int k=0; k<movesVector.size(); k++){
             printf("%d,", movesVector[k].id != INT_MAX ? movesVector[k].id : -1);
             printf("%s, ", strcmp(movesVector[k].identifier, "") != 0 ? movesVector[k].identifier : "-1");
@@ -2437,12 +2437,12 @@ void parsePokemonSpeciesFile(){
             printf("%d, ", pokemonSpeciesVector[k].color_id != INT_MAX ? pokemonSpeciesVector[k].color_id : -1);
             printf("%d, ", pokemonSpeciesVector[k].shape_id != INT_MAX ? pokemonSpeciesVector[k].shape_id : -1);
             printf("%d, ", pokemonSpeciesVector[k].habitat_id != INT_MAX ? pokemonSpeciesVector[k].habitat_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].gender_rate != INT_MAX ? pokemonSpeciesVector[k] : -1);
+            printf("%d, ", pokemonSpeciesVector[k].gender_rate != INT_MAX ? pokemonSpeciesVector[k].gender_rate : -1);
             printf("%d, ", pokemonSpeciesVector[k].capture_rate != INT_MAX ? pokemonSpeciesVector[k].capture_rate : -1);
             printf("%d, ", pokemonSpeciesVector[k].base_happiness != INT_MAX ? pokemonSpeciesVector[k].base_happiness : -1);
             printf("%d, ", pokemonSpeciesVector[k].is_baby != INT_MAX ? pokemonSpeciesVector[k].is_baby : -1);
             printf("%d, ", pokemonSpeciesVector[k].hatch_counter != INT_MAX ? pokemonSpeciesVector[k].hatch_counter : -1);
-            printf("%d, ", pokemonSpeciesVector[k].has_gender_differnces != INT_MAX ? pokemonSpeciesVector[k].has_gender_differnce : -1);
+            printf("%d, ", pokemonSpeciesVector[k].has_gender_differences != INT_MAX ? pokemonSpeciesVector[k].has_gender_differences : -1);
             printf("%d, ", pokemonSpeciesVector[k].growth_rate_id != INT_MAX ? pokemonSpeciesVector[k].growth_rate_id : -1);
             printf("%d, ", pokemonSpeciesVector[k].forms_switchable != INT_MAX ? pokemonSpeciesVector[k].forms_switchable : -1);
             printf("%d, ", pokemonSpeciesVector[k].order != INT_MAX ? pokemonSpeciesVector[k].order : -1);
@@ -2563,7 +2563,12 @@ void parsePokemonStatsFile(){
 
     if (file != NULL){
         char line[100];
-
+        /*
+        int pokemon_id;
+    int stat_id;
+    int base_stat;
+    int effort;
+    */
         while (fgets(line, sizeof(line), file)) { 
           PokemonStats pokemonStats;
             char *token = strtok(line, ","); 
@@ -2574,10 +2579,6 @@ void parsePokemonStatsFile(){
             pokemonStats.base_stat = (token != NULL) ? atoi(token) : INT_MAX;
             token = strtok(NULL, ",");
             pokemonStats.effort = (token != NULL) ? atoi(token) : INT_MAX;
-            token = strtok(NULL, ",");
-            pokemonStats.increase = (token != NULL) ? atoi(token) : INT_MAX;
-            token = strtok(NULL, ",");
-            pokemonStats.decrease = (token != NULL) ? atoi(token) : INT_MAX;
 
             pokemonStatsVector.push_back(pokemonStats);
             size++;
@@ -2587,9 +2588,7 @@ void parsePokemonStatsFile(){
             printf("%d,", pokemonStatsVector[k].pokemon_id != INT_MAX ? pokemonStatsVector[k].pokemon_id : -1);
             printf("%d, ", pokemonStatsVector[k].stat_id != INT_MAX ? pokemonStatsVector[k].stat_id : -1);
             printf("%d, ", pokemonStatsVector[k].base_stat != INT_MAX ? pokemonStatsVector[k].base_stat : -1);
-            printf("%d, ", pokemonStatsVector[k].effort != INT_MAX ? pokemonStatsVector[k].effort : -1);
-            printf("%d, ", pokemonStatsVector[k].increase != INT_MAX ? pokemonStatsVector[k].increase : -1);
-            printf("%d", pokemonStatsVector[k].decrease != INT_MAX ? pokemonStatsVector[k].decrease : -1);
+            printf("%d", pokemonStatsVector[k].effort != INT_MAX ? pokemonStatsVector[k].effort : -1);
             printf("\n");
         }
         fclose(file);
@@ -2615,7 +2614,12 @@ void parseStatsFile(){
 
     if (file != NULL){
         char line[100];
-
+/*
+int id;
+    char identifier[50];
+    int damage_class_id;
+    int is_battle_only;
+    int game_index;*/
         while (fgets(line, sizeof(line), file)) { 
           Stats stats;
             char *token = strtok(line, ","); 
@@ -2626,8 +2630,6 @@ void parseStatsFile(){
             } else {
                  strcpy( stats.identifier , "");
             }
-            token = strtok(NULL, ",");
-            stats.generation_id = (token != NULL) ? atoi(token) : INT_MAX;
             token = strtok(NULL, ",");
             stats.damage_class_id = (token != NULL) ? atoi(token) : INT_MAX;
             token = strtok(NULL, ",");
@@ -2642,7 +2644,6 @@ void parseStatsFile(){
         for(int k=0; k<statsVector.size(); k++){
             printf("%d,", statsVector[k].id != INT_MAX ? statsVector[k].id : -1);
             printf("%s, ", strcmp(statsVector[k].identifier, "") != 0 ? statsVector[k].identifier : "-1");
-            printf("%d, ", statsVector[k].generation_id != INT_MAX ? statsVector[k].generation_id : -1);
             printf("%d, ", statsVector[k].damage_class_id != INT_MAX ? statsVector[k].damage_class_id : -1);
             printf("%d, ", statsVector[k].is_battle_only != INT_MAX ? statsVector[k].is_battle_only : -1);
             printf("%d", statsVector[k].game_index != INT_MAX ? statsVector[k].game_index : -1);
@@ -2719,17 +2720,17 @@ int main(int argc, char *argv[]){
             parseMovesFile();
         } else if(strcmp(argv[1], "pokemon_moves") == 0){
             parsePokemonMovesFile();
-        } else if(strcmp(argv[1], "pokemon_species")){
+        } else if(strcmp(argv[1], "pokemon_species") == 0){
             parsePokemonSpeciesFile();
-        } else if(strcmp(argv[1], "experience")){
+        } else if(strcmp(argv[1], "experience")==0){
             parseExperienceFile();
-        } else if(strcmp(argv[1], "type_names")){
+        } else if(strcmp(argv[1], "type_names")==0){
             parseTypeNamesFile();
-        } else if(strcmp(argv[1], "pokemon_stats")){
+        } else if(strcmp(argv[1], "pokemon_stats")==0){
             parsePokemonStatsFile();
-        } else if(strcmp(argv[1], " stats")){
+        } else if(strcmp(argv[1], "stats")==0){
             parseStatsFile();
-        } else if(strcmp(argv[1], "pokemon_type")){
+        } else if(strcmp(argv[1], "pokemon_type")==0){
             parsePokemonTypesFile();
         } 
     }
