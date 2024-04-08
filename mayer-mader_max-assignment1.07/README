@@ -1,17 +1,20 @@
-***Assignemnt1.06***
+***Assignemnt1.07***
 
 How to run:
     make
     ./Game
+    ./Game 'command' command like pokemon
 
 
 Bugs:
-    
+    not sure how $HOME works but i followed instrcutions
 
 
 Description:
     Parse files in C++
     I've used -1 as a palce holder for INT_MAX
+
+
 
 ignore:
     git log > CHANGELOG
