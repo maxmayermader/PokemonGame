@@ -1,0 +1,686 @@
+commit 68770f87b12542d6217a8a4356ce65e8c0db0fbd
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Apr 4 00:30:51 2024 -0500
+
+    I think goofy ass7 done
+
+commit 6a84953ab0ea47b26c14ac225d7ff1009ab92638
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 3 22:29:53 2024 -0500
+
+    finneshed parse functions
+
+commit 600273b0253df870aec49d271ad89f769dfa300c
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 3 21:54:19 2024 -0500
+
+    parse moves done
+
+commit f0e4da52d3647aaaed5702d00246866f97f93399
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 3 15:50:54 2024 -0500
+
+    ;
+
+commit 9b67b30b503f8a69f620745aaf2c4e76815077e9
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 3 15:49:53 2024 -0500
+
+    added all classes
+
+commit e41859f5c361bd12ab515fad3380b374fabaac2f
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 3 15:40:51 2024 -0500
+
+    parse pokemon  done
+
+commit cdbe8ee92cc033047670a24be51bc28b76e453c6
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Apr 2 20:16:31 2024 -0500
+
+    made 1.07
+
+commit 3a0014d1f8ec4b776a2718fad415c6b52bd33dba
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Apr 2 13:05:26 2024 -0500
+
+    added color
+
+commit 7ef6cf0817a421f5ef8e04105cb1bfec2c736f4b
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Mar 28 00:45:06 2024 -0500
+
+    cPP submitted
+
+commit 9bb59650f3677e1edaa824e169993f91aeb0b2ad
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Mar 28 00:09:16 2024 -0500
+
+    last c commit
+
+commit 9d39e66e045ec87bb9123a8d68d4e2e238deb6a8
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Mar 27 22:06:09 2024 -0500
+
+    only N works
+
+commit 99cd7438f660cadfc4eb9517dacf0df6b93f7852
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Mar 27 18:06:39 2024 -0500
+
+    fly working
+
+commit 3489077d56daa93cd3f04d669bb0a391e65db4d7
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Mar 27 17:01:52 2024 -0500
+
+    fixed rival error
+
+commit 5ebf3286a6b3036c5e03a519e5a312cb7b2d3d5d
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Mar 27 15:42:19 2024 -0500
+
+    new folder that works
+
+commit 4f7e033c649ec68bd5a5a515125ca83d6535b18c
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Mar 26 22:43:06 2024 -0500
+
+    can move up
+
+commit 670458eff9da88d8e34eba81442ee65fa49ed844
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Mar 26 22:26:43 2024 -0500
+
+    trying  to move to gate
+
+commit de7b2c1376065c3a3987f7fd038143b937a7920d
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Mar 26 22:18:35 2024 -0500
+
+    ladu
+
+commit dbb1addfd5e29ab8bf50a351d6bfeed555f45de9
+Merge: 500367a 74797db
+Author: Max Mayer-Mader <119761775+maxmayermader@users.noreply.github.com>
+Date:   Tue Mar 26 13:03:02 2024 -0500
+
+    Merge pull request #12 from maxmayermader/Ass5
+    
+    Ass5
+
+commit 74797dbe012e7741f0ba2e09e14ebd4f01e6a759
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Mar 26 13:01:51 2024 -0500
+
+    fixed j
+
+commit 80e166fb797eb75551989c57ebcb46d0680d0a6b
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Mar 26 12:56:10 2024 -0500
+
+    merge
+
+commit 00aeb95704ec138e5c60fe454f91dd7dfbe295fb
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Mar 20 22:46:54 2024 -0500
+
+    ready to submit
+
+commit a5daa308563bc6c58670427e83d6afff19f6960c
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Mar 20 22:16:20 2024 -0500
+
+    pre submit
+
+commit dfc5273e9cf3973b2eea497d39381a589a32abb7
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Mar 20 17:05:13 2024 -0500
+
+    sad
+
+commit efac8bfa736dd262bc035729f468ddcb348945af
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Mar 20 16:50:53 2024 -0500
+
+    battle done
+
+commit 1f040d7060b6d585743049c4d26ddd659bc06d80
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Mar 20 16:02:46 2024 -0500
+
+    display trainers done
+
+commit 5739df7a6930372d19ae4d9dfc89b4e767e885b9
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Mar 20 14:55:58 2024 -0500
+
+    finished print building
+
+commit c0e31c3ccb15092f66f562f65886924bfc62b778
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Mar 20 13:43:16 2024 -0500
+
+    fghjk
+
+commit 30facde24f02ce3615f4171f18a122303e506a7e
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Mar 20 12:31:47 2024 -0500
+
+    i hate vs code
+
+commit 08ea504f9b0d49771f803240c27739f7801c43cf
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Mar 20 11:41:48 2024 -0500
+
+    brufghjk
+
+commit 5cc360691ceefc49a08212905ba9447a148fdb67
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Mar 19 21:20:36 2024 -0500
+
+    print map
+
+commit 2c3ba33e7fa542fd5a4e13ae9cf101ab4ee74553
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Mar 19 21:20:16 2024 -0500
+
+    started move pc
+
+commit 8c05299e8023fa403379107a8af20150baa328d7
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Mar 19 18:29:07 2024 -0500
+
+    bruhhħoß
+
+commit 1720cee3bf61c9305d334cbe37dba1c0736111dc
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Mar 19 17:50:09 2024 -0500
+
+    renamed folder
+
+commit 500367ae733f9f0c60710d81a8e67ac5e699b4c5
+Merge: 61afce5 9854f5e
+Author: Max Mayer-Mader <119761775+maxmayermader@users.noreply.github.com>
+Date:   Mon Mar 18 17:15:15 2024 -0500
+
+    Merge pull request #11 from maxmayermader/Ass4
+    
+    Ass4
+
+commit 9854f5e848aa0db6b455a8fbe3f082edb55a7134
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Mar 18 17:13:30 2024 -0500
+
+    fixed goofy pacer
+
+commit a06ab65182454bf3deb39386b06dde6207f5f3e4
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Feb 29 01:30:10 2024 -0600
+
+    blah blah
+
+commit c9c20100431ed6fba89fd1e0566bc8d15353adac
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 28 22:23:17 2024 -0600
+
+    move pacer done
+
+commit c58a973e10fe0b8c4210ad3da977542d0a98ad48
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 28 21:46:35 2024 -0600
+
+    hiker working :)
+
+commit db13eef27aaddf117f3c1df1d0e8bd540495f139
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 28 17:41:26 2024 -0600
+
+    moveHiker writen
+
+commit 6fa07cd2c8261e21f55bfbf23ca1bce3bcf52d6c
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 28 16:59:55 2024 -0600
+
+    finished moveHiker
+
+commit b65a5ad2c5b4567080f90aec8c82899b88922202
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 28 13:48:37 2024 -0600
+
+    calc cost function written
+
+commit 35c5c59e406830a18fd711b4c7f8d7e14ff1f901
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 28 12:24:34 2024 -0600
+
+    print works with like 1000 npcs
+
+commit f562e76df971ca3513a42e77db198d41f96dfac6
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 27 22:04:35 2024 -0600
+
+    heap init working
+
+commit f8600c70c067fd454465ddb8fd627f59e37198e2
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 27 21:57:29 2024 -0600
+
+    started working on moving
+
+commit db4cf0d6fd0bfc32860e1b54becb8aa5388c5b58
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 27 18:35:37 2024 -0600
+
+    made more func declerations
+
+commit 4d38a8da70868608c119995857ec71c834bfd32d
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 27 12:47:17 2024 -0600
+
+    layed out moveCharecters func
+
+commit 61afce5ee575786a071ba0db072ab8a0f1eb429d
+Merge: 5c3daf0 70fde21
+Author: Max Mayer-Mader <119761775+maxmayermader@users.noreply.github.com>
+Date:   Wed Feb 21 12:41:45 2024 -0600
+
+    Merge pull request #8 from maxmayermader/Ass3
+    
+    Ass3
+
+commit 70fde2155abaa6688a1459dbb4f4f18a6abe3cbe
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 21 12:40:43 2024 -0600
+
+    submitted 1.03
+
+commit 1e7f08bf7401ec6d651ef54aed93d4e989e43951
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 20 15:32:09 2024 -0600
+
+    worked in class
+
+commit 1b0aa6f2c3460624305a34933b5bc88cc2074826
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 22:59:05 2024 -0600
+
+    i think it works
+
+commit 4b47eb5e92f476e5619117e0ad703f18d12a009a
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 16:49:35 2024 -0600
+
+    changed file name
+
+commit 3c37aae8bc151dfcd1f7dd0f8cdd6e39d7be6669
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 16:48:36 2024 -0600
+
+    Fixed dijkstras
+
+commit 4153612e83c955222897a49dc5f61e29d849b30f
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 14:19:06 2024 -0600
+
+    algo somewhat working
+
+commit 43cceba9c2608e2787fc93bc5793f33622d73e25
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 14:00:08 2024 -0600
+
+    new dijkstras
+
+commit a0714480e9eabfec8ba1dd5efacb0afaceeb8809
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 13:45:46 2024 -0600
+
+    begin of new dijkstras algo
+
+commit 95df2935639137f5bc7c5d363d218d754be2082c
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 13:36:49 2024 -0600
+
+    Wikipedia sucks
+
+commit b3bbdb0e770d0dcee25d27a31a939a06b237ae5d
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 19 00:43:26 2024 -0600
+
+    print weight maps
+
+commit d3ce03e73a3b943dbcbe57df494e8c05fe20bcfe
+Author: Max P <maxmay@iastate.edu>
+Date:   Sun Feb 18 18:40:17 2024 -0600
+
+    trying my very hardest to debug
+
+commit 5aa64658623f90e07662a635b61adc61f8062c52
+Author: Max P <maxmay@iastate.edu>
+Date:   Sun Feb 18 17:59:21 2024 -0600
+
+    made heap node array initlaizer
+
+commit 1ef07725a7e76a1b7b75bf304bb31f444c0b485f
+Author: Max P <maxmay@iastate.edu>
+Date:   Fri Feb 16 12:58:52 2024 -0600
+
+    created heap node data
+
+commit e01437f315879947b0161e206d885b01c1349ecf
+Author: Max P <maxmay@iastate.edu>
+Date:   Fri Feb 16 12:44:25 2024 -0600
+
+    finished dijkstras
+
+commit 91873d2b79c8e0cd335791ef523cfd9572a33ea9
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Feb 15 13:27:18 2024 -0600
+
+    fixed excess element error
+
+commit 65b8f548f56320f525b34d7c17905d8fd97b6d98
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Feb 15 13:19:29 2024 -0600
+
+    fixed gates at borders
+
+commit 99b60bc1f389beeef6590e6b5b99edb65d4012d3
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 14 14:43:58 2024 -0600
+
+    working on removing gates at edges
+
+commit c195d866a9e36eda4ee3e3259c57163224ba41a7
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 14 14:29:21 2024 -0600
+
+    wieght map array added
+
+commit c9f3590edd9ace5af8f7b760791ab319f676e2f6
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 14 13:56:31 2024 -0600
+
+    fixed clacCost
+
+commit 486536926e91cd6b55efdf75110142ea793b7c5a
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 14 13:50:26 2024 -0600
+
+    calcCost func
+
+commit fec34cafa3cfde0a5dc833ae207ecd529427c628
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 14 12:05:44 2024 -0600
+
+    decalred dijkstras
+
+commit d2a0a04dbd182ee5b5e3368760c44cfb5a911f80
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 14 11:49:58 2024 -0600
+
+    edited heap
+
+commit 89c098ac4e216e4c931e24bf82edbd05740c60e2
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 14 11:48:01 2024 -0600
+
+    tuesday work
+
+commit b611394037dc444d539836421f7d3bea0b3a0fc9
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 13 18:53:07 2024 -0600
+
+    no vscode erros for heap
+
+commit d7fa70c0426e62e4087f204daad13aeaf4e506cf
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 13 18:05:14 2024 -0600
+
+    gg heap
+
+commit 8d7ca16e298e18d77a3d5d4257ba5f7f736d4c92
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 13 18:03:30 2024 -0600
+
+    idk how to revert
+
+commit 96ba436e4d313a9e9631380a139fc996716e8f9f
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 13 17:51:29 2024 -0600
+
+    added wrong heap
+
+commit 3d1a61b5c5a3c70e5b08072977555fa1138bdd47
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 13 17:40:46 2024 -0600
+
+    new heap added
+
+commit 482daae2f09803105a1b7e5aec163835584cac40
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 13 13:41:30 2024 -0600
+
+    added priority que; semi complete
+
+commit 57d7b05124c9eefa01fd40e2075602dcac03d0fb
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 12 10:44:39 2024 -0600
+
+    no gates at edeges
+
+commit 097babd691c06c67ad7d293d1b5bb2bc8981fbb4
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Feb 8 13:54:09 2024 -0600
+
+    cleaned code
+
+commit 5c3daf02e8008500fd6074b629364b8b546f63da
+Merge: ae47379 6a7c0eb
+Author: Max Mayer-Mader <119761775+maxmayermader@users.noreply.github.com>
+Date:   Thu Feb 8 12:47:20 2024 -0600
+
+    Merge pull request #7 from maxmayermader/Ass2
+    
+    Ass2
+
+commit 6a7c0ebeacf6b8637154cb6170b4950286335946
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 7 19:03:28 2024 -0600
+
+    git ignore
+
+commit c0cf9b636194e55df2575c5acd081416f43e2c2f
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 7 18:54:29 2024 -0600
+
+    ready to submit
+
+commit 75121eb48e0547965e0a4c81b90adae8f3ae98db
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 7 17:25:13 2024 -0600
+
+    I think it's done
+
+commit 9fd34f39044aa1f018c749efa179f50f1f5ee651
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 7 13:48:12 2024 -0600
+
+    roads allign now
+
+commit 327f078e6ad961ae691c0a131edcec2771c5e4b1
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Feb 7 13:17:56 2024 -0600
+
+    roads align sometimes. Don't print all the way
+
+commit ca66a9aed075a579839e13e509acdf423df676bc
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 6 22:51:33 2024 -0600
+
+    abiltity to traverse maps
+
+commit 57cf1377c44751d18b8ea4e5f02ccdcb0bf0deab
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 6 18:19:51 2024 -0600
+
+    changing terrain to struct
+
+commit f5a08656df1a5c15d2cef90ed03e86cf702c0449
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Feb 6 12:58:48 2024 -0600
+
+    input message
+
+commit 021fb0ef704a899c295d54b59b925c983f1d8d21
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 5 12:39:01 2024 -0600
+
+    input and map generation altered
+
+commit 7305fe43ad7cb41b1ad5094686c859ec4f05b111
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 5 10:23:47 2024 -0600
+
+    deleted folder
+
+commit d7dbe85ee056779dde97c90775416ccebd8c7df1
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 5 10:03:45 2024 -0600
+
+    Edited file names and updated branch
+
+commit ea9b5bd7d98430ccc3e65dbff6019ab9868ef698
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Feb 5 10:20:44 2024 -0600
+
+    hope this works
+
+commit ae47379efd25465ada7ac24ebf2cf9ba7a33980d
+Merge: 89f2fa4 256f1e3
+Author: Max Mayer-Mader <119761775+maxmayermader@users.noreply.github.com>
+Date:   Fri Feb 2 11:43:11 2024 -0600
+
+    Merge pull request #5 from maxmayermader/ass1
+    
+    commiting c and binary
+
+commit 256f1e3f511b543906aa547669cd348d206250aa
+Author: Max P <maxmay@iastate.edu>
+Date:   Fri Feb 2 11:42:19 2024 -0600
+
+    commiting c and binary
+
+commit 89f2fa4b63d82ed325be9db080e27a3319058247
+Merge: dc86d50 ca710fd
+Author: Max Mayer-Mader <119761775+maxmayermader@users.noreply.github.com>
+Date:   Thu Feb 1 13:02:57 2024 -0600
+
+    Merge pull request #4 from maxmayermader/ass1
+    
+    Submitted
+
+commit dc86d5070117ee2b8163c72e3d0a0834fa5fb0db
+Merge: a921af7 46789da
+Author: Max Mayer-Mader <119761775+maxmayermader@users.noreply.github.com>
+Date:   Wed Jan 31 23:34:17 2024 -0600
+
+    Merge pull request #2 from maxmayermader/ass1
+    
+    Ass1
+
+commit ca710fd2f61f11b3049b72a002dee4257b3b6ff6
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Jan 31 23:30:37 2024 -0600
+
+    Submitted
+
+commit 46789da22e0874a31c374771e2e34a2314e047ed
+Author: maxmayermader <maxmayermader2@gmail.com>
+Date:   Wed Jan 31 21:37:26 2024 -0600
+
+    added center generation
+
+commit c4a2127954ffc30950cf72cde59e212875f0c490
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Jan 31 17:59:51 2024 -0600
+
+    Roads complete
+
+commit 97aa1fb113bd1dbc2726c79278c07a9057afebee
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Jan 31 17:41:45 2024 -0600
+
+    Refactor map generation and add road creation
+
+commit adab12c3cea07b2202677b644716b13796ee3398
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Jan 31 12:50:46 2024 -0600
+
+    Border generation
+
+commit d53db66f99722be95772e38581ebe0f78b03fdc2
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Jan 30 23:27:51 2024 -0600
+
+    prints board :)
+
+commit e3054ba7ddfacd58fb55f45138476f24b5679819
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Jan 30 21:02:45 2024 -0600
+
+    new code
+
+commit 149d1df2c45a4e52c9e443fb40977c3eafb84f02
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Jan 30 20:56:37 2024 -0600
+
+    fixed errors
+
+commit ad3fb721999ec3d8c43088b5761a6efd9ba93fcf
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Jan 30 18:49:58 2024 -0600
+
+    queSize
+
+commit c48251423175d210a224ebe6835a45cfdcdec4da
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Jan 30 18:45:09 2024 -0600
+
+    Que with nodes sucks
+
+commit d99330c0b7c9f21bc7d13d879543933205df72aa
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Jan 29 23:57:37 2024 -0600
+
+    added random seeds
+
+commit 7ac7fc388d867618fe84c2bfda7bd6fa0de6940e
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Jan 29 23:23:38 2024 -0600
+
+    added que
+
+commit 06d37f8af9965f2fe7458f7cc3174a81d45a05c0
+Author: Max P <maxmay@iastate.edu>
+Date:   Sun Jan 28 23:34:51 2024 -0600
+
+    print map
+
+commit 01f94c872aa54e96e71bbf37d0845015677ee3de
+Author: Max P <maxmay@iastate.edu>
+Date:   Fri Jan 26 15:29:46 2024 -0600
+
+    added change file
+
+commit 8a828b376e5e64f64ce944f90593180d4b3e6a13
+Author: Max P <maxmay@iastate.edu>
+Date:   Fri Jan 26 14:13:13 2024 -0600
+
+    change log file contents
+
+commit a921af73f6f6d2031ee535caffdabfce0aeb0f74
+Author: Max P <maxmay@iastate.edu>
+Date:   Fri Jan 26 13:59:10 2024 -0600
+
+    First commit
