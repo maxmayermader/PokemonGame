@@ -2709,37 +2709,29 @@ int main(int argc, char *argv[]){
     int currY = 200;
     int numTrainers = 8;
 
+    parsePokemonFile();
+    parseMoveFile();    
+    parsePokemonMovesFile();
+    parsePokemonSpeciesFile();
+    parseExperienceFile();
+    parseTypeNamesFile();
+    parsePokemonStatsFile();
+    parseStatsFile();
+    parsePokemonTypesFile();
+
     //parseMovesFile();
     if (argc >= 2 ){
         if (argc >= 3 && strcmp(argv[1], "--numtrainers") == 0) {
                 numTrainers = atoi(argv[2]);
             } 
-        else if(strcmp(argv[1], "pokemon") == 0){
-            parsePokemonFile();
-        } else if(strcmp(argv[1], "moves") == 0) {
-            parseMovesFile();
-        } else if(strcmp(argv[1], "pokemon_moves") == 0){
-            parsePokemonMovesFile();
-        } else if(strcmp(argv[1], "pokemon_species") == 0){
-            parsePokemonSpeciesFile();
-        } else if(strcmp(argv[1], "experience")==0){
-            parseExperienceFile();
-        } else if(strcmp(argv[1], "type_names")==0){
-            parseTypeNamesFile();
-        } else if(strcmp(argv[1], "pokemon_stats")==0){
-            parsePokemonStatsFile();
-        } else if(strcmp(argv[1], "stats")==0){
-            parseStatsFile();
-        } else if(strcmp(argv[1], "pokemon_type")==0){
-            parsePokemonTypesFile();
-        } 
     }
+       
     
 
     printf("%d\n", numTrainers);
 
     
-    return 0;
+    //return 0;
     
     initscr();
     createWorldMap(&wm);
