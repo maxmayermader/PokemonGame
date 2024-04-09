@@ -153,8 +153,8 @@ int randomGenerator(int upper, int lower){
 3. parse files with scanner. Lots of switch cases
 */
 
-/*Pokemon Class*/
-class Pokemon{
+/*PokemonFile Class*/
+class PokemonFile{
     public:
     int id;
     char identifier[50];
@@ -265,6 +265,27 @@ class PokemonTypes{
     int slot;
 };
 
+std::vector<PokemonFile> pokemonVector;
+std::vector<Moves> movesVector;
+std::vector<PokemonMoves> pokemonMovesVector;
+std::vector<PokemonSpecies> pokemonSpeciesVector;
+std::vector<Experience> experienceVector;
+std::vector<TypeNames> typeNamesVector;
+std::vector<PokemonStats> pokemonStatsVector;
+std::vector<Stats> statsVector;
+std::vector<PokemonTypes> pokemonTypesVector;
+
+/*Pokemon class*/
+// class Pokemon{
+//     public:
+//     int id;
+//     char[50] identfier;
+
+    
+//     int health;
+//     int level;
+
+// }
 
 //Prints map out to the terminal
 void printMap(mapclass *map, PC *pc){
@@ -2169,7 +2190,7 @@ void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newC
 
 
 void parsePokemonFile(){
-    std::vector<Pokemon> pokemonVector;
+    //std::vector<PokemonFile> pokemonVector;
     
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon.csv";
     char *home = getenv("HOME");
@@ -2186,7 +2207,7 @@ void parsePokemonFile(){
         char line[100];
 
         while (fgets(line, sizeof(line), file)) { 
-          Pokemon pokemon;
+          PokemonFile pokemon;
             char *token = strtok(line, ","); 
             pokemon.id = (token != NULL) ? atoi(token) : INT_MAX;
             token = strtok(NULL, ",");
@@ -2223,7 +2244,9 @@ void parsePokemonFile(){
             printf("%d", pokemonVector[j].is_default != INT_MAX ? pokemonVector[j].is_default: -1);
             printf("\n");
         }
+        //printf("%d\n",(int)pokemonVector.size());
         fclose(file);
+        //globalPokemonVector = &pokemonVector;
     } 
     else {
         printf("File not found: pokemon.csv\n");
@@ -2231,7 +2254,7 @@ void parsePokemonFile(){
 }
 
 void parseMovesFile(){
-    std::vector<Moves> movesVector;
+    //std::vector<Moves> movesVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/moves.csv";
     char *home = getenv("HOME");
@@ -2287,24 +2310,7 @@ void parseMovesFile(){
             size++;
         }
         //printf("%d",movesVector.size());
-        for(int k=0; k<movesVector.size(); k++){
-            printf("%d,", movesVector[k].id != INT_MAX ? movesVector[k].id : -1);
-            printf("%s, ", strcmp(movesVector[k].identifier, "") != 0 ? movesVector[k].identifier : "-1");
-            printf("%d, ", movesVector[k].generation_id != INT_MAX ? movesVector[k].generation_id : -1);
-            printf("%d, ", movesVector[k].type_id != INT_MAX ? movesVector[k].type_id : -1);
-            printf("%d, ", movesVector[k].power != INT_MAX ? movesVector[k].power : -1);
-            printf("%d, ", movesVector[k].pp != INT_MAX ? movesVector[k].pp : -1);
-            printf("%d, ", movesVector[k].accuracy != INT_MAX ? movesVector[k].accuracy : -1);
-            printf("%d, ", movesVector[k].priority != INT_MAX ? movesVector[k].priority : -1);
-            printf("%d, ", movesVector[k].target_id != INT_MAX ? movesVector[k].target_id : -1);
-            printf("%d, ", movesVector[k].damage_class_id != INT_MAX ? movesVector[k].damage_class_id : -1);
-            printf("%d, ", movesVector[k].effect_id != INT_MAX ? movesVector[k].effect_id : -1);
-            printf("%d, ", movesVector[k].effect_chance != INT_MAX ? movesVector[k].effect_chance : -1);
-            printf("%d, ", movesVector[k].contest_type_id != INT_MAX ? movesVector[k].contest_type_id : -1);
-            printf("%d, ", movesVector[k].contest_effect_id != INT_MAX ? movesVector[k].contest_effect_id : -1);
-            printf("%d", movesVector[k].super_contest_effect_id != INT_MAX ? movesVector[k].super_contest_effect_id : -1);
-            printf("\n");
-        }
+        
         fclose(file);
     } 
     else {
@@ -2313,7 +2319,7 @@ void parseMovesFile(){
 }
 
 void parsePokemonMovesFile(){
-    std::vector<PokemonMoves> pokemonMovesVector;
+    //std::vector<PokemonMoves> pokemonMovesVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon_moves.csv";
     char *home = getenv("HOME");
@@ -2348,15 +2354,7 @@ void parsePokemonMovesFile(){
             size++;
         }
         //printf("%d",pokemonMovesVector.size());
-        for(int k=0; k<pokemonMovesVector.size(); k++){
-            printf("%d,", pokemonMovesVector[k].pokemon_id != INT_MAX ? pokemonMovesVector[k].pokemon_id : -1);
-            printf("%d, ", pokemonMovesVector[k].version_group_id != INT_MAX ? pokemonMovesVector[k].version_group_id : -1);
-            printf("%d, ", pokemonMovesVector[k].move_id != INT_MAX ? pokemonMovesVector[k].move_id : -1);
-            printf("%d, ", pokemonMovesVector[k].pokemon_move_method_id != INT_MAX ? pokemonMovesVector[k].pokemon_move_method_id : -1);
-            printf("%d, ", pokemonMovesVector[k].level != INT_MAX ? pokemonMovesVector[k].level : -1);
-            printf("%d", pokemonMovesVector[k].order != INT_MAX ? pokemonMovesVector[k].order : -1);
-            printf("\n");
-        }
+        
         fclose(file);
     } 
     else {
@@ -2365,7 +2363,7 @@ void parsePokemonMovesFile(){
 }
 
 void parsePokemonSpeciesFile(){
-    std::vector<PokemonSpecies> pokemonSpeciesVector;
+    //std::vector<PokemonSpecies> pokemonSpeciesVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon_species.csv";
     char *home = getenv("HOME");
@@ -2428,27 +2426,7 @@ void parsePokemonSpeciesFile(){
             size++;
         }
         //printf("%d",pokemonSpeciesVector.size());
-        for(int k=0; k<pokemonSpeciesVector.size(); k++){
-            printf("%d,", pokemonSpeciesVector[k].id != INT_MAX ? pokemonSpeciesVector[k].id : -1);
-            printf("%s, ", strcmp(pokemonSpeciesVector[k].identifier, "") != 0 ? pokemonSpeciesVector[k].identifier : "-1");
-            printf("%d, ", pokemonSpeciesVector[k].generation_id != INT_MAX ? pokemonSpeciesVector[k].generation_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].evolves_from_species_id != INT_MAX ? pokemonSpeciesVector[k].evolves_from_species_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].evolution_chain_id != INT_MAX ? pokemonSpeciesVector[k].evolution_chain_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].color_id != INT_MAX ? pokemonSpeciesVector[k].color_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].shape_id != INT_MAX ? pokemonSpeciesVector[k].shape_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].habitat_id != INT_MAX ? pokemonSpeciesVector[k].habitat_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].gender_rate != INT_MAX ? pokemonSpeciesVector[k].gender_rate : -1);
-            printf("%d, ", pokemonSpeciesVector[k].capture_rate != INT_MAX ? pokemonSpeciesVector[k].capture_rate : -1);
-            printf("%d, ", pokemonSpeciesVector[k].base_happiness != INT_MAX ? pokemonSpeciesVector[k].base_happiness : -1);
-            printf("%d, ", pokemonSpeciesVector[k].is_baby != INT_MAX ? pokemonSpeciesVector[k].is_baby : -1);
-            printf("%d, ", pokemonSpeciesVector[k].hatch_counter != INT_MAX ? pokemonSpeciesVector[k].hatch_counter : -1);
-            printf("%d, ", pokemonSpeciesVector[k].has_gender_differences != INT_MAX ? pokemonSpeciesVector[k].has_gender_differences : -1);
-            printf("%d, ", pokemonSpeciesVector[k].growth_rate_id != INT_MAX ? pokemonSpeciesVector[k].growth_rate_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].forms_switchable != INT_MAX ? pokemonSpeciesVector[k].forms_switchable : -1);
-            printf("%d, ", pokemonSpeciesVector[k].order != INT_MAX ? pokemonSpeciesVector[k].order : -1);
-            printf("%d", pokemonSpeciesVector[k].conquest_order != INT_MAX ? pokemonSpeciesVector[k].conquest_order : -1);
-            printf("\n");
-        }
+        
         fclose(file);
     }
     else {
@@ -2457,7 +2435,7 @@ void parsePokemonSpeciesFile(){
 }
 
 void parseExperienceFile(){
-    std::vector<Experience> experienceVector;
+    //std::vector<Experience> experienceVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/experience.csv";
     char *home = getenv("HOME");
@@ -2486,12 +2464,7 @@ void parseExperienceFile(){
             size++;
         }
         //printf("%d",experienceVector.size());
-        for(int k=0; k<experienceVector.size(); k++){
-            printf("%d,", experienceVector[k].growth_rate_id != INT_MAX ? experienceVector[k].growth_rate_id : -1);
-            printf("%d, ", experienceVector[k].level != INT_MAX ? experienceVector[k].level : -1);
-            printf("%d", experienceVector[k].experience != INT_MAX ? experienceVector[k].experience : -1);
-            printf("\n");
-        }
+        
         fclose(file);
     }
     else {
@@ -2500,7 +2473,7 @@ void parseExperienceFile(){
 }
 
 void parseTypeNamesFile(){
-    std::vector<TypeNames> typeNamesVector;
+    //std::vector<TypeNames> typeNamesVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/type_names.csv";
     char *home = getenv("HOME");
@@ -2533,12 +2506,7 @@ void parseTypeNamesFile(){
             size++;
         }
         //printf("%d",typeNamesVector.size());
-        for(int k=0; k<typeNamesVector.size(); k++){
-            printf("%d,", typeNamesVector[k].type_id != INT_MAX ? typeNamesVector[k].type_id : -1);
-            printf("%d, ", typeNamesVector[k].local_language_id != INT_MAX ? typeNamesVector[k].local_language_id : -1);
-            printf("%s", strcmp(typeNamesVector[k].name, "") != 0 ? typeNamesVector[k].name : "-1");
-            printf("\n");
-        }
+        
         fclose(file);
     }
     else {
@@ -2548,7 +2516,7 @@ void parseTypeNamesFile(){
 }
     
 void parsePokemonStatsFile(){
-    std::vector<PokemonStats> pokemonStatsVector;
+    //std::vector<PokemonStats> pokemonStatsVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon_stats.csv";
     char *home = getenv("HOME");
@@ -2584,13 +2552,7 @@ void parsePokemonStatsFile(){
             size++;
         }
         //printf("%d",pokemonStatsVector.size());
-        for(int k=0; k<pokemonStatsVector.size(); k++){
-            printf("%d,", pokemonStatsVector[k].pokemon_id != INT_MAX ? pokemonStatsVector[k].pokemon_id : -1);
-            printf("%d, ", pokemonStatsVector[k].stat_id != INT_MAX ? pokemonStatsVector[k].stat_id : -1);
-            printf("%d, ", pokemonStatsVector[k].base_stat != INT_MAX ? pokemonStatsVector[k].base_stat : -1);
-            printf("%d", pokemonStatsVector[k].effort != INT_MAX ? pokemonStatsVector[k].effort : -1);
-            printf("\n");
-        }
+        
         fclose(file);
     }
     else {
@@ -2599,7 +2561,7 @@ void parsePokemonStatsFile(){
 }
 
 void parseStatsFile(){
-    std::vector<Stats> statsVector;
+    //std::vector<Stats> statsVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/stats.csv";
     char *home = getenv("HOME");
@@ -2641,14 +2603,7 @@ int id;
             size++;
         }
         //printf("%d",statsVector.size());
-        for(int k=0; k<statsVector.size(); k++){
-            printf("%d,", statsVector[k].id != INT_MAX ? statsVector[k].id : -1);
-            printf("%s, ", strcmp(statsVector[k].identifier, "") != 0 ? statsVector[k].identifier : "-1");
-            printf("%d, ", statsVector[k].damage_class_id != INT_MAX ? statsVector[k].damage_class_id : -1);
-            printf("%d, ", statsVector[k].is_battle_only != INT_MAX ? statsVector[k].is_battle_only : -1);
-            printf("%d", statsVector[k].game_index != INT_MAX ? statsVector[k].game_index : -1);
-            printf("\n");
-        }
+        
         fclose(file);
     }
     else {
@@ -2657,7 +2612,7 @@ int id;
 }
 
 void parsePokemonTypesFile(){
-    std::vector<PokemonTypes> pokemonTypesVector;
+    //std::vector<PokemonTypes> pokemonTypesVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon_types.csv";
     char *home = getenv("HOME");
@@ -2686,13 +2641,9 @@ void parsePokemonTypesFile(){
             size++;
         }
         //printf("%d",pokemonTypesVector.size());
-        for(int k=0; k<pokemonTypesVector.size(); k++){
-            printf("%d,", pokemonTypesVector[k].pokemon_id != INT_MAX ? pokemonTypesVector[k].pokemon_id : -1);
-            printf("%d, ", pokemonTypesVector[k].type_id != INT_MAX ? pokemonTypesVector[k].type_id : -1);
-            printf("%d", pokemonTypesVector[k].slot != INT_MAX ? pokemonTypesVector[k].slot : -1);
-            printf("\n");
-        }
+        
         fclose(file);
+
     }
     else {
         printf("File not found: pokemon_types.csv\n");
@@ -2710,20 +2661,20 @@ int main(int argc, char *argv[]){
     int numTrainers = 8;
 
     parsePokemonFile();
-    parseMoveFile();    
-    parsePokemonMovesFile();
-    parsePokemonSpeciesFile();
-    parseExperienceFile();
-    parseTypeNamesFile();
-    parsePokemonStatsFile();
-    parseStatsFile();
-    parsePokemonTypesFile();
+    // parseMovesFile();    
+    // parsePokemonMovesFile();
+    // parsePokemonSpeciesFile();
+    // parseExperienceFile();
+    // parseTypeNamesFile();
+    // parsePokemonStatsFile();
+    // parseStatsFile();
+    // parsePokemonTypesFile();
 
     //parseMovesFile();
     if (argc >= 2 ){
         if (argc >= 3 && strcmp(argv[1], "--numtrainers") == 0) {
-                numTrainers = atoi(argv[2]);
-            } 
+            numTrainers = atoi(argv[2]);
+        } 
     }
        
     
