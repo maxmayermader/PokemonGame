@@ -1,9 +1,16 @@
-#include <stdio.h>
+#include <vector>
+#include <vector>
+#include <cstdio>
 #include <time.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <ncurses.h>
+#include <fstream>
+#include <iostream>
+#include <climits>
+#include <vector>
+#include <cmath>
 
 #define MAX_SIZE 100  
 #define ROW 21//21 //Y
@@ -25,6 +32,342 @@
 #define WATER '~'
 #define PLAYERCHAR '@'
 
+int randomGenerator(int upper, int lower){
+  return (rand() % (upper - lower + 1)) + lower;
+}
+
+/*PokemonFile Class*/
+class PokemonFile{
+    public:
+    int id;
+    char identifier[50];
+    int species_id;
+    int height;
+    int weight;
+    int base_experience;
+    int order;
+    int is_default;
+};
+
+/*moves class*/
+class Moves{
+    public:
+    int id;
+    char identifier[50];
+    int generation_id;
+    int type_id;
+    int power;
+    int pp;
+    int accuracy;
+    int priority;
+    int target_id;
+    int damage_class_id;
+    int effect_id;
+    int effect_chance;
+    int contest_type_id;
+    int contest_effect_id;
+    int super_contest_effect_id;
+};
+
+/*Pokemon Moves Class*/
+class PokemonMoves{
+    public:
+    int pokemon_id;
+    int version_group_id;
+    int move_id;
+    int pokemon_move_method_id;
+    int level;
+    int order;
+};
+
+/*Pokemon Species Class*/
+class PokemonSpecies{
+    public:
+    int id;
+    char identifier[50];
+    int generation_id;
+    int evolves_from_species_id;
+    int evolution_chain_id;
+    int color_id;
+    int shape_id;
+    int habitat_id;
+    int gender_rate;
+    int capture_rate;
+    int base_happiness;
+    int is_baby;
+    int hatch_counter;
+    int has_gender_differences;
+    int growth_rate_id;
+    int forms_switchable;
+    int is_legendary;
+    int is_mythical;
+    int order;
+    int conquest_order;
+};
+
+/*Experince Class*/
+class Experience{
+    public:
+    int growth_rate_id;
+    int level;
+    int experience;
+};
+
+/*type names class*/
+class TypeNames{
+    public:
+    int type_id;
+    int local_language_id;
+    char name[50];
+};
+
+/*Pokemon Stats class*/
+class PokemonStats{
+    public:
+    int pokemon_id;
+    int stat_id;
+    int base_stat;
+    int effort;
+};
+
+/*Stats class*/
+class Stats{
+    public:
+    int id;
+    char identifier[50];
+    int damage_class_id;
+    int is_battle_only;
+    int game_index;
+};
+
+/*Pokemon Types class*/
+class PokemonTypes{
+    public:
+    int pokemon_id;
+    int type_id;
+    int slot;
+};
+
+std::vector<PokemonFile> pokemonVector;
+std::vector<Moves> movesVector;
+std::vector<PokemonMoves> pokemonMovesVector;
+std::vector<PokemonSpecies> pokemonSpeciesVector;
+std::vector<Experience> experienceVector;
+std::vector<TypeNames> typeNamesVector;
+std::vector<PokemonStats> pokemonStatsVector;
+std::vector<Stats> statsVector;
+std::vector<PokemonTypes> pokemonTypesVector;
+
+bool searchPokemonVector(int id, PokemonFile *p){
+    for (int i = 0; i < (int)pokemonVector.size(); i++){
+        if (pokemonVector[i].id == id){
+            *p = pokemonVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+bool searchMovesVector(int id, Moves *m){
+    for (int i = 0; i < (int)movesVector.size(); i++){
+        if (movesVector[i].id == id){
+            *m = movesVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+bool searchPokemonMovesVector(int id, PokemonMoves *pm){
+    for (int i = 0; i < (int)pokemonMovesVector.size(); i++){
+        if (pokemonMovesVector[i].pokemon_id == id){
+            *pm = pokemonMovesVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+bool searchPokemonSpeciesVector(int id, PokemonSpecies *ps){
+    for (int i = 0; i < (int)pokemonSpeciesVector.size(); i++){
+        if (pokemonSpeciesVector[i].id == id){
+            *ps = pokemonSpeciesVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+bool searchExperienceVector(int level, Experience *e){
+    for (int i = 0; i < (int)experienceVector.size(); i++){
+        if (experienceVector[i].level == level){
+            *e = experienceVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+bool searchTypeNamesVector(int id, TypeNames *tn){
+    for (int i = 0; i < (int)typeNamesVector.size(); i++){
+        if (typeNamesVector[i].type_id == id){
+            *tn = typeNamesVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+bool searchPokemonStatsVector(int id, int stats_id, PokemonStats *ps){
+    for (int i = 0; i < (int)pokemonStatsVector.size(); i++){
+        if (pokemonStatsVector[i].pokemon_id == id && pokemonStatsVector[i].stat_id == stats_id){
+            *ps = pokemonStatsVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+bool searchStatsVector(int id, Stats *s){
+    for (int i = 0; i < (int)statsVector.size(); i++){
+        if (statsVector[i].id == id){
+            *s = statsVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+bool searchPokemonTypesVector(int id, PokemonTypes *pt){
+    for (int i = 0; i < (int)pokemonTypesVector.size(); i++){
+        if (pokemonTypesVector[i].pokemon_id == id){
+            *pt = pokemonTypesVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+/*Pokemon class*/
+class Pokemon{
+    public:
+    int id;
+    char identfier[50];
+    int health;
+    int level;
+    int attack;
+    int defense;
+    int gender;
+    int baseHealth;
+    int baseAttack;
+    int baseDefense;
+    int iv;
+    int shiny;
+
+    
+    Pokemon(){
+        id = randomGenerator(1092, 1); // Generate a random ID for the Pokemon, between 1 and 1092
+        iv = randomGenerator(15, 0); // Generate a random Individual Value (IV) for the Pokemon, between 0 and 15
+        PokemonFile pf;
+        searchPokemonVector(id, &pf); 
+        strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
+        PokemonStats ps;
+        searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
+        baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
+        level = 1; // Set the initial level for this Pokemon to 1
+        health = floor((baseHealth + iv)*2/ 100) + level + 10; // Calculate the health for this Pokemon using the formula: floor((base + iv) * 2 / 100) + level + 10
+        searchPokemonStatsVector(id, 2, &ps);
+        baseAttack = ps.base_stat;
+        searchPokemonStatsVector(id, 3, &ps);
+        baseDefense = ps.base_stat; 
+        gender = randomGenerator(1,0); // Generate a random gender for this Pokemon, 0 or 1
+        if (rand() % 8192 == 0){ // Determine if the Pokemon is shiny (rare variant) with a 1 in 8192 chance
+            shiny = 1;
+        } else {
+            shiny = 0;
+        }
+    }
+
+    Pokemon(int distance){
+        id = randomGenerator(1092, 1); // Generate a random ID for the Pokemon, between 1 and 1092
+        iv = randomGenerator(15, 0); // Generate a random Individual Value (IV) for the Pokemon, between 0 and 15
+        PokemonFile pf;
+        searchPokemonVector(id, &pf); 
+        strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
+        PokemonStats ps;
+        searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
+        baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
+        if (distance <= 200){
+            if (distance == 0){
+                level = 5;
+            } else {
+                level = randomGenerator(distance / 2 , 1); // If the distance is less than or equal to 200, set the level to a random number between 1 and distance/2
+            }        
+        } else {
+            level = randomGenerator(100, int((distance - 200) / 2)); // If the distance is more than 200, set the level to a random number between (distance - 200)/2 and 100
+        }
+        health = floor((baseHealth + iv)*2/ 100) + level + 10; // Calculate the health for this Pokemon using the formula: floor((base + iv) * 2 / 100) + level + 10
+        searchPokemonStatsVector(id, 2, &ps);
+        baseAttack = ps.base_stat;
+        searchPokemonStatsVector(id, 3, &ps);
+        baseDefense = ps.base_stat; // Calculate the defense for this Pokemon using the formula: floor((base + iv) * 2 / 100) + 5
+        gender = randomGenerator(1,0); // Generate a random gender for this Pokemon, 0 or 1
+        if (rand() % 8192 == 0){ // Determine if the Pokemon is shiny (rare variant) with a 1 in 8192 chance
+            shiny = 1;
+        } else {
+            shiny = 0;
+        }
+    }
+
+    Pokemon(int id, int distance){
+        this->id = id;
+        iv = randomGenerator(15, 0); // Generate a random Individual Value (IV) for the Pokemon, between 0 and 15
+        PokemonFile pf;
+        searchPokemonVector(id, &pf); 
+        strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
+        PokemonStats ps;
+        searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
+        baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
+        if (distance <= 200){
+            if (distance == 0){
+                level = 5;
+            } else {
+                level = randomGenerator(distance / 2 , 1); // If the distance is less than or equal to 200, set the level to a random number between 1 and distance/2
+            }
+        } else {
+            level = randomGenerator(100, (distance - 200) / 2); // If the distance is more than 200, set the level to a random number between (distance - 200)/2 and 100
+        }
+        health = floor((baseHealth + iv)*2/ 100) + level + 10; // Calculate the health for this Pokemon using the formula: floor((base + iv) * 2 / 100) + level + 10
+        searchPokemonStatsVector(id, 2, &ps);
+        attack = ps.base_stat;
+        searchPokemonStatsVector(id, 3, &ps);
+        defense = ps.base_stat; // Calculate the defense for this Pokemon using the formula: floor((base + iv) * 2 / 100) + 5
+        gender = randomGenerator(1,0); // Generate a random gender for this Pokemon, 0 or 1
+        if (rand() % 8192 == 0){ // Determine if the Pokemon is shiny (rare variant) with a 1 in 8192 chance
+            shiny = 1;
+        } else {
+            shiny = 0;
+        }
+    }
+
+    void printPokemon(){
+        printf("ID: %d\n", id);
+        printf("Identifier: %s\n", identfier);
+        printf("Health: %d\n", health);
+        printf("Level: %d\n", level);
+        printf("Attack: %d\n", baseAttack);
+        printf("Defense: %d\n", baseDefense);
+        printf("Gender: %d\n", gender);
+        printf("baseHealth: %d\n", baseHealth);
+        printf("health: %d\n", health);
+        printf("IV: %d\n", iv);
+        printf("Shiny: %d\n", shiny);
+    }
+
+
+
+};
+
 
 //NPC class
 typedef class NPC{
@@ -35,6 +378,7 @@ typedef class NPC{
     int direc;
     int weightArr[NPCROW][NPCCOL]; //weightMap. Might change it to pointer arr
     int defeated;
+    Pokemon* pokemons[6];
 }NPC;
 
 //NPC Enums
@@ -67,6 +411,7 @@ typedef class PC{
     int col;
     int globalX;
     int globalY;
+    Pokemon* pokemons[6];
 }PC;
 
 typedef class heapNode {
@@ -137,28 +482,6 @@ int getQueSize(){
     void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum);
     void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h);
     
-int randomGenerator(int upper, int lower){
-  return (rand() % (upper - lower + 1)) + lower;
-}
-
-/*TODO
-1. Make class for each file to parse
-2. Use vector
-3. parse files with scanner. Lots of switch cases
-*/
-
-/*Pokemon Class*/
-class PokemonFile{
-    public:
-    int id;
-    char identifier[50];
-    int species_id;
-    int height;
-    int weight;
-    int base_experience;
-    int order;
-    int is_default;
-};
 
 //Prints map out to the terminal
 void printMap(mapclass *map, PC *pc){
@@ -2061,37 +2384,497 @@ void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newC
     }
 }
 
+
 void parsePokemonFile(){
+    //std::vector<PokemonFile> pokemonVector;
+    
+    char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon.csv";
+    char *home = getenv("HOME");
+    
+    FILE *file = fopen(path, "r");
+    
+    if (file == NULL){
+        strcat(home, "/.poke327/pokedex/pokedex/data/csv/pokemon.csv");
+        //printf("home is %s\n", home);
+        file = fopen(home, "r");
+    }
+
+    if (file != NULL){
+        char line[100];
+
+        while (fgets(line, sizeof(line), file)) { 
+          PokemonFile pokemon;
+            char *token = strtok(line, ","); 
+            pokemon.id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            if (token != NULL) {
+                strcpy( pokemon.identifier, token);
+            } else {
+                 strcpy( pokemon.identifier , "");
+            }
+            token = strtok(NULL, ",");
+            pokemon.species_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemon.height = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemon.weight = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemon.base_experience = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemon.order = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemon.is_default = (token != NULL) ? atoi(token) : INT_MAX;
+
+            pokemonVector.push_back(pokemon);
+            
+  
+        }
+        
+        //printf("%d\n",(int)pokemonVector.size());
+        fclose(file);
+        //globalPokemonVector = &pokemonVector;
+    } 
+    else {
+        printf("File not found: pokemon.csv\n");
+    }
+}
+
+void parseMovesFile(){
+    //std::vector<Moves> movesVector;
+    int size = 0;
+    char path[300] = "/share/cs327/pokedex/pokedex/data/csv/moves.csv";
+    char *home = getenv("HOME");
+    
+    FILE *file = fopen(path, "r");
+    
+    if (file == NULL){
+        strcat(home, "/.poke327/pokedex/pokedex/data/csv/moves.csv");
+        //printf("home is %s\n", home);
+        file = fopen(home, "r");
+    }
+
+    if (file != NULL){
+        char line[100];
+
+        while (fgets(line, sizeof(line), file)) { 
+          Moves moves;
+            char *token = strtok(line, ","); 
+            moves.id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            if (token != NULL) {
+                strcpy( moves.identifier, token);
+            } else {
+                 strcpy( moves.identifier , "");
+            }
+            token = strtok(NULL, ",");
+            moves.generation_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.type_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.power = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.pp = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.accuracy = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.priority = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.target_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.damage_class_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.effect_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.effect_chance = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.contest_type_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.contest_effect_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            moves.super_contest_effect_id = (token != NULL) ? atoi(token) : INT_MAX;
+            movesVector.push_back(moves);
+            size++;
+        }
+        //printf("%d",movesVector.size());
+        
+        fclose(file);
+    } 
+    else {
+        printf("File not found: moves.csv\n");
+    }
+}
+
+void parsePokemonMovesFile(){
+    //std::vector<PokemonMoves> pokemonMovesVector;
+    int size = 0;
+    char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon_moves.csv";
+    char *home = getenv("HOME");
+    
+    FILE *file = fopen(path, "r");
+    
+    if (file == NULL){
+        strcat(home, "/.poke327/pokedex/pokedex/data/csv/pokemon_moves.csv");
+        //printf("home is %s\n", home);
+        file = fopen(home, "r");
+    }
+
+    if (file != NULL){
+        char line[100];
+
+        while (fgets(line, sizeof(line), file)) { 
+          PokemonMoves pokemonMoves;
+            char *token = strtok(line, ","); 
+            pokemonMoves.pokemon_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonMoves.version_group_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonMoves.move_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonMoves.pokemon_move_method_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonMoves.level = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonMoves.order = (token != NULL) ? atoi(token) : INT_MAX;
+
+            pokemonMovesVector.push_back(pokemonMoves);
+            size++;
+        }
+        //printf("%d",pokemonMovesVector.size());
+        
+        fclose(file);
+    } 
+    else {
+        printf("File not found: pokemon_moves.csv\n");
+    }
+}
+
+void parsePokemonSpeciesFile(){
+    //std::vector<PokemonSpecies> pokemonSpeciesVector;
+    int size = 0;
+    char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon_species.csv";
+    char *home = getenv("HOME");
+
+    FILE *file = fopen(path, "r");
+
+    if (file == NULL){
+        strcat(home, "/.poke327/pokedex/pokedex/data/csv/pokemon_species.csv");
+        //printf("home is %s\n", home);
+        file = fopen(home, "r");
+    }
+
+    if (file != NULL){
+        char line[100];
+
+        while (fgets(line, sizeof(line), file)) { 
+          PokemonSpecies pokemonSpecies;
+            char *token = strtok(line, ","); 
+            pokemonSpecies.id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            if (token != NULL) {
+                strcpy( pokemonSpecies.identifier, token);
+            } else {
+                 strcpy( pokemonSpecies.identifier , "");
+            }
+            token = strtok(NULL, ",");
+            pokemonSpecies.generation_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.evolves_from_species_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.evolution_chain_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.color_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.shape_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.habitat_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.gender_rate = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.capture_rate = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.base_happiness = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.is_baby = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.hatch_counter = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.has_gender_differences = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.growth_rate_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.forms_switchable = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.order = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonSpecies.conquest_order = (token != NULL) ? atoi(token) : INT_MAX;
+
+            pokemonSpeciesVector.push_back(pokemonSpecies);
+            size++;
+        }
+        //printf("%d",pokemonSpeciesVector.size());
+        
+        fclose(file);
+    }
+    else {
+        printf("File not found: pokemon_species.csv\n");
+    }
+}
+
+void parseExperienceFile(){
+    //std::vector<Experience> experienceVector;
+    int size = 0;
+    char path[300] = "/share/cs327/pokedex/pokedex/data/csv/experience.csv";
+    char *home = getenv("HOME");
+
+    FILE *file = fopen(path, "r");
+
+    if (file == NULL){
+        strcat(home, "/.poke327/pokedex/pokedex/data/csv/experience.csv");
+        //printf("home is %s\n", home);
+        file = fopen(home, "r");
+    }
+
+    if (file != NULL){
+        char line[100];
+
+        while (fgets(line, sizeof(line), file)) { 
+          Experience experience;
+            char *token = strtok(line, ","); 
+            experience.growth_rate_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            experience.level = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            experience.experience = (token != NULL) ? atoi(token) : INT_MAX;
+
+            experienceVector.push_back(experience);
+            size++;
+        }
+        //printf("%d",experienceVector.size());
+        
+        fclose(file);
+    }
+    else {
+        printf("File not found: experience.csv\n");
+    }
+}
+
+void parseTypeNamesFile(){
+    //std::vector<TypeNames> typeNamesVector;
+    int size = 0;
+    char path[300] = "/share/cs327/pokedex/pokedex/data/csv/type_names.csv";
+    char *home = getenv("HOME");
+
+    FILE *file = fopen(path, "r");
+
+    if (file == NULL){
+        strcat(home, "/.poke327/pokedex/pokedex/data/csv/type_names.csv");
+        //printf("home is %s\n", home);
+        file = fopen(home, "r");
+    }
+
+    if (file != NULL){
+        char line[100];
+
+        while (fgets(line, sizeof(line), file)) { 
+          TypeNames typeNames;
+            char *token = strtok(line, ","); 
+            typeNames.type_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            typeNames.local_language_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            if (token != NULL) {
+                strcpy( typeNames.name, token);
+            } else {
+                 strcpy( typeNames.name , "");
+            }
+
+            typeNamesVector.push_back(typeNames);
+            size++;
+        }
+        //printf("%d",typeNamesVector.size());
+        
+        fclose(file);
+    }
+    else {
+        printf("File not found: type_names.csv\n");
+    }
 
 }
+    
+void parsePokemonStatsFile(){
+    //std::vector<PokemonStats> pokemonStatsVector;
+    int size = 0;
+    char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon_stats.csv";
+    char *home = getenv("HOME");
+
+    FILE *file = fopen(path, "r");
+
+    if (file == NULL){
+        strcat(home, "/.poke327/pokedex/pokedex/data/csv/pokemon_stats.csv");
+        //printf("home is %s\n", home);
+        file = fopen(home, "r");
+    }
+
+    if (file != NULL){
+        char line[100];
+        /*
+        int pokemon_id;
+    int stat_id;
+    int base_stat;
+    int effort;
+    */
+        while (fgets(line, sizeof(line), file)) { 
+          PokemonStats pokemonStats;
+            char *token = strtok(line, ","); 
+            pokemonStats.pokemon_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonStats.stat_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonStats.base_stat = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonStats.effort = (token != NULL) ? atoi(token) : INT_MAX;
+
+            pokemonStatsVector.push_back(pokemonStats);
+            size++;
+        }
+        //printf("%d",pokemonStatsVector.size());
+        
+        fclose(file);
+    }
+    else {
+        printf("File not found: pokemon_stats.csv\n");
+    }
+}
+
+void parseStatsFile(){
+    //std::vector<Stats> statsVector;
+    int size = 0;
+    char path[300] = "/share/cs327/pokedex/pokedex/data/csv/stats.csv";
+    char *home = getenv("HOME");
+
+    FILE *file = fopen(path, "r");
+
+    if (file == NULL){
+        strcat(home, "/.poke327/pokedex/pokedex/data/csv/stats.csv");
+        //printf("home is %s\n", home);
+        file = fopen(home, "r");
+    }
+
+    if (file != NULL){
+        char line[100];
+/*
+int id;
+    char identifier[50];
+    int damage_class_id;
+    int is_battle_only;
+    int game_index;*/
+        while (fgets(line, sizeof(line), file)) { 
+          Stats stats;
+            char *token = strtok(line, ","); 
+            stats.id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            if (token != NULL) {
+                strcpy( stats.identifier, token);
+            } else {
+                 strcpy( stats.identifier , "");
+            }
+            token = strtok(NULL, ",");
+            stats.damage_class_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            stats.is_battle_only = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            stats.game_index = (token != NULL) ? atoi(token) : INT_MAX;
+
+            statsVector.push_back(stats);
+            size++;
+        }
+        //printf("%d",statsVector.size());
+        
+        fclose(file);
+    }
+    else {
+        printf("File not found: stats.csv\n");
+    }
+}
+
+void parsePokemonTypesFile(){
+    //std::vector<PokemonTypes> pokemonTypesVector;
+    int size = 0;
+    char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon_types.csv";
+    char *home = getenv("HOME");
+
+    FILE *file = fopen(path, "r");
+
+    if (file == NULL){
+        strcat(home, "/.poke327/pokedex/pokedex/data/csv/pokemon_types.csv");
+        //printf("home is %s\n", home);
+        file = fopen(home, "r");
+    }
+
+    if (file != NULL){
+        char line[100];
+
+        while (fgets(line, sizeof(line), file)) { 
+          PokemonTypes pokemonTypes;
+            char *token = strtok(line, ","); 
+            pokemonTypes.pokemon_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonTypes.type_id = (token != NULL) ? atoi(token) : INT_MAX;
+            token = strtok(NULL, ",");
+            pokemonTypes.slot = (token != NULL) ? atoi(token) : INT_MAX;
+
+            pokemonTypesVector.push_back(pokemonTypes);
+            size++;
+        }
+        //printf("%d",pokemonTypesVector.size());
+        
+        fclose(file);
+
+    }
+    else {
+        printf("File not found: pokemon_types.csv\n");
+    }
+}
+
+
 
 int main(int argc, char *argv[]){
 
-    //srand(time(NULL));//random seed
-    srand(100); //11223344
+    srand(time(NULL));//random seed
+    //srand(100); //11223344
    
     worldMap wm;
     int currX = 200;
     int currY = 200;
     int numTrainers = 8;
 
-    
+    parsePokemonFile();
+    parseMovesFile();    
+    parsePokemonMovesFile();
+    parsePokemonSpeciesFile();
+    parseExperienceFile();
+    parseTypeNamesFile();
+    parsePokemonStatsFile();
+    parseStatsFile();
+    parsePokemonTypesFile();
+
+    //parseMovesFile();
     if (argc >= 2 ){
         if (argc >= 3 && strcmp(argv[1], "--numtrainers") == 0) {
-                numTrainers = atoi(argv[2]);
-            } 
-        else if(strcmp(argv[1], "pokemon") == 0){
-            parsePokemonFile();
-        } else {
-            
-        }
+            numTrainers = atoi(argv[2]);
+        } 
     }
+       
     
 
     printf("%d\n", numTrainers);
 
+    Pokemon pk(0);
+    pk.printPokemon();
     
+
     return 0;
+    //return 0;
     
     initscr();
     createWorldMap(&wm);
