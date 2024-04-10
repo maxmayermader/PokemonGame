@@ -298,9 +298,13 @@ class Pokemon{
         searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
         baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
         if (distance <= 200){
-            level = randomGenerator(distance / 2 , 1); // If the distance is less than or equal to 200, set the level to a random number between 1 and distance/2
+            if (distance == 0){
+                level = 5;
+            } else {
+                level = randomGenerator(distance / 2 , 1); // If the distance is less than or equal to 200, set the level to a random number between 1 and distance/2
+            }        
         } else {
-            level = randomGenerator(100, (distance - 200) / 2); // If the distance is more than 200, set the level to a random number between (distance - 200)/2 and 100
+            level = randomGenerator(100, int((distance - 200) / 2)); // If the distance is more than 200, set the level to a random number between (distance - 200)/2 and 100
         }
         health = floor((baseHealth + iv)*2/ 100) + level + 10; // Calculate the health for this Pokemon using the formula: floor((base + iv) * 2 / 100) + level + 10
         searchPokemonStatsVector(id, 2, &ps);
@@ -325,7 +329,11 @@ class Pokemon{
         searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
         baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
         if (distance <= 200){
-            level = randomGenerator(distance / 2 , 1); // If the distance is less than or equal to 200, set the level to a random number between 1 and distance/2
+            if (distance == 0){
+                level = 5;
+            } else {
+                level = randomGenerator(distance / 2 , 1); // If the distance is less than or equal to 200, set the level to a random number between 1 and distance/2
+            }
         } else {
             level = randomGenerator(100, (distance - 200) / 2); // If the distance is more than 200, set the level to a random number between (distance - 200)/2 and 100
         }
@@ -370,7 +378,7 @@ typedef class NPC{
     int direc;
     int weightArr[NPCROW][NPCCOL]; //weightMap. Might change it to pointer arr
     int defeated;
-    std::vector<Pokemon> pokemons;
+    Pokemon* pokemons[6];
 }NPC;
 
 //NPC Enums
@@ -403,7 +411,7 @@ typedef class PC{
     int col;
     int globalX;
     int globalY;
-    std::vector<Pokemon> pokemons;
+    Pokemon* pokemons[6];
 }PC;
 
 typedef class heapNode {
@@ -2861,7 +2869,7 @@ int main(int argc, char *argv[]){
 
     printf("%d\n", numTrainers);
 
-    Pokemon pk;
+    Pokemon pk(0);
     pk.printPokemon();
     
 
