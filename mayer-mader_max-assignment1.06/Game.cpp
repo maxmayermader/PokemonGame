@@ -350,6 +350,13 @@ class Pokemon{
         }
     }
 
+    void levelUp(){
+        level++;
+        health = floor((baseHealth + iv)*2/ 100) + level + 10;
+        attack = floor((baseAttack + iv)*2/ 100) + 5;
+        defense = floor((baseDefense + iv)*2/ 100) + 5;
+    }
+
     void printPokemon(){
         printf("ID: %d\n", id);
         printf("Identifier: %s\n", identfier);
