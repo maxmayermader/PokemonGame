@@ -31,127 +31,9 @@
 #define WATER '~'
 #define PLAYERCHAR '@'
 
-
-//NPC class
-typedef class NPC{
-    public:
-    int symb; //NPC type: Rival, Hiker etc
-    int row; 
-    int col;
-    int direc;
-    int weightArr[NPCROW][NPCCOL]; //weightMap. Might change it to pointer arr
-    int defeated;
-}NPC;
-
-//NPC Enums
-typedef enum NPCSymb{
-    HIKER,
-    RIVAL,
-    PACER,
-    WANDERER,
-    SENTRIES, 
-    EXPLORERS
-}NPCSymb;
-
-typedef enum PCMOV{
-    NE,
-    N,
-    NW,
-    W,
-    SW,
-    S,
-    SE,
-    E,
-    SKIP
-}PCMOV;
-
-//PC class
-typedef class PC{
-    public:
-    int symb;
-    int row;
-    int col;
-    int globalX;
-    int globalY;
-}PC;
-
-typedef class heapNode {
-    public:
-    int weight;
-    //for dijkstra
-    int row;
-    int col;
-    int visited;
-    //for moving
-    NPC* npc;
-    PC* pc;
-} heapNode;
-
-/*Begin heap implemantation*/
-// Declare a heap classure
-class Heap {
-    public:
-    heapNode* arr[MAX_HEAP_SIZE];
-    int size;
-    //int capacity;
-};
- // define the class Heap name
-typedef class Heap heap;
-
-//map class for terrain. 21x80 map
-typedef class mapclass{
-    public:
-	int gateN;//top
-	int gateS;//bottom
-	int gateW;//left
-	int gateE;//right
-    int connection1[2];
-    int connection2[2];
-	char terrain[ROW][COL];
-    NPC* npcArray[NPCROW][NPCCOL];
-    PC* playerT;
-    int NPCSInit; 
-    heap* terrainHeap;
-}mapclass;
-
-
-//Global map. Array of map pointers
-typedef class worldMap{
-    public:
-    mapclass* arr[worldYSize][worldXSize];
-    PC* player;
-}worldMap;
-
-//char startMap[ROW][COL];
-int queSize = 0;
-int getQueSize(){
-    return queSize;
-}
-
-//prototype declerations
-    void createMap(int x, int y, worldMap *wm, int npcNum);
-    void dijkstras(int row, int col, mapclass* terrainMap, int weightArr[NPCROW][NPCCOL], int type);
-    void printWeightMap(int weightArr[NPCROW][NPCCOL]);
-    void moveCharecters(worldMap *wm, mapclass *terrainMap, int numTrainers);
-    int randomGenerator(int upper, int lower);
-    int calcCost(int npc, char terrainType);
-    int canMove(mapclass *terrainMap, int symb, int row, int col, int prevRow, int prevCol);
-    int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc);
-    void enterBuilding();
-    void trainerList(mapclass *terrainMap, PC *pc);
-    void enterBattle(NPC *npc);
-    void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum);
-    void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h);
-    
 int randomGenerator(int upper, int lower){
   return (rand() % (upper - lower + 1)) + lower;
 }
-
-/*TODO
-1. Make class for each file to parse
-2. Use vector
-3. parse files with scanner. Lots of switch cases
-*/
 
 /*PokemonFile Class*/
 class PokemonFile{
@@ -276,16 +158,148 @@ std::vector<Stats> statsVector;
 std::vector<PokemonTypes> pokemonTypesVector;
 
 /*Pokemon class*/
-// class Pokemon{
-//     public:
-//     int id;
-//     char[50] identfier;
-
+class Pokemon{
+    public:
+    int id;
+    char identfier[50];
+    int health;
+    int level;
     
-//     int health;
-//     int level;
+    Pokemon(){
+        id = ran
+        health = 0;
+        level = 0;
+    }
 
-// }
+    Pokemon(int id, int health, int level){
+        this->id = id;
+        this->health = health;
+        this->level = level;
+    }
+
+    void printPokemon(){
+        printf("ID: %d\n", id);
+        printf("Health: %d\n", health);
+        printf("Level: %d\n", level);
+    }
+
+
+};
+
+
+//NPC class
+typedef class NPC{
+    public:
+    int symb; //NPC type: Rival, Hiker etc
+    int row; 
+    int col;
+    int direc;
+    int weightArr[NPCROW][NPCCOL]; //weightMap. Might change it to pointer arr
+    int defeated;
+    std::vector<Pokemon> pokemons;
+}NPC;
+
+//NPC Enums
+typedef enum NPCSymb{
+    HIKER,
+    RIVAL,
+    PACER,
+    WANDERER,
+    SENTRIES, 
+    EXPLORERS
+}NPCSymb;
+
+typedef enum PCMOV{
+    NE,
+    N,
+    NW,
+    W,
+    SW,
+    S,
+    SE,
+    E,
+    SKIP
+}PCMOV;
+
+//PC class
+typedef class PC{
+    public:
+    int symb;
+    int row;
+    int col;
+    int globalX;
+    int globalY;
+    std::vector<Pokemon> pokemons;
+}PC;
+
+typedef class heapNode {
+    public:
+    int weight;
+    //for dijkstra
+    int row;
+    int col;
+    int visited;
+    //for moving
+    NPC* npc;
+    PC* pc;
+} heapNode;
+
+/*Begin heap implemantation*/
+// Declare a heap classure
+class Heap {
+    public:
+    heapNode* arr[MAX_HEAP_SIZE];
+    int size;
+    //int capacity;
+};
+ // define the class Heap name
+typedef class Heap heap;
+
+//map class for terrain. 21x80 map
+typedef class mapclass{
+    public:
+	int gateN;//top
+	int gateS;//bottom
+	int gateW;//left
+	int gateE;//right
+    int connection1[2];
+    int connection2[2];
+	char terrain[ROW][COL];
+    NPC* npcArray[NPCROW][NPCCOL];
+    PC* playerT;
+    int NPCSInit; 
+    heap* terrainHeap;
+}mapclass;
+
+
+//Global map. Array of map pointers
+typedef class worldMap{
+    public:
+    mapclass* arr[worldYSize][worldXSize];
+    PC* player;
+}worldMap;
+
+//char startMap[ROW][COL];
+int queSize = 0;
+int getQueSize(){
+    return queSize;
+}
+
+//prototype declerations
+    void createMap(int x, int y, worldMap *wm, int npcNum);
+    void dijkstras(int row, int col, mapclass* terrainMap, int weightArr[NPCROW][NPCCOL], int type);
+    void printWeightMap(int weightArr[NPCROW][NPCCOL]);
+    void moveCharecters(worldMap *wm, mapclass *terrainMap, int numTrainers);
+    int randomGenerator(int upper, int lower);
+    int calcCost(int npc, char terrainType);
+    int canMove(mapclass *terrainMap, int symb, int row, int col, int prevRow, int prevCol);
+    int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc);
+    void enterBuilding();
+    void trainerList(mapclass *terrainMap, PC *pc);
+    void enterBattle(NPC *npc);
+    void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum);
+    void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h);
+    
 
 //Prints map out to the terminal
 void printMap(mapclass *map, PC *pc){
@@ -2233,17 +2247,7 @@ void parsePokemonFile(){
             
   
         }
-        for (int j = 0; j < pokemonVector.size(); j++){
-            printf("%d,", pokemonVector[j].id != INT_MAX ? pokemonVector[j].id : -1);
-            printf("%s, ", strcmp(pokemonVector[j].identifier, "") != 0 ? pokemonVector[j].identifier : "-1");
-            printf("%d, ", pokemonVector[j].species_id != INT_MAX ? pokemonVector[j].species_id : -1);
-            printf("%d, ", pokemonVector[j].height != INT_MAX ? pokemonVector[j].height : -1);
-            printf("%d, ", pokemonVector[j].weight != INT_MAX ? pokemonVector[j].weight : -1);
-            printf("%d, ", pokemonVector[j].base_experience != INT_MAX ? pokemonVector[j].base_experience : -1);
-            printf("%d, ", pokemonVector[j].order != INT_MAX ? pokemonVector[j].order: -1);
-            printf("%d", pokemonVector[j].is_default != INT_MAX ? pokemonVector[j].is_default: -1);
-            printf("\n");
-        }
+        
         //printf("%d\n",(int)pokemonVector.size());
         fclose(file);
         //globalPokemonVector = &pokemonVector;
@@ -2649,6 +2653,8 @@ void parsePokemonTypesFile(){
         printf("File not found: pokemon_types.csv\n");
     }
 }
+
+
 
 int main(int argc, char *argv[]){
 
