@@ -1079,6 +1079,15 @@ void setMap(mapclass *map, int x, int y, worldMap *wm){
 
 }
 
+void pcChooseStarterPokemon(PC *pc){
+    Pokemon pk1(0);
+    Pokemon pk2(0);
+    Pokemon pk3(0);
+
+    mvprintw(0,0, "Choose your starter Pokemon: ");
+    mvprintw(1,0, "1. ");
+}
+
 /*Set all pointers to NULL*/
 void createWorldMap(worldMap *wm){
     int i;
@@ -1096,6 +1105,9 @@ void createWorldMap(worldMap *wm){
     //wm->player->col = 40;
     wm->player->globalX = 200;
     wm->player->globalY = 200;
+
+    //initialize player pokemons
+    pcChooseStarterPokemon(wm->player);
 }
 
 /*spawns a pc in the terrain map*/
@@ -2879,8 +2891,6 @@ int main(int argc, char *argv[]){
     Pokemon pk(0);
     pk.printPokemon();
     
-
-    return 0;
     //return 0;
     
     initscr();
