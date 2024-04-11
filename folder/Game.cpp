@@ -265,6 +265,8 @@ class Pokemon{
     int baseDefense;
     int iv;
     int shiny;
+    char move1[50];
+    char move2[50];
 
     
     Pokemon(){
@@ -317,6 +319,8 @@ class Pokemon{
         } else {
             shiny = 0;
         }
+
+        
     }
 
     Pokemon(int id, int distance){
@@ -1092,21 +1096,20 @@ void pcChooseStarterPokemon(PC *pc){
     refresh();
 
     int choice = 0;
-    while (choice != 1 && choice != 2 && choice != 3){
-        choice = getch();
-       if (choice == '1'){
-            pc->pokemons[0] = pk1;
-            delete pk2;
-            delete pk3;
-        } else if (choice == '2'){
-            pc->pokemons[0] = pk2;
-            delete pk1;
-            delete pk3;
-        } else if (choice == '3'){
-            pc->pokemons[0] = pk3;
-            delete pk1;
-            delete pk2;
-        }
+    
+    choice = getch();
+    if (choice == '1'){
+        pc->pokemons[0] = pk1;
+        delete pk2;
+        delete pk3;
+    } else if (choice == '2'){
+        pc->pokemons[0] = pk2;
+        delete pk1;
+        delete pk3;
+    } else if (choice == '3'){
+        pc->pokemons[0] = pk3;
+        delete pk1;
+        delete pk2;
     }
 }
 
