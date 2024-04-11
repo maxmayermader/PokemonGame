@@ -418,7 +418,7 @@ typedef class PC{
     int col;
     int globalX;
     int globalY;
-    Pokemon pokemons[6];
+    Pokemon* pokemons[6];
 }PC;
 
 typedef class heapNode {
@@ -1080,30 +1080,32 @@ void setMap(mapclass *map, int x, int y, worldMap *wm){
 }
 
 void pcChooseStarterPokemon(PC *pc){
-    Pokemon pk1(0);
-    Pokemon pk2(0);
-    Pokemon pk3(0);
+    Pokemon* pk1 = new Pokemon(0);
+    Pokemon* pk2 = new Pokemon(0);
+    Pokemon* pk3 = new Pokemon(0);
 
     clear();
-    mvprintw(0,0, "Choose your starter Pokemon: ");
-    mvprintw(1,0, "Name is %s ! They are level %d,  health is %d, attack is %d, defense is %d.", pk1.identfier, pk1.level, pk1.health, pk1.attack, pk1.defense);
-    mvprintw(2,0, "Name is %s ! They are level %d,  health is %d, attack is %d, defense is %d.", pk2.identfier, pk2.level, pk2.health, pk2.attack, pk2.defense);
-    mvprintw(3,0, "Name is %s ! They are level %d,  health is %d, attack is %d, defense is %d.", pk3.identfier, pk3.level, pk3.health, pk3.attack, pk3.defense);
+    mvprintw(0,0, "Choose your starter Pokemon(enter 1, 2, or 3): ");
+    mvprintw(1,0, "Name is %s! They are level %d,  health is %d, attack is %d, defense is %d.", pk1->identfier, pk1->level, pk1->health, pk1->attack, pk1->defense);
+    mvprintw(2,0, "Name is %s! They are level %d,  health is %d, attack is %d, defense is %d.", pk2->identfier, pk2->level, pk2->health, pk2->attack, pk2->defense);
+    mvprintw(3,0, "Name is %s! They are level %d,  health is %d, attack is %d, defense is %d.", pk3->identfier, pk3->level, pk3->health, pk3->attack, pk3->defense);
     refresh();
 
     int choice = 0;
     while (choice != 1 && choice != 2 && choice != 3){
         choice = getch();
-        if (choice == '1'){
+       if (choice == '1'){
             pc->pokemons[0] = pk1;
-            ~pk2();
-            ~pk3();
+            delete pk2;
+            delete pk3;
         } else if (choice == '2'){
             pc->pokemons[0] = pk2;
-            
+            delete pk1;
+            delete pk3;
         } else if (choice == '3'){
             pc->pokemons[0] = pk3;
-            
+            delete pk1;
+            delete pk2;
         }
     }
 }
@@ -2366,8 +2368,8 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
        int ranVal = randomGenerator(10, 1);
 
        if (ranVal == 1){
-           Pokemon spawnedPokemon(DFC(pc->globalX, pc->globalY));
-           mvprintw(0,0, "A wild %s appeared! They are level %d,  health is %d, attack is %d, defense is %d.", spawnedPokemon.identfier, spawnedPokemon.level, spawnedPokemon.health, spawnedPokemon.attack, spawnedPokemon.defense);
+           Pokemon* spawnedPokemon = new Pokemon(DFC(pc->globalX, pc->globalY));
+           mvprintw(0,0, "A wild %s appeared! They are level %d,  health is %d, attack is %d, defense is %d.", spawnedPokemon->identfier, spawnedPokemon->level, spawnedPokemon->health, spawnedPokemon->attack, spawnedPokemon->defense);
            refresh();
        }
     }
