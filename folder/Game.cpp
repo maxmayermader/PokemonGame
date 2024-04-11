@@ -2348,6 +2348,7 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
        int ranVal = randomGenerator(10, 1);
        if (ranVal == 1){
            Pokemon spawnedPokemon(DFC(pc->globalX, pc->globalY));
+           mvprintw(0,0, "A wild %s appeared! They are level %d,  health is %d, attack is %d, defense is %d.", spawnedPokemon.identfier, spawnedPokemon.level, spawnedPokemon.health, spawnedPokemon.attack, spawnedPokemon.defense);
        }
     }
 
