@@ -32,6 +32,8 @@
 #define WATER '~'
 #define PLAYERCHAR '@'
 
+#define DFC(x,y) (abs(x - 200) + abs(y - 200))
+
 int randomGenerator(int upper, int lower){
   return (rand() % (upper - lower + 1)) + lower;
 }
@@ -1189,7 +1191,7 @@ void createMap(int x, int y, worldMap *wm, int npcNum){
     mapclass *newMap = (mapclass*)malloc(sizeof(mapclass)); //malloc new mapclass
     setMap(newMap, x, y, wm); //set mapclass terrain to pseudo NULL values
     createTerrain(newMap); //create a terrain and set it to newMap
-    int distanceFromCenter = abs(x - 200) + abs(y - 200);
+    int distanceFromCenter = DFC(x, y); //calculate distance from center
     makeRoads(newMap, distanceFromCenter, x, y, wm);//add roads to map
 
     wm->arr[x][y] = newMap; //add new terrain map to world map
@@ -2342,6 +2344,13 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
     }
     if (terrainMap->npcArray[pc->row-1][pc->col-1] != NULL && terrainMap->npcArray[pc->row-1][pc->col-1]->defeated == 0)
         enterBattle(terrainMap->npcArray[pc->row-1][pc->col-1]);
+    if(terrainMap->terrain[pc->row][pc->col] == GRASS){
+       int ranVal = randomGenerator(10, 1);
+       if (ranVal == 1){
+           Pokemon spawnedPokemon(DFC(pc->globalX, pc->globalY));
+       }
+    }
+
     return calcCost(2, terrainMap->terrain[pc->row][pc->col]);
 }
 
