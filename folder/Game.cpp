@@ -418,7 +418,7 @@ typedef class PC{
     int col;
     int globalX;
     int globalY;
-    Pokemon* pokemons[6];
+    Pokemon pokemons[6];
 }PC;
 
 typedef class heapNode {
@@ -1084,8 +1084,28 @@ void pcChooseStarterPokemon(PC *pc){
     Pokemon pk2(0);
     Pokemon pk3(0);
 
+    clear();
     mvprintw(0,0, "Choose your starter Pokemon: ");
-    mvprintw(1,0, "1. ");
+    mvprintw(1,0, "Name is %s ! They are level %d,  health is %d, attack is %d, defense is %d.", pk1.identfier, pk1.level, pk1.health, pk1.attack, pk1.defense);
+    mvprintw(2,0, "Name is %s ! They are level %d,  health is %d, attack is %d, defense is %d.", pk2.identfier, pk2.level, pk2.health, pk2.attack, pk2.defense);
+    mvprintw(3,0, "Name is %s ! They are level %d,  health is %d, attack is %d, defense is %d.", pk3.identfier, pk3.level, pk3.health, pk3.attack, pk3.defense);
+    refresh();
+
+    int choice = 0;
+    while (choice != 1 && choice != 2 && choice != 3){
+        choice = getch();
+        if (choice == '1'){
+            pc->pokemons[0] = pk1;
+            ~pk2();
+            ~pk3();
+        } else if (choice == '2'){
+            pc->pokemons[0] = pk2;
+            
+        } else if (choice == '3'){
+            pc->pokemons[0] = pk3;
+            
+        }
+    }
 }
 
 /*Set all pointers to NULL*/
