@@ -161,7 +161,7 @@ std::vector<Stats> statsVector;
 std::vector<PokemonTypes> pokemonTypesVector;
 
 bool searchPokemonVector(int id, PokemonFile *p){
-    for (int i = 0; i < (int)pokemonVector.size(); i++){
+    for (int i = 1; i < (int)pokemonVector.size(); i++){
         if (pokemonVector[i].id == id){
             *p = pokemonVector[i];
             return true;
@@ -171,7 +171,7 @@ bool searchPokemonVector(int id, PokemonFile *p){
 }
 
 bool searchMovesVector(int id, Moves *m){
-    for (int i = 0; i < (int)movesVector.size(); i++){
+    for (int i = 1; i < (int)movesVector.size(); i++){
         if (movesVector[i].id == id){
             *m = movesVector[i];
             return true;
@@ -181,7 +181,7 @@ bool searchMovesVector(int id, Moves *m){
 }
 
 bool searchPokemonMovesVector(int id, PokemonMoves *pm){
-    for (int i = 0; i < (int)pokemonMovesVector.size(); i++){
+    for (int i = 1; i < (int)pokemonMovesVector.size(); i++){
         if (pokemonMovesVector[i].pokemon_id == id){
             *pm = pokemonMovesVector[i];
             return true;
@@ -191,7 +191,7 @@ bool searchPokemonMovesVector(int id, PokemonMoves *pm){
 }
 
 bool searchPokemonSpeciesVector(int id, PokemonSpecies *ps){
-    for (int i = 0; i < (int)pokemonSpeciesVector.size(); i++){
+    for (int i = 1; i < (int)pokemonSpeciesVector.size(); i++){
         if (pokemonSpeciesVector[i].id == id){
             *ps = pokemonSpeciesVector[i];
             return true;
@@ -201,7 +201,7 @@ bool searchPokemonSpeciesVector(int id, PokemonSpecies *ps){
 }
 
 bool searchExperienceVector(int level, Experience *e){
-    for (int i = 0; i < (int)experienceVector.size(); i++){
+    for (int i = 1; i < (int)experienceVector.size(); i++){
         if (experienceVector[i].level == level){
             *e = experienceVector[i];
             return true;
@@ -211,7 +211,7 @@ bool searchExperienceVector(int level, Experience *e){
 }
 
 bool searchTypeNamesVector(int id, TypeNames *tn){
-    for (int i = 0; i < (int)typeNamesVector.size(); i++){
+    for (int i = 1; i < (int)typeNamesVector.size(); i++){
         if (typeNamesVector[i].type_id == id){
             *tn = typeNamesVector[i];
             return true;
@@ -221,7 +221,7 @@ bool searchTypeNamesVector(int id, TypeNames *tn){
 }
 
 bool searchPokemonStatsVector(int id, int stats_id, PokemonStats *ps){
-    for (int i = 0; i < (int)pokemonStatsVector.size(); i++){
+    for (int i = 1; i < (int)pokemonStatsVector.size(); i++){
         if (pokemonStatsVector[i].pokemon_id == id && pokemonStatsVector[i].stat_id == stats_id){
             *ps = pokemonStatsVector[i];
             return true;
@@ -231,7 +231,7 @@ bool searchPokemonStatsVector(int id, int stats_id, PokemonStats *ps){
 }
 
 bool searchStatsVector(int id, Stats *s){
-    for (int i = 0; i < (int)statsVector.size(); i++){
+    for (int i = 1; i < (int)statsVector.size(); i++){
         if (statsVector[i].id == id){
             *s = statsVector[i];
             return true;
@@ -241,7 +241,7 @@ bool searchStatsVector(int id, Stats *s){
 }
 
 bool searchPokemonTypesVector(int id, PokemonTypes *pt){
-    for (int i = 0; i < (int)pokemonTypesVector.size(); i++){
+    for (int i = 1; i < (int)pokemonTypesVector.size(); i++){
         if (pokemonTypesVector[i].pokemon_id == id){
             *pt = pokemonTypesVector[i];
             return true;
@@ -275,13 +275,12 @@ class Pokemon{
         strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
         PokemonStats ps;
         searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
-        baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
+        health = baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
         level = 1; // Set the initial level for this Pokemon to 1
-        health = floor((baseHealth + iv)*2/ 100) + level + 10; // Calculate the health for this Pokemon using the formula: floor((base + iv) * 2 / 100) + level + 10
         searchPokemonStatsVector(id, 2, &ps);
-        baseAttack = ps.base_stat;
+        attack = baseAttack = ps.base_stat;
         searchPokemonStatsVector(id, 3, &ps);
-        baseDefense = ps.base_stat; 
+        defense = baseDefense = ps.base_stat; 
         gender = randomGenerator(1,0); // Generate a random gender for this Pokemon, 0 or 1
         if (rand() % 8192 == 0){ // Determine if the Pokemon is shiny (rare variant) with a 1 in 8192 chance
             shiny = 1;
@@ -298,21 +297,20 @@ class Pokemon{
         strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
         PokemonStats ps;
         searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
-        baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
+        health = baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
         if (distance <= 200){
-            if (distance == 0){
-                level = 5;
+            if (distance < 2){
+                level = 1;
             } else {
                 level = randomGenerator(distance / 2 , 1); // If the distance is less than or equal to 200, set the level to a random number between 1 and distance/2
             }        
         } else {
             level = randomGenerator(100, int((distance - 200) / 2)); // If the distance is more than 200, set the level to a random number between (distance - 200)/2 and 100
         }
-        health = floor((baseHealth + iv)*2/ 100) + level + 10; // Calculate the health for this Pokemon using the formula: floor((base + iv) * 2 / 100) + level + 10
         searchPokemonStatsVector(id, 2, &ps);
-        baseAttack = ps.base_stat;
+        attack = baseAttack = ps.base_stat;
         searchPokemonStatsVector(id, 3, &ps);
-        baseDefense = ps.base_stat; // Calculate the defense for this Pokemon using the formula: floor((base + iv) * 2 / 100) + 5
+        defense = baseDefense = ps.base_stat; // Calculate the defense for this Pokemon using the formula: floor((base + iv) * 2 / 100) + 5
         gender = randomGenerator(1,0); // Generate a random gender for this Pokemon, 0 or 1
         if (rand() % 8192 == 0){ // Determine if the Pokemon is shiny (rare variant) with a 1 in 8192 chance
             shiny = 1;
@@ -331,8 +329,8 @@ class Pokemon{
         searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
         baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
         if (distance <= 200){
-            if (distance == 0){
-                level = 5;
+            if (distance < 2){
+                level = 1;
             } else {
                 level = randomGenerator(distance / 2 , 1); // If the distance is less than or equal to 200, set the level to a random number between 1 and distance/2
             }
@@ -341,9 +339,9 @@ class Pokemon{
         }
         health = floor((baseHealth + iv)*2/ 100) + level + 10; // Calculate the health for this Pokemon using the formula: floor((base + iv) * 2 / 100) + level + 10
         searchPokemonStatsVector(id, 2, &ps);
-        attack = ps.base_stat;
+        attack = baseAttack = ps.base_stat;
         searchPokemonStatsVector(id, 3, &ps);
-        defense = ps.base_stat; // Calculate the defense for this Pokemon using the formula: floor((base + iv) * 2 / 100) + 5
+        defense = baseDefense = ps.base_stat; // Calculate the defense for this Pokemon using the formula: floor((base + iv) * 2 / 100) + 5
         gender = randomGenerator(1,0); // Generate a random gender for this Pokemon, 0 or 1
         if (rand() % 8192 == 0){ // Determine if the Pokemon is shiny (rare variant) with a 1 in 8192 chance
             shiny = 1;
@@ -2346,9 +2344,11 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
         enterBattle(terrainMap->npcArray[pc->row-1][pc->col-1]);
     if(terrainMap->terrain[pc->row][pc->col] == GRASS){
        int ranVal = randomGenerator(10, 1);
+
        if (ranVal == 1){
            Pokemon spawnedPokemon(DFC(pc->globalX, pc->globalY));
            mvprintw(0,0, "A wild %s appeared! They are level %d,  health is %d, attack is %d, defense is %d.", spawnedPokemon.identfier, spawnedPokemon.level, spawnedPokemon.health, spawnedPokemon.attack, spawnedPokemon.defense);
+           refresh();
        }
     }
 
