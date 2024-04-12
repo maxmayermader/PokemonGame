@@ -2420,12 +2420,30 @@ void enterBattle(NPC *npc, PC *pc) {
     mvprintw(npc->numPK+2, 0, "Your Pokemon %s level %d has... health %d, attack is %d, defense is %d. ", pc->pokemons[0]->identfier, pc->pokemons[0]->level, pc->pokemons[0]->health, pc->pokemons[0]->attack, pc->pokemons[0]->defense);
     mvprintw(npc->numPK+3, 0, "You win");
     pc->pokemons[0]->levelUp();
+
+    mvprintw(npc->numPK+4,0, "You now have leveled up");
+
+    mvprintw(npc->numPK+5,0, "ID: %d", pc->pokemons[0]->id);
+    mvprintw(npc->numPK+6,0, "Identifier: %s", pc->pokemons[0]->identfier);
+    mvprintw(npc->numPK+7,0, "Health: %d", pc->pokemons[0]->health);
+    mvprintw(npc->numPK+8,0, "Level: %d", pc->pokemons[0]->level);
+    mvprintw(npc->numPK+9,0, "Attack: %d", pc->pokemons[0]->attack);
+    mvprintw(npc->numPK+10,0, "Defense: %d", pc->pokemons[0]->defense);
+    mvprintw(npc->numPK+11,0, "Gender: %d", pc->pokemons[0]->gender);
+    mvprintw(npc->numPK+12,0, "Base Health: %d", pc->pokemons[0]->baseHealth);
+    mvprintw(npc->numPK+13,0, "Shiny: %d", pc->pokemons[0]->shiny);
+    mvprintw(npc->numPK+14,0, "Speed: %d", pc->pokemons[0]->speed);
+    mvprintw(npc->numPK+15,0, "Special Attack: %d", pc->pokemons[0]->specialAttack);
+    mvprintw(npc->numPK+16,0, "Special Defense: %d", pc->pokemons[0]->specialDefense);
+    for(int i=0; i<(int)pc->pokemons[0]->pkMoves.size(); i++){
+        mvprintw(npc->numPK+17+i,0, "Move %d: %s     move id %d", i+1, pc->pokemons[0]->pkMoves[i].identifier, pc->pokemons[0]->pkMoves[i].id);
+    }
     refresh();
     input = getch();
     while ((input = getch()) != 27) {
 
     }
-   pc->pokemons[0]->printPokemonCurses();
+   
 }
 
 int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
