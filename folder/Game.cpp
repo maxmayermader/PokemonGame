@@ -180,11 +180,11 @@ bool searchMovesVector(int id, Moves *m){
     return false;
 }
 
-bool searchPokemonMovesVector(int id, PokemonMoves *pm){
+bool searchPokemonMovesVector(int id, int level, PokemonMoves *pm1, PokemonMoves *pm2){
     for (int i = 1; i < (int)pokemonMovesVector.size(); i++){
-        if (pokemonMovesVector[i].pokemon_id == id){
-            *pm = pokemonMovesVector[i];
-            return true;
+        if (pokemonMovesVector[i].pokemon_id == id && pokemonMovesVector[i].level <= level && pm2->move_id != pokemonMovesVector[i].move_id){
+            *pm1 = pokemonMovesVector[i];
+            continue;
         }
     }
     return false;
@@ -269,7 +269,7 @@ class Pokemon{
     char move2[50];
 
     
-    Pokemon(){
+    Pokemon(){ //Incomplete
         id = randomGenerator(1092, 1); // Generate a random ID for the Pokemon, between 1 and 1092
         iv = randomGenerator(15, 0); // Generate a random Individual Value (IV) for the Pokemon, between 0 and 15
         PokemonFile pf;
@@ -289,9 +289,10 @@ class Pokemon{
         } else {
             shiny = 0;
         }
+
     }
 
-    Pokemon(int distance){
+    Pokemon(int distance){ //T H I S 
         id = randomGenerator(1092, 1); // Generate a random ID for the Pokemon, between 1 and 1092
         iv = randomGenerator(15, 0); // Generate a random Individual Value (IV) for the Pokemon, between 0 and 15
         PokemonFile pf;
@@ -320,10 +321,19 @@ class Pokemon{
             shiny = 0;
         }
 
+        PokemonMoves pm1;
+        PokemonMoves pm2;
+        Moves moves;
+        searchPokemonMovesVector(id, level, &pm1, &pm2);
+        searchMovesVector(pm1.move_id, &moves);
+        strcpy(move1, moves.identifier);
+        searchPokemonMovesVector(id, level, &pm2, &pm1);
+        searchMovesVector(pm2.move_id, &moves);
+        strcpy(move2, moves.identifier);
         
     }
 
-    Pokemon(int id, int distance){
+    Pokemon(int id, int distance){ //incomplete
         this->id = id;
         iv = randomGenerator(15, 0); // Generate a random Individual Value (IV) for the Pokemon, between 0 and 15
         PokemonFile pf;
@@ -373,6 +383,8 @@ class Pokemon{
         printf("health: %d\n", health);
         printf("IV: %d\n", iv);
         printf("Shiny: %d\n", shiny);
+        printf("Move 1: %s\n", move1);
+        printf("Move 2: %s\n", move2);
     }
 
 
@@ -2926,7 +2938,7 @@ int main(int argc, char *argv[]){
     Pokemon pk(0);
     pk.printPokemon();
     
-    //return 0;
+    return 0;
     
     initscr();
     createWorldMap(&wm);
