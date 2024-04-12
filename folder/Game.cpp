@@ -504,6 +504,7 @@ int getQueSize(){
     void enterBattle(NPC *npc);
     void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum);
     void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h);
+    void encounterPokemon(PC *pc);
     
 
 //Prints map out to the terminal
@@ -2383,13 +2384,26 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
        int ranVal = randomGenerator(10, 1);
 
        if (ranVal == 1){
-           Pokemon* spawnedPokemon = new Pokemon(DFC(pc->globalX, pc->globalY));
-           mvprintw(0,0, "A wild %s appeared! They are level %d,  health is %d, attack is %d, defense is %d.", spawnedPokemon->identfier, spawnedPokemon->level, spawnedPokemon->health, spawnedPokemon->attack, spawnedPokemon->defense);
-           refresh();
+           encounterPokemon(pc);
        }
     }
 
     return calcCost(2, terrainMap->terrain[pc->row][pc->col]);
+}
+
+void encounterPokemon(PC *pc){
+    Pokemon* spawnedPokemon = new Pokemon(DFC(pc->globalX, pc->globalY));
+    clear();
+    mvprintw(0,0, "A wild %s appeared! They are level %d,  health is %d, attack is %d, defense is %d. They know %s and %s", spawnedPokemon->identfier, spawnedPokemon->level, spawnedPokemon->health, spawnedPokemon->attack, spawnedPokemon->defense, spawnedPokemon->move1, spawnedPokemon->move2);
+    mvprintw(1,0, "Press 'esc' to run");
+    refresh();
+    keypad(stdscr, TRUE);
+    int ch;
+        while ((ch = getch()) != 27){
+
+        }
+    return;
+
 }
 
 void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum){
@@ -2938,7 +2952,7 @@ int main(int argc, char *argv[]){
     Pokemon pk(0);
     pk.printPokemon();
     
-    return 0;
+    //return 0;
     
     initscr();
     createWorldMap(&wm);
