@@ -334,36 +334,6 @@ class Pokemon{
         
     }
 
-    Pokemon(int id, int distance){ //incomplete
-        this->id = id;
-        iv = randomGenerator(15, 0); // Generate a random Individual Value (IV) for the Pokemon, between 0 and 15
-        PokemonFile pf;
-        searchPokemonVector(id, &pf); 
-        strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
-        PokemonStats ps;
-        searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
-        baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
-        if (distance <= 200){
-            if (distance < 2){
-                level = 1;
-            } else {
-                level = randomGenerator(distance / 2 , 1); // If the distance is less than or equal to 200, set the level to a random number between 1 and distance/2
-            }
-        } else {
-            level = randomGenerator(100, (distance - 200) / 2); // If the distance is more than 200, set the level to a random number between (distance - 200)/2 and 100
-        }
-        health = floor((baseHealth + iv)*2/ 100) + level + 10; // Calculate the health for this Pokemon using the formula: floor((base + iv) * 2 / 100) + level + 10
-        searchPokemonStatsVector(id, 2, &ps);
-        attack = baseAttack = ps.base_stat;
-        searchPokemonStatsVector(id, 3, &ps);
-        defense = baseDefense = ps.base_stat; // Calculate the defense for this Pokemon using the formula: floor((base + iv) * 2 / 100) + 5
-        gender = randomGenerator(1,0); // Generate a random gender for this Pokemon, 0 or 1
-        if (rand() % 8192 == 0){ // Determine if the Pokemon is shiny (rare variant) with a 1 in 8192 chance
-            shiny = 1;
-        } else {
-            shiny = 0;
-        }
-    }
 
     void levelUp(){
         level++;
@@ -403,6 +373,7 @@ typedef class NPC{
     int weightArr[NPCROW][NPCCOL]; //weightMap. Might change it to pointer arr
     int defeated;
     Pokemon* pokemons[6];
+    int numPK;
 }NPC;
 
 //NPC Enums
@@ -502,7 +473,7 @@ int getQueSize(){
     int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc);
     void enterBuilding();
     void trainerList(mapclass *terrainMap, PC *pc);
-    void enterBattle(NPC *npc);
+    void enterBattle(NPC *npc, PC *pc);
     void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum);
     void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h);
     void encounterPokemon(PC *pc);
@@ -1169,6 +1140,11 @@ void spawnNPC(worldMap *wm, mapclass *terrainMap, int npcType){
             }
         }
     }
+    int numPK = randomGenerator(5, 0);
+    npc->numPK = numPK;
+    for(int i=0; i<numPK; i++){
+        npc->pokemons[i] = new Pokemon(DFC(terrainMap->playerT->globalX, terrainMap->playerT->globalY));
+    }
 }
 
 /*adds all npcs to terrain map array*/
@@ -1218,6 +1194,8 @@ void placeNPCS(worldMap *wm, mapclass *terrainMap, int npcNum){
       npcNum--;  
     }
   }
+
+  
     
 }
 
@@ -2129,7 +2107,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
-                        enterBattle(newHN->npc);
+                        enterBattle(newHN->npc, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -2142,7 +2120,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
-                        enterBattle(newHN->npc);
+                        enterBattle(newHN->npc, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -2155,7 +2133,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
-                        enterBattle(newHN->npc);
+                        enterBattle(newHN->npc, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -2167,7 +2145,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
-                        enterBattle(newHN->npc);
+                        enterBattle(newHN->npc, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -2178,7 +2156,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
-                        enterBattle(newHN->npc);
+                        enterBattle(newHN->npc, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -2190,7 +2168,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
-                        enterBattle(newHN->npc);
+                        enterBattle(newHN->npc, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -2331,18 +2309,21 @@ void trainerList(mapclass *terrainMap, PC *pc){
   clear();
 }
 
-void enterBattle(NPC *npc) {
-  clear();
-  int input;
+void enterBattle(NPC *npc, PC *pc) {
+    clear();
+    int input;
     npc->defeated = 1;
     // printf("u win");
-  mvprintw(11, 18, "Trainer Defeated! Press 'esc' to exit!");
-input = getch();
-  while ((input = getch()) != 27) {
-  
-  }
+    mvprintw(1, 0, "Trainer wants to battle! They have...");
+    for(int i = 0; i < npc->numPK; i++) {
+        mvprintw(i+2, 0, " a %s ! They are level %d,  health is %d, attack is %d, defense is %d. They know %s and %s.", npc->pokemons[i]->identfier, npc->pokemons[i]->level, npc->pokemons[i]->health, npc->pokemons[i]->attack, npc->pokemons[i]->defense, npc->pokemons[i]->move1, npc->pokemons[i]->move2);
+    }
+    refresh();
+    input = getch();
+    while ((input = getch()) != 27) {
 
-  clear();
+    }
+
 }
 
 int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
@@ -2380,7 +2361,7 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
             break;
     }
     if (terrainMap->npcArray[pc->row-1][pc->col-1] != NULL && terrainMap->npcArray[pc->row-1][pc->col-1]->defeated == 0)
-        enterBattle(terrainMap->npcArray[pc->row-1][pc->col-1]);
+        enterBattle(terrainMap->npcArray[pc->row-1][pc->col-1], pc);
     if(terrainMap->terrain[pc->row][pc->col] == GRASS){
        int ranVal = randomGenerator(10, 1);
 
