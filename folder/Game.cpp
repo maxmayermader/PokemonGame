@@ -506,6 +506,7 @@ int getQueSize(){
 //Prints map out to the terminal
 void printMap(mapclass *map, PC *pc){
     int i, j;
+    clear();
     start_color();
 
     init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK); //NPCs
@@ -1164,10 +1165,16 @@ void spawnNPC(worldMap *wm, mapclass *terrainMap, int npcType){
             }
         }
     }
-    int numPK = randomGenerator(5, 1);
-    npc->numPK = numPK;
-    for(int i=0; i<numPK; i++){
-        npc->pokemons[i] = new Pokemon(DFC(terrainMap->playerT->globalX, terrainMap->playerT->globalY));
+    int numPK = randomGenerator(10, 1);
+    npc->numPK = 1;
+    npc->pokemons[0] = new Pokemon(DFC(terrainMap->playerT->globalX, terrainMap->playerT->globalY));
+    for(int i=1; i<6; i++){
+        if(randomGenerator(10, 1) <= 6){
+            npc->pokemons[i] = new Pokemon(DFC(terrainMap->playerT->globalX, terrainMap->playerT->globalY));
+            npc->numPK++;
+        } else {
+            break;
+        }
     }
 }
 
@@ -2400,9 +2407,13 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
 void encounterPokemon(PC *pc){
     Pokemon* spawnedPokemon = new Pokemon(DFC(pc->globalX, pc->globalY));
     clear();
-    mvprintw(0,0, "A wild %s appeared! They are level %d,  health is %d, attack is %d, defense is %d. They know %s and %s.", spawnedPokemon->identfier, spawnedPokemon->level, spawnedPokemon->health, spawnedPokemon->attack, spawnedPokemon->defense, spawnedPokemon->move1, spawnedPokemon->move2);
-    mvprintw(1,0, "Press 'esc' to run");
-    mvprintw(2,0, "ID is %d", spawnedPokemon->id);
+    mvprintw(0,0, "A wild %s appeared! They are level %d,  health is %d, attack is %d, defense is %d.", spawnedPokemon->identfier, spawnedPokemon->level, spawnedPokemon->health, spawnedPokemon->attack, spawnedPokemon->defense);
+    int i;
+    for(i = 0; i<(int)spawnedPokemon->pkMoves.size(); i++){
+        mvprintw(i+1,0, "They know %s", spawnedPokemon->pkMoves[i].identifier);
+    }
+    mvprintw(i+1,0, "Press 'esc' to run, or 'f' to fight!");
+    mvprintw(i+2,0, "ID is %d", spawnedPokemon->id);
     refresh();
     keypad(stdscr, TRUE);
     int ch;
@@ -2955,6 +2966,8 @@ int main(int argc, char *argv[]){
     printf("%d\n", numTrainers);
 
     Pokemon pk(0);
+    pk.printPokemon();
+    pk.levelUp();
     pk.printPokemon();
     
     //return 0;
