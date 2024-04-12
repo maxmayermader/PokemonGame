@@ -161,12 +161,13 @@ std::vector<Stats> statsVector;
 std::vector<PokemonTypes> pokemonTypesVector;
 
 bool searchPokemonVector(int id, PokemonFile *p){
-    for (int i = 1; i < (int)pokemonVector.size(); i++){
-        if (pokemonVector[i].id == id){
-            *p = pokemonVector[i];
-            return true;
-        }
-    }
+    // for (int i = 1; i < (int)pokemonVector.size(); i++){
+    //     if (pokemonVector[i].id == id){
+    //         *p = pokemonVector[i];
+    //         return true;
+    //     }
+    // }
+    *p = pokemonVector[id];
     return false;
 }
 
@@ -270,10 +271,10 @@ class Pokemon{
 
     
     Pokemon(){ //Incomplete
-        id = randomGenerator(1092, 1); // Generate a random ID for the Pokemon, between 1 and 1092
-        iv = randomGenerator(15, 0); // Generate a random Individual Value (IV) for the Pokemon, between 0 and 15
         PokemonFile pf;
-        searchPokemonVector(id, &pf); 
+        searchPokemonVector(randomGenerator(1092, 1), &pf);
+        id = pf.id;
+        iv = randomGenerator(15, 0); // Generate a random Individual Value (IV) for the Pokemon, between 0 and 15 
         strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
         PokemonStats ps;
         searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
@@ -293,10 +294,10 @@ class Pokemon{
     }
 
     Pokemon(int distance){ //T H I S 
-        id = randomGenerator(1092, 1); // Generate a random ID for the Pokemon, between 1 and 1092
-        iv = randomGenerator(15, 0); // Generate a random Individual Value (IV) for the Pokemon, between 0 and 15
         PokemonFile pf;
-        searchPokemonVector(id, &pf); 
+        searchPokemonVector(randomGenerator(1092, 1), &pf);
+        id = pf.id; // Generate a random ID for the Pokemon, between 1 and 1092
+        iv = randomGenerator(15, 0); // Generate a random Individual Value (IV) for the Pokemon, between 0 and 15
         strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
         PokemonStats ps;
         searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
@@ -2394,14 +2395,13 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
 void encounterPokemon(PC *pc){
     Pokemon* spawnedPokemon = new Pokemon(DFC(pc->globalX, pc->globalY));
     clear();
-    mvprintw(0,0, "A wild %s appeared! They are level %d,  health is %d, attack is %d, defense is %d. They know %s and %s", spawnedPokemon->identfier, spawnedPokemon->level, spawnedPokemon->health, spawnedPokemon->attack, spawnedPokemon->defense, spawnedPokemon->move1, spawnedPokemon->move2);
+    mvprintw(0,0, "A wild %s appeared! They are level %d,  health is %d, attack is %d, defense is %d. They know %s and %s.", spawnedPokemon->identfier, spawnedPokemon->level, spawnedPokemon->health, spawnedPokemon->attack, spawnedPokemon->defense, spawnedPokemon->move1, spawnedPokemon->move2);
     mvprintw(1,0, "Press 'esc' to run");
+    mvprintw(2,0, "ID is %d", spawnedPokemon->id);
     refresh();
     keypad(stdscr, TRUE);
     int ch;
-        while ((ch = getch()) != 27){
-
-        }
+        while ((ch = getch()) != 27){}
     return;
 
 }
