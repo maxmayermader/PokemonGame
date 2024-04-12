@@ -181,11 +181,20 @@ bool searchMovesVector(int id, Moves *m){
     return false;
 }
 
-bool searchPokemonMovesVector(int id, int level, PokemonMoves *pm1, PokemonMoves *pm2){
+bool searchPokemonMovesVector(int id, int level, PokemonMoves *pm1, PokemonMoves *pm2, std::vector<Moves> pkMoves){
     for (int i = 1; i < (int)pokemonMovesVector.size(); i++){
         if (pokemonMovesVector[i].pokemon_id == id && pokemonMovesVector[i].level <= level && pm2->move_id != pokemonMovesVector[i].move_id){
-            *pm1 = pokemonMovesVector[i];
-            continue;
+            bool dup = false;
+            for(int j=0; j<(int)pkMoves.size(); j++){
+                if(pkMoves[j].id == pokemonMovesVector[i].move_id){
+                    dup = true;
+                    break;
+                }
+            }
+            if(!dup){
+                *pm1 = pokemonMovesVector[i];
+                break;
+            }
         }
     }
     return false;
@@ -251,6 +260,7 @@ bool searchPokemonTypesVector(int id, PokemonTypes *pt){
     return false;
 }
 
+
 /*Pokemon class*/
 class Pokemon{
     public:
@@ -274,6 +284,7 @@ class Pokemon{
     std::vector<Moves> pkMoves;
     char move1[50];
     char move2[50];
+    std::vector<Moves> allPossibleMoves;
 
     
     Pokemon(){ //Incomplete
@@ -334,36 +345,77 @@ class Pokemon{
             shiny = 0;
         }
 
+        for (int i = 1; i < (int)pokemonMovesVector.size(); i++){
+            if (pokemonMovesVector[i].pokemon_id == id ){
+                PokemonMoves pm = pokemonMovesVector[i];
+                for(int j = 1; j < (int)movesVector.size(); j++){
+                    if (movesVector[j].id == pm.move_id){
+                        allPossibleMoves.push_back(movesVector[j]);
+                    }
+                }
+            }
+        }
+
+        // for (int i = 0; i < (int)allPossibleMoves.size(); i++){
+        //   printf("%s\n", allPossibleMoves[i].identifier);
+        // }
         PokemonMoves pm1;
         PokemonMoves pm2;
         Moves moves;
-        searchPokemonMovesVector(id, level, &pm1, &pm2);
+        searchPokemonMovesVector(id, level, &pm1, &pm2, pkMoves);
         searchMovesVector(pm1.move_id, &moves);
         strcpy(move1, moves.identifier);
         pkMoves.push_back(moves);
-        searchPokemonMovesVector(id, level, &pm2, &pm1);
+        searchPokemonMovesVector(id, level, &pm2, &pm1, pkMoves);
         searchMovesVector(pm2.move_id, &moves);
         strcpy(move2, moves.identifier); 
         pkMoves.push_back(moves);
+
+        health = floor((baseHealth + randomGenerator(15,0))*2*level/ 100) + level + 10;
+        attack = floor((baseAttack + randomGenerator(15,0))*2*level/ 100) + 5;
+        defense = floor((baseDefense + randomGenerator(15,0))*2*level/ 100) + 5;
+        speed = floor((baseSpeed + randomGenerator(15,0))*2*level/ 100) + 5;
+        specialDefense = floor((baseSpecialDefense + randomGenerator(15,0))*2/ 100) + 5;
+        specialAttack = floor((baseSpecialAttack + randomGenerator(15,0))*2/ 100) + 5;
  
+    }
+
+    bool searchForNewMove(){
+        // for(int i=1; i<(int)allPossibleMoves.size(); i++){
+        //     if(allPossibleMoves[i].level <= level){
+
+        //     }
+        //     for(int j=0; j<(int)pkMoves.size(); j++){
+        //         if(allPossibleMoves[i].id == pkMoves[j].id){
+        //             found = true;
+        //             break;
+        //         }
+        //     }
+        //     if(!found){
+        //         pkMoves.push_back(allPossibleMoves[i]);
+        //         return true;
+        //     }
+        // }
+        // return false;
     }
 
 
     void levelUp(){
         level++;
-        health = floor((baseHealth + randomGenerator(0,15))*2/ 100) + level + 10;
-        attack = floor((baseAttack + randomGenerator(0,15))*2/ 100) + 5;
-        defense = floor((baseDefense + randomGenerator(0,15))*2/ 100) + 5;
-        speed = floor((baseSpeed + randomGenerator(0,15))*2/ 100) + 5;
-        specialDefense = floor((baseSpecialDefense + randomGenerator(0,15))*2/ 100) + 5;
-        specialAttack = floor((baseSpecialAttack + randomGenerator(0,15))*2/ 100) + 5;
+        health = floor((baseHealth + randomGenerator(15,0))*2*level/ 100) + level + 10;
+        attack = floor((baseAttack + randomGenerator(15,0))*2*level/ 100) + 5;
+        defense = floor((baseDefense + randomGenerator(15,0))*2*level/ 100) + 5;
+        speed = floor((baseSpeed + randomGenerator(15,0))*2*level/ 100) + 5;
+        specialDefense = floor((baseSpecialDefense + randomGenerator(15,0))*2/ 100) + 5;
+        specialAttack = floor((baseSpecialAttack + randomGenerator(15,0))*2/ 100) + 5;
         
+        //searchForNewMove();
         PokemonMoves pm1;
         PokemonMoves pm2;
         Moves moves;
-        searchPokemonMovesVector(id, level, &pm1, &pm2);
-        searchMovesVector(pm1.move_id, &moves);
-        pkMoves.push_back(moves);
+        searchPokemonMovesVector(id, level, &pm1, &pm2, pkMoves);
+        if(searchMovesVector(pm1.move_id, &moves))
+            pkMoves.push_back(moves);
     }
 
     void printPokemon(){
@@ -371,15 +423,31 @@ class Pokemon{
         printf("Identifier: %s\n", identfier);
         printf("Health: %d\n", health);
         printf("Level: %d\n", level);
-        printf("Attack: %d\n", baseAttack);
-        printf("Defense: %d\n", baseDefense);
+        printf("Attack: %d\n", attack);
+        printf("Defense: %d\n", defense);
         printf("Gender: %d\n", gender);
         printf("baseHealth: %d\n", baseHealth);
-        printf("health: %d\n", health);
         printf("Shiny: %d\n", shiny);
         for(int i=0; i<(int)pkMoves.size(); i++){
-            printf("Move %d: %s\n", i+1, pkMoves[i].identifier);
+            printf("Move %d: %s      move id %d\n", i+1, pkMoves[i].identifier, pkMoves[i].id);
         }
+    }
+
+    void printPokemonCurses(){
+        clear();
+        mvprintw(0,0, "ID: %d", id);
+        mvprintw(1,0, "Identifier: %s", identfier);
+        mvprintw(2,0, "Health: %d", health);
+        mvprintw(3,0, "Level: %d", level);
+        mvprintw(4,0, "Attack: %d", attack);
+        mvprintw(5,0, "Defense: %d", defense);
+        mvprintw(6,0, "Gender: %d",gender);
+        mvprintw(7,0, "baseHealth: %d", baseHealth);
+        mvprintw(8,0, "Shiny: %d", shiny);
+        for(int i=0; i<(int)pkMoves.size(); i++){
+            mvprintw(9+i,0, "Move %d: %s     move id %d", i+1, pkMoves[i].identifier, pkMoves[i].id);
+        }
+        refresh();
     }
 
 
@@ -1165,7 +1233,6 @@ void spawnNPC(worldMap *wm, mapclass *terrainMap, int npcType){
             }
         }
     }
-    int numPK = randomGenerator(10, 1);
     npc->numPK = 1;
     npc->pokemons[0] = new Pokemon(DFC(terrainMap->playerT->globalX, terrainMap->playerT->globalY));
     for(int i=1; i<6; i++){
@@ -2340,6 +2407,7 @@ void trainerList(mapclass *terrainMap, PC *pc){
   clear();
 }
 
+
 void enterBattle(NPC *npc, PC *pc) {
     clear();
     int input;
@@ -2349,12 +2417,15 @@ void enterBattle(NPC *npc, PC *pc) {
     for(int i = 0; i < npc->numPK; i++) {
         mvprintw(i+2, 0, " a %s ! They are level %d,  health is %d, attack is %d, defense is %d. They know %s and %s.", npc->pokemons[i]->identfier, npc->pokemons[i]->level, npc->pokemons[i]->health, npc->pokemons[i]->attack, npc->pokemons[i]->defense, npc->pokemons[i]->move1, npc->pokemons[i]->move2);
     }
+    mvprintw(npc->numPK+2, 0, "Your Pokemon %s level %d has... health %d, attack is %d, defense is %d. ", pc->pokemons[0]->identfier, pc->pokemons[0]->level, pc->pokemons[0]->health, pc->pokemons[0]->attack, pc->pokemons[0]->defense);
+    mvprintw(npc->numPK+3, 0, "You win");
+    pc->pokemons[0]->levelUp();
     refresh();
     input = getch();
     while ((input = getch()) != 27) {
 
     }
-
+   pc->pokemons[0]->printPokemonCurses();
 }
 
 int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
@@ -2965,7 +3036,13 @@ int main(int argc, char *argv[]){
 
     printf("%d\n", numTrainers);
 
-    Pokemon pk(0);
+    Pokemon pk(100);
+    pk.printPokemon();
+    pk.levelUp();
+    pk.printPokemon();
+    pk.levelUp();
+    pk.printPokemon();
+    pk.levelUp();
     pk.printPokemon();
     pk.levelUp();
     pk.printPokemon();
