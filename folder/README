@@ -1,0 +1,24 @@
+***Assignemnt1.08***
+
+How to run:
+    make
+    ./Game
+
+
+Bugs:
+    when entering coordinates you will be prompted to enter coordinates you should enter like -200 -200. You wont see what you type.
+    press enter
+
+    there are pokemon moves that have the same name but have differnt ids
+
+    when you enter an interface press escape then move the pc to get map back
+
+    
+
+
+Description:
+    Pokemon class, finding them and battling npcs
+
+ignore:
+    git log > CHANGELOG
+    tar cvzf folder.tsr.gz folder/

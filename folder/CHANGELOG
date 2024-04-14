@@ -1,3 +1,156 @@
+commit 6cdcba3f033af37440c3770a34333b61d01b5325
+Author: Max P <maxmay@iastate.edu>
+Date:   Fri Apr 12 01:10:46 2024 -0500
+
+    i think ready to submit
+
+commit 1d3c75469c925371c81a4ab0fbc778ef9a8f263a
+Author: Max P <maxmay@iastate.edu>
+Date:   Fri Apr 12 00:55:59 2024 -0500
+
+    idk
+
+commit 53f104f29211bb4bf5fd7fa30f2e7425d46ffb4d
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Apr 11 23:16:32 2024 -0500
+
+    npc chance of poke
+
+commit 3b8b94f81afe733099a49fb325ab5cb0d9c8377d
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Apr 11 22:15:24 2024 -0500
+
+    Move vector
+
+commit 1567ccfbc4fe1562c599cb9ab9dcef1daa237234
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Apr 11 20:20:54 2024 -0500
+
+    npc got pokemon
+
+commit 6870a21e35a0d65dbc24ef233f2f7370ee37ead3
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Apr 11 19:49:47 2024 -0500
+
+    id fix
+
+commit e634f1ff625701128fd9fca329e74e3982f3ac95
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Apr 11 19:24:45 2024 -0500
+
+    encounter pokemon func
+
+commit da9fe879c1f712a9a816d90b506032c23c34b444
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Apr 11 19:15:05 2024 -0500
+
+    Refactor searchPokemonMovesVector function in Game.cpp to accept two PokemonMoves pointers
+
+commit 7681c86005944208fafe0a94d00379843353bace
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Apr 11 15:51:01 2024 -0500
+
+    idk what I did and what I lost
+
+commit d9d7d1d0851544c4f715076948a2a8894c83ac4e
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Apr 11 00:46:18 2024 -0500
+
+    trying to get user to choose pokemon
+
+commit fab7eef10caff1ab1c49469dc7206faa0c6f8ed1
+Author: Max P <maxmay@iastate.edu>
+Date:   Thu Apr 11 00:21:00 2024 -0500
+
+    errrrrrrrr
+
+commit d0fc4edf0c00252667e1f7855f1fa7b63693d006
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 10 23:53:06 2024 -0500
+
+    files are parsed from 1 instead of 0
+
+commit 7bef934407b17b9cb3d3a9339a3c9c15eba9b947
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 10 23:26:22 2024 -0500
+
+    can encounter random pokemon
+
+commit 065a0b4d92c6492569591abec3676cb815361be8
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 10 23:19:59 2024 -0500
+
+    odds of pokemon
+
+commit 5c06ede81166fac5b413959ff35afddbdada0c17
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 10 17:55:50 2024 -0500
+
+    Refactor Game.cpp to add pcChooseStarterPokemon function
+
+commit 3e8b07d47f6a9552f541fec7ceffa0da5706bb83
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 10 17:52:42 2024 -0500
+
+    folder folder
+
+commit 8a7b35c4d1beaf1588392a8252e06ebcd687f3dc
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 10 17:49:57 2024 -0500
+
+    made level up
+
+commit 23b4af3e515b562442cf041c4896f50200f17cbf
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 10 17:41:38 2024 -0500
+
+    I hate pyrite
+
+commit f43b13cfb12f2db1cff0a03f2c324adcda8dda42
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 10 17:04:14 2024 -0500
+
+    only 6 pokemon
+
+commit d1d4db00e3ca59c260bdd3ee08cd451aeb60ea39
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 10 16:51:26 2024 -0500
+
+    make pokemon kinda works
+
+commit 090e516fc6abccda13fc9cb618ab83504dd06a56
+Author: Max P <maxmay@iastate.edu>
+Date:   Wed Apr 10 14:58:44 2024 -0500
+
+    had to move stuff
+
+commit 114875bb667c744facebb4e312ee9412cce01e2b
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Apr 9 18:25:08 2024 -0500
+
+    added global vectors
+
+commit cc84cf36ca7496e61f5eba83a04c42f524a2d476
+Author: Max P <maxmay@iastate.edu>
+Date:   Tue Apr 9 17:16:58 2024 -0500
+
+    parse all files at start
+
+commit a790db5d0ad02cd19ea79a938557656be9e5c098
+Merge: d30a0a5 fca4f88
+Author: Max Mayer-Mader <119761775+maxmayermader@users.noreply.github.com>
+Date:   Mon Apr 8 10:20:25 2024 -0500
+
+    Merge pull request #17 from maxmayermader/Ass7
+    
+    merge ass7 to main
+
+commit fca4f889158a96efc8c4c2be52169b22678ace58
+Author: Max P <maxmay@iastate.edu>
+Date:   Mon Apr 8 10:19:33 2024 -0500
+
+    uploaded ass7
+
 commit 68770f87b12542d6217a8a4356ce65e8c0db0fbd
 Author: Max P <maxmay@iastate.edu>
 Date:   Thu Apr 4 00:30:51 2024 -0500
@@ -45,6 +198,24 @@ Author: Max P <maxmay@iastate.edu>
 Date:   Tue Apr 2 13:05:26 2024 -0500
 
     added color
+
+commit d30a0a5575779cd8740f60b3b5dbb315a0636da1
+Merge: f8685af 7ef6cf0
+Author: Max Mayer-Mader <119761775+maxmayermader@users.noreply.github.com>
+Date:   Thu Mar 28 12:29:43 2024 -0500
+
+    Merge pull request #16 from maxmayermader/Ass6
+    
+    cPP submitted
+
+commit f8685afe51da7f7912af0d78f2e9e0416bdf44fd
+Merge: dbb1add 9bb5965
+Author: Max Mayer-Mader <119761775+maxmayermader@users.noreply.github.com>
+Date:   Thu Mar 28 12:28:11 2024 -0500
+
+    Merge pull request #15 from maxmayermader/Ass6
+    
+    Ass6
 
 commit 7ef6cf0817a421f5ef8e04105cb1bfec2c736f4b
 Author: Max P <maxmay@iastate.edu>

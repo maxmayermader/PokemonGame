@@ -10,6 +10,7 @@
 #include <iostream>
 #include <climits>
 #include <vector>
+#include <cmath>
 
 #define MAX_SIZE 100  
 #define ROW 21//21 //Y
@@ -31,130 +32,14 @@
 #define WATER '~'
 #define PLAYERCHAR '@'
 
+#define DFC(x,y) (abs(x - 200) + abs(y - 200))
 
-//NPC class
-typedef class NPC{
-    public:
-    int symb; //NPC type: Rival, Hiker etc
-    int row; 
-    int col;
-    int direc;
-    int weightArr[NPCROW][NPCCOL]; //weightMap. Might change it to pointer arr
-    int defeated;
-}NPC;
-
-//NPC Enums
-typedef enum NPCSymb{
-    HIKER,
-    RIVAL,
-    PACER,
-    WANDERER,
-    SENTRIES, 
-    EXPLORERS
-}NPCSymb;
-
-typedef enum PCMOV{
-    NE,
-    N,
-    NW,
-    W,
-    SW,
-    S,
-    SE,
-    E,
-    SKIP
-}PCMOV;
-
-//PC class
-typedef class PC{
-    public:
-    int symb;
-    int row;
-    int col;
-    int globalX;
-    int globalY;
-}PC;
-
-typedef class heapNode {
-    public:
-    int weight;
-    //for dijkstra
-    int row;
-    int col;
-    int visited;
-    //for moving
-    NPC* npc;
-    PC* pc;
-} heapNode;
-
-/*Begin heap implemantation*/
-// Declare a heap classure
-class Heap {
-    public:
-    heapNode* arr[MAX_HEAP_SIZE];
-    int size;
-    //int capacity;
-};
- // define the class Heap name
-typedef class Heap heap;
-
-//map class for terrain. 21x80 map
-typedef class mapclass{
-    public:
-	int gateN;//top
-	int gateS;//bottom
-	int gateW;//left
-	int gateE;//right
-    int connection1[2];
-    int connection2[2];
-	char terrain[ROW][COL];
-    NPC* npcArray[NPCROW][NPCCOL];
-    PC* playerT;
-    int NPCSInit; 
-    heap* terrainHeap;
-}mapclass;
-
-
-//Global map. Array of map pointers
-typedef class worldMap{
-    public:
-    mapclass* arr[worldYSize][worldXSize];
-    PC* player;
-}worldMap;
-
-//char startMap[ROW][COL];
-int queSize = 0;
-int getQueSize(){
-    return queSize;
-}
-
-//prototype declerations
-    void createMap(int x, int y, worldMap *wm, int npcNum);
-    void dijkstras(int row, int col, mapclass* terrainMap, int weightArr[NPCROW][NPCCOL], int type);
-    void printWeightMap(int weightArr[NPCROW][NPCCOL]);
-    void moveCharecters(worldMap *wm, mapclass *terrainMap, int numTrainers);
-    int randomGenerator(int upper, int lower);
-    int calcCost(int npc, char terrainType);
-    int canMove(mapclass *terrainMap, int symb, int row, int col, int prevRow, int prevCol);
-    int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc);
-    void enterBuilding();
-    void trainerList(mapclass *terrainMap, PC *pc);
-    void enterBattle(NPC *npc);
-    void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum);
-    void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h);
-    
 int randomGenerator(int upper, int lower){
   return (rand() % (upper - lower + 1)) + lower;
 }
 
-/*TODO
-1. Make class for each file to parse
-2. Use vector
-3. parse files with scanner. Lots of switch cases
-*/
-
-/*Pokemon Class*/
-class Pokemon{
+/*PokemonFile Class*/
+class PokemonFile{
     public:
     int id;
     char identifier[50];
@@ -265,10 +150,431 @@ class PokemonTypes{
     int slot;
 };
 
+std::vector<PokemonFile> pokemonVector;
+std::vector<Moves> movesVector;
+std::vector<PokemonMoves> pokemonMovesVector;
+std::vector<PokemonSpecies> pokemonSpeciesVector;
+std::vector<Experience> experienceVector;
+std::vector<TypeNames> typeNamesVector;
+std::vector<PokemonStats> pokemonStatsVector;
+std::vector<Stats> statsVector;
+std::vector<PokemonTypes> pokemonTypesVector;
+
+bool searchPokemonVector(int id, PokemonFile *p){
+    // for (int i = 1; i < (int)pokemonVector.size(); i++){
+    //     if (pokemonVector[i].id == id){
+    //         *p = pokemonVector[i];
+    //         return true;
+    //     }
+    // }
+    *p = pokemonVector[id];
+    return false;
+}
+
+bool searchMovesVector(int id, Moves *m){
+    for (int i = 1; i < (int)movesVector.size(); i++){
+        if (movesVector[i].id == id){
+            *m = movesVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+bool searchPokemonMovesVector(int id, int level, PokemonMoves *pm1, PokemonMoves *pm2, std::vector<Moves> pkMoves){
+    for (int i = 1; i < (int)pokemonMovesVector.size(); i++){
+        if (pokemonMovesVector[i].pokemon_id == id && pokemonMovesVector[i].level <= level && pm2->move_id != pokemonMovesVector[i].move_id){
+            bool dup = false;
+            for(int j=0; j<(int)pkMoves.size(); j++){
+                if(pkMoves[j].id == pokemonMovesVector[i].move_id){
+                    dup = true;
+                    break;
+                }
+            }
+            if(!dup){
+                *pm1 = pokemonMovesVector[i];
+                break;
+            }
+        }
+    }
+    return false;
+}
+
+bool searchPokemonSpeciesVector(int id, PokemonSpecies *ps){
+    for (int i = 1; i < (int)pokemonSpeciesVector.size(); i++){
+        if (pokemonSpeciesVector[i].id == id){
+            *ps = pokemonSpeciesVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+bool searchExperienceVector(int level, Experience *e){
+    for (int i = 1; i < (int)experienceVector.size(); i++){
+        if (experienceVector[i].level == level){
+            *e = experienceVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+bool searchTypeNamesVector(int id, TypeNames *tn){
+    for (int i = 1; i < (int)typeNamesVector.size(); i++){
+        if (typeNamesVector[i].type_id == id){
+            *tn = typeNamesVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+bool searchPokemonStatsVector(int id, int stats_id, PokemonStats *ps){
+    for (int i = 1; i < (int)pokemonStatsVector.size(); i++){
+        if (pokemonStatsVector[i].pokemon_id == id && pokemonStatsVector[i].stat_id == stats_id){
+            *ps = pokemonStatsVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+bool searchStatsVector(int id, Stats *s){
+    for (int i = 1; i < (int)statsVector.size(); i++){
+        if (statsVector[i].id == id){
+            *s = statsVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+bool searchPokemonTypesVector(int id, PokemonTypes *pt){
+    for (int i = 1; i < (int)pokemonTypesVector.size(); i++){
+        if (pokemonTypesVector[i].pokemon_id == id){
+            *pt = pokemonTypesVector[i];
+            return true;
+        }
+    }
+    return false;
+}
+
+
+/*Pokemon class*/
+class Pokemon{
+    public:
+    int id;
+    char identfier[50];
+    int health;
+    int level;
+    int attack;
+    int defense;
+    int gender;
+    int baseHealth;
+    int baseAttack;
+    int baseDefense;
+    int speed;
+    int baseSpeed;
+    int baseSpecialDefense;
+    int specialDefense;
+    int baseSpecialAttack;
+    int specialAttack;
+    int shiny;
+    std::vector<Moves> pkMoves;
+    char move1[50];
+    char move2[50];
+    std::vector<Moves> allPossibleMoves;
+
+    
+    Pokemon(){ //Incomplete
+        // PokemonFile pf;
+        // searchPokemonVector(randomGenerator(1092, 1), &pf);
+        // id = pf.id;
+        // iv = randomGenerator(15, 0); // Generate a random Individual Value (IV) for the Pokemon, between 0 and 15 
+        // strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
+        // PokemonStats ps;
+        // searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
+        // health = baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
+        // level = 1; // Set the initial level for this Pokemon to 1
+        // searchPokemonStatsVector(id, 2, &ps);
+        // attack = baseAttack = ps.base_stat;
+        // searchPokemonStatsVector(id, 3, &ps);
+        // defense = baseDefense = ps.base_stat; 
+        // gender = randomGenerator(1,0); // Generate a random gender for this Pokemon, 0 or 1
+        // if (rand() % 8192 == 0){ // Determine if the Pokemon is shiny (rare variant) with a 1 in 8192 chance
+        //     shiny = 1;
+        // } else {
+        //     shiny = 0;
+        // }
+    }
+
+    Pokemon(int distance){ //T H I S 
+        PokemonFile pf;
+        searchPokemonVector(randomGenerator(1092, 1), &pf);
+        id = pf.id; // Generate a random ID for the Pokemon, between 1 and 1092
+        strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
+        PokemonStats ps;
+        searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
+        health = baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
+        if (distance <= 200){
+            if (distance < 2){
+                level = 1;
+            } else {
+                level = randomGenerator(distance / 2 , 1); // If the distance is less than or equal to 200, set the level to a random number between 1 and distance/2
+            }        
+        } else {
+            level = randomGenerator(100, int((distance - 200) / 2)); // If the distance is more than 200, set the level to a random number between (distance - 200)/2 and 100
+        }
+        searchPokemonStatsVector(id, 2, &ps);
+        attack = baseAttack = ps.base_stat;
+        searchPokemonStatsVector(id, 3, &ps);
+        defense = baseDefense = ps.base_stat; // Calculate the defense for this Pokemon using the formula: floor((base + iv) * 2 / 100) + 5
+        searchPokemonStatsVector(id, 4, &ps);
+        specialAttack = baseSpecialAttack = ps.base_stat;
+        searchPokemonStatsVector(id, 5, &ps);
+        specialDefense = baseSpecialDefense = ps.base_stat;
+        searchPokemonStatsVector(id, 6, &ps);
+        speed = baseSpeed = ps.base_stat;
+
+
+        gender = randomGenerator(1,0); // Generate a random gender for this Pokemon, 0 or 1
+        if (rand() % 8192 == 0){ // Determine if the Pokemon is shiny (rare variant) with a 1 in 8192 chance
+            shiny = 1;
+        } else {
+            shiny = 0;
+        }
+
+        for (int i = 1; i < (int)pokemonMovesVector.size(); i++){
+            if (pokemonMovesVector[i].pokemon_id == id ){
+                PokemonMoves pm = pokemonMovesVector[i];
+                for(int j = 1; j < (int)movesVector.size(); j++){
+                    if (movesVector[j].id == pm.move_id){
+                        allPossibleMoves.push_back(movesVector[j]);
+                    }
+                }
+            }
+        }
+
+        // for (int i = 0; i < (int)allPossibleMoves.size(); i++){
+        //   printf("%s\n", allPossibleMoves[i].identifier);
+        // }
+        PokemonMoves pm1;
+        PokemonMoves pm2;
+        Moves moves;
+        searchPokemonMovesVector(id, level, &pm1, &pm2, pkMoves);
+        searchMovesVector(pm1.move_id, &moves);
+        strcpy(move1, moves.identifier);
+        pkMoves.push_back(moves);
+        searchPokemonMovesVector(id, level, &pm2, &pm1, pkMoves);
+        searchMovesVector(pm2.move_id, &moves);
+        strcpy(move2, moves.identifier); 
+        pkMoves.push_back(moves);
+
+        health = floor((baseHealth + randomGenerator(15,0))*2*level/ 100) + level + 10;
+        attack = floor((baseAttack + randomGenerator(15,0))*2*level/ 100) + 5;
+        defense = floor((baseDefense + randomGenerator(15,0))*2*level/ 100) + 5;
+        speed = floor((baseSpeed + randomGenerator(15,0))*2*level/ 100) + 5;
+        specialDefense = floor((baseSpecialDefense + randomGenerator(15,0))*2/ 100) + 5;
+        specialAttack = floor((baseSpecialAttack + randomGenerator(15,0))*2/ 100) + 5;
+ 
+    }
+
+    bool searchForNewMove(){
+        // for(int i=1; i<(int)allPossibleMoves.size(); i++){
+        //     if(allPossibleMoves[i].level <= level){
+
+        //     }
+        //     for(int j=0; j<(int)pkMoves.size(); j++){
+        //         if(allPossibleMoves[i].id == pkMoves[j].id){
+        //             found = true;
+        //             break;
+        //         }
+        //     }
+        //     if(!found){
+        //         pkMoves.push_back(allPossibleMoves[i]);
+        //         return true;
+        //     }
+        // }
+        // return false;
+    }
+
+
+    void levelUp(){
+        level++;
+        health = floor((baseHealth + randomGenerator(15,0))*2*level/ 100) + level + 10;
+        attack = floor((baseAttack + randomGenerator(15,0))*2*level/ 100) + 5;
+        defense = floor((baseDefense + randomGenerator(15,0))*2*level/ 100) + 5;
+        speed = floor((baseSpeed + randomGenerator(15,0))*2*level/ 100) + 5;
+        specialDefense = floor((baseSpeed + randomGenerator(15,0))*2*level/ 100) + 5;
+        specialAttack = floor((baseSpeed + randomGenerator(15,0))*2*level/ 100) + 5;
+        
+        //searchForNewMove();
+        PokemonMoves pm1;
+        PokemonMoves pm2;
+        Moves moves;
+        searchPokemonMovesVector(id, level, &pm1, &pm2, pkMoves);
+        if(searchMovesVector(pm1.move_id, &moves))
+            pkMoves.push_back(moves);
+    }
+
+    void printPokemon(){
+        printf("ID: %d\n", id);
+        printf("Identifier: %s\n", identfier);
+        printf("Health: %d\n", health);
+        printf("Level: %d\n", level);
+        printf("Attack: %d\n", attack);
+        printf("Defense: %d\n", defense);
+        printf("Gender: %d\n", gender);
+        printf("baseHealth: %d\n", baseHealth);
+        printf("Shiny: %d\n", shiny);
+        for(int i=0; i<(int)pkMoves.size(); i++){
+            printf("Move %d: %s      move id %d\n", i+1, pkMoves[i].identifier, pkMoves[i].id);
+        }
+    }
+
+    void printPokemonCurses(){
+        clear();
+        mvprintw(0,0, "ID: %d", id);
+        mvprintw(1,0, "Identifier: %s", identfier);
+        mvprintw(2,0, "Health: %d", health);
+        mvprintw(3,0, "Level: %d", level);
+        mvprintw(4,0, "Attack: %d", attack);
+        mvprintw(5,0, "Defense: %d", defense);
+        mvprintw(6,0, "Gender: %d",gender);
+        mvprintw(7,0, "baseHealth: %d", baseHealth);
+        mvprintw(8,0, "Shiny: %d", shiny);
+        for(int i=0; i<(int)pkMoves.size(); i++){
+            mvprintw(9+i,0, "Move %d: %s     move id %d", i+1, pkMoves[i].identifier, pkMoves[i].id);
+        }
+        refresh();
+    }
+
+
+
+};
+
+
+//NPC class
+typedef class NPC{
+    public:
+    int symb; //NPC type: Rival, Hiker etc
+    int row; 
+    int col;
+    int direc;
+    int weightArr[NPCROW][NPCCOL]; //weightMap. Might change it to pointer arr
+    int defeated;
+    Pokemon* pokemons[6];
+    int numPK;
+}NPC;
+
+//NPC Enums
+typedef enum NPCSymb{
+    HIKER,
+    RIVAL,
+    PACER,
+    WANDERER,
+    SENTRIES, 
+    EXPLORERS
+}NPCSymb;
+
+typedef enum PCMOV{
+    NE,
+    N,
+    NW,
+    W,
+    SW,
+    S,
+    SE,
+    E,
+    SKIP
+}PCMOV;
+
+//PC class
+typedef class PC{
+    public:
+    int symb;
+    int row;
+    int col;
+    int globalX;
+    int globalY;
+    Pokemon* pokemons[6];
+}PC;
+
+typedef class heapNode {
+    public:
+    int weight;
+    //for dijkstra
+    int row;
+    int col;
+    int visited;
+    //for moving
+    NPC* npc;
+    PC* pc;
+} heapNode;
+
+/*Begin heap implemantation*/
+// Declare a heap classure
+class Heap {
+    public:
+    heapNode* arr[MAX_HEAP_SIZE];
+    int size;
+    //int capacity;
+};
+ // define the class Heap name
+typedef class Heap heap;
+
+//map class for terrain. 21x80 map
+typedef class mapclass{
+    public:
+	int gateN;//top
+	int gateS;//bottom
+	int gateW;//left
+	int gateE;//right
+    int connection1[2];
+    int connection2[2];
+	char terrain[ROW][COL];
+    NPC* npcArray[NPCROW][NPCCOL];
+    PC* playerT;
+    int NPCSInit; 
+    heap* terrainHeap;
+}mapclass;
+
+
+//Global map. Array of map pointers
+typedef class worldMap{
+    public:
+    mapclass* arr[worldYSize][worldXSize];
+    PC* player;
+}worldMap;
+
+//char startMap[ROW][COL];
+int queSize = 0;
+int getQueSize(){
+    return queSize;
+}
+
+//prototype declerations
+    void createMap(int x, int y, worldMap *wm, int npcNum);
+    void dijkstras(int row, int col, mapclass* terrainMap, int weightArr[NPCROW][NPCCOL], int type);
+    void printWeightMap(int weightArr[NPCROW][NPCCOL]);
+    void moveCharecters(worldMap *wm, mapclass *terrainMap, int numTrainers);
+    int randomGenerator(int upper, int lower);
+    int calcCost(int npc, char terrainType);
+    int canMove(mapclass *terrainMap, int symb, int row, int col, int prevRow, int prevCol);
+    int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc);
+    void enterBuilding();
+    void trainerList(mapclass *terrainMap, PC *pc);
+    void enterBattle(NPC *npc, PC *pc);
+    void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum);
+    void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h);
+    void encounterPokemon(PC *pc);
+    
 
 //Prints map out to the terminal
 void printMap(mapclass *map, PC *pc){
     int i, j;
+    clear();
     start_color();
 
     init_pair(COLOR_RED, COLOR_RED, COLOR_BLACK); //NPCs
@@ -855,6 +1161,36 @@ void setMap(mapclass *map, int x, int y, worldMap *wm){
 
 }
 
+void pcChooseStarterPokemon(PC *pc){
+    Pokemon* pk1 = new Pokemon(0);
+    Pokemon* pk2 = new Pokemon(0);
+    Pokemon* pk3 = new Pokemon(0);
+
+    clear();
+    mvprintw(0,0, "Choose your starter Pokemon(enter 1, 2, or 3): ");
+    mvprintw(1,0, "Name is %s! They are level %d,  health is %d, attack is %d, defense is %d.", pk1->identfier, pk1->level, pk1->health, pk1->attack, pk1->defense);
+    mvprintw(2,0, "Name is %s! They are level %d,  health is %d, attack is %d, defense is %d.", pk2->identfier, pk2->level, pk2->health, pk2->attack, pk2->defense);
+    mvprintw(3,0, "Name is %s! They are level %d,  health is %d, attack is %d, defense is %d.", pk3->identfier, pk3->level, pk3->health, pk3->attack, pk3->defense);
+    refresh();
+
+    int choice = 0;
+    
+    choice = getch();
+    if (choice == '1'){
+        pc->pokemons[0] = pk1;
+        delete pk2;
+        delete pk3;
+    } else if (choice == '2'){
+        pc->pokemons[0] = pk2;
+        delete pk1;
+        delete pk3;
+    } else if (choice == '3'){
+        pc->pokemons[0] = pk3;
+        delete pk1;
+        delete pk2;
+    }
+}
+
 /*Set all pointers to NULL*/
 void createWorldMap(worldMap *wm){
     int i;
@@ -872,6 +1208,9 @@ void createWorldMap(worldMap *wm){
     //wm->player->col = 40;
     wm->player->globalX = 200;
     wm->player->globalY = 200;
+
+    //initialize player pokemons
+    pcChooseStarterPokemon(wm->player);
 }
 
 /*spawns a pc in the terrain map*/
@@ -892,6 +1231,16 @@ void spawnNPC(worldMap *wm, mapclass *terrainMap, int npcType){
                 npc->col = col;
                 canPlace = 0;
             }
+        }
+    }
+    npc->numPK = 1;
+    npc->pokemons[0] = new Pokemon(DFC(terrainMap->playerT->globalX, terrainMap->playerT->globalY));
+    for(int i=1; i<6; i++){
+        if(randomGenerator(10, 1) <= 6){
+            npc->pokemons[i] = new Pokemon(DFC(terrainMap->playerT->globalX, terrainMap->playerT->globalY));
+            npc->numPK++;
+        } else {
+            break;
         }
     }
 }
@@ -943,6 +1292,8 @@ void placeNPCS(worldMap *wm, mapclass *terrainMap, int npcNum){
       npcNum--;  
     }
   }
+
+  
     
 }
 
@@ -953,7 +1304,7 @@ void createMap(int x, int y, worldMap *wm, int npcNum){
     mapclass *newMap = (mapclass*)malloc(sizeof(mapclass)); //malloc new mapclass
     setMap(newMap, x, y, wm); //set mapclass terrain to pseudo NULL values
     createTerrain(newMap); //create a terrain and set it to newMap
-    int distanceFromCenter = abs(x - 200) + abs(y - 200);
+    int distanceFromCenter = DFC(x, y); //calculate distance from center
     makeRoads(newMap, distanceFromCenter, x, y, wm);//add roads to map
 
     wm->arr[x][y] = newMap; //add new terrain map to world map
@@ -1854,7 +2205,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
-                        enterBattle(newHN->npc);
+                        enterBattle(newHN->npc, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -1867,7 +2218,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
-                        enterBattle(newHN->npc);
+                        enterBattle(newHN->npc, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -1880,7 +2231,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
-                        enterBattle(newHN->npc);
+                        enterBattle(newHN->npc, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -1892,7 +2243,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
-                        enterBattle(newHN->npc);
+                        enterBattle(newHN->npc, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -1903,7 +2254,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
-                        enterBattle(newHN->npc);
+                        enterBattle(newHN->npc, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -1915,7 +2266,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->npc = hn->npc;
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
-                        enterBattle(newHN->npc);
+                        enterBattle(newHN->npc, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -2056,18 +2407,43 @@ void trainerList(mapclass *terrainMap, PC *pc){
   clear();
 }
 
-void enterBattle(NPC *npc) {
-  clear();
-  int input;
+
+void enterBattle(NPC *npc, PC *pc) {
+    clear();
+    int input;
     npc->defeated = 1;
     // printf("u win");
-  mvprintw(11, 18, "Trainer Defeated! Press 'esc' to exit!");
-input = getch();
-  while ((input = getch()) != 27) {
-  
-  }
+    mvprintw(1, 0, "Trainer wants to battle! They have...");
+    for(int i = 0; i < npc->numPK; i++) {
+        mvprintw(i+2, 0, " a %s ! They are level %d,  health is %d, attack is %d, defense is %d. They know %s and %s.", npc->pokemons[i]->identfier, npc->pokemons[i]->level, npc->pokemons[i]->health, npc->pokemons[i]->attack, npc->pokemons[i]->defense, npc->pokemons[i]->move1, npc->pokemons[i]->move2);
+    }
+    mvprintw(npc->numPK+2, 0, "Your Pokemon %s level %d has... health %d, attack is %d, defense is %d. ", pc->pokemons[0]->identfier, pc->pokemons[0]->level, pc->pokemons[0]->health, pc->pokemons[0]->attack, pc->pokemons[0]->defense);
+    mvprintw(npc->numPK+3, 0, "You win");
+    pc->pokemons[0]->levelUp();
 
-  clear();
+    mvprintw(npc->numPK+4,0, "You now have leveled up");
+
+    mvprintw(npc->numPK+5,0, "ID: %d", pc->pokemons[0]->id);
+    mvprintw(npc->numPK+6,0, "Identifier: %s", pc->pokemons[0]->identfier);
+    mvprintw(npc->numPK+7,0, "Health: %d", pc->pokemons[0]->health);
+    mvprintw(npc->numPK+8,0, "Level: %d", pc->pokemons[0]->level);
+    mvprintw(npc->numPK+9,0, "Attack: %d", pc->pokemons[0]->attack);
+    mvprintw(npc->numPK+10,0, "Defense: %d", pc->pokemons[0]->defense);
+    mvprintw(npc->numPK+11,0, "Gender: %d", pc->pokemons[0]->gender);
+    mvprintw(npc->numPK+12,0, "Base Health: %d", pc->pokemons[0]->baseHealth);
+    mvprintw(npc->numPK+13,0, "Shiny: %d", pc->pokemons[0]->shiny);
+    mvprintw(npc->numPK+14,0, "Speed: %d", pc->pokemons[0]->speed);
+    mvprintw(npc->numPK+15,0, "Special Attack: %d", pc->pokemons[0]->specialAttack);
+    mvprintw(npc->numPK+16,0, "Special Defense: %d", pc->pokemons[0]->specialDefense);
+    for(int i=0; i<(int)pc->pokemons[0]->pkMoves.size(); i++){
+        mvprintw(npc->numPK+17+i,0, "Move %d: %s     move id %d", i+1, pc->pokemons[0]->pkMoves[i].identifier, pc->pokemons[0]->pkMoves[i].id);
+    }
+    refresh();
+    input = getch();
+    while ((input = getch()) != 27) {
+
+    }
+   
 }
 
 int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
@@ -2105,8 +2481,34 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
             break;
     }
     if (terrainMap->npcArray[pc->row-1][pc->col-1] != NULL && terrainMap->npcArray[pc->row-1][pc->col-1]->defeated == 0)
-        enterBattle(terrainMap->npcArray[pc->row-1][pc->col-1]);
+        enterBattle(terrainMap->npcArray[pc->row-1][pc->col-1], pc);
+    if(terrainMap->terrain[pc->row][pc->col] == GRASS){
+       int ranVal = randomGenerator(10, 1);
+
+       if (ranVal == 1){
+           encounterPokemon(pc);
+       }
+    }
+
     return calcCost(2, terrainMap->terrain[pc->row][pc->col]);
+}
+
+void encounterPokemon(PC *pc){
+    Pokemon* spawnedPokemon = new Pokemon(DFC(pc->globalX, pc->globalY));
+    clear();
+    mvprintw(0,0, "A wild %s appeared! They are level %d,  health is %d, attack is %d, defense is %d.", spawnedPokemon->identfier, spawnedPokemon->level, spawnedPokemon->health, spawnedPokemon->attack, spawnedPokemon->defense);
+    int i;
+    for(i = 0; i<(int)spawnedPokemon->pkMoves.size(); i++){
+        mvprintw(i+1,0, "They know %s", spawnedPokemon->pkMoves[i].identifier);
+    }
+    mvprintw(i+1,0, "Press 'esc' to run, or 'f' to fight!");
+    mvprintw(i+2,0, "ID is %d", spawnedPokemon->id);
+    refresh();
+    keypad(stdscr, TRUE);
+    int ch;
+        while ((ch = getch()) != 27){}
+    return;
+
 }
 
 void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum){
@@ -2169,7 +2571,7 @@ void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newC
 
 
 void parsePokemonFile(){
-    std::vector<Pokemon> pokemonVector;
+    //std::vector<PokemonFile> pokemonVector;
     
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon.csv";
     char *home = getenv("HOME");
@@ -2186,7 +2588,7 @@ void parsePokemonFile(){
         char line[100];
 
         while (fgets(line, sizeof(line), file)) { 
-          Pokemon pokemon;
+          PokemonFile pokemon;
             char *token = strtok(line, ","); 
             pokemon.id = (token != NULL) ? atoi(token) : INT_MAX;
             token = strtok(NULL, ",");
@@ -2212,18 +2614,10 @@ void parsePokemonFile(){
             
   
         }
-        for (int j = 0; j < pokemonVector.size(); j++){
-            printf("%d,", pokemonVector[j].id != INT_MAX ? pokemonVector[j].id : -1);
-            printf("%s, ", strcmp(pokemonVector[j].identifier, "") != 0 ? pokemonVector[j].identifier : "-1");
-            printf("%d, ", pokemonVector[j].species_id != INT_MAX ? pokemonVector[j].species_id : -1);
-            printf("%d, ", pokemonVector[j].height != INT_MAX ? pokemonVector[j].height : -1);
-            printf("%d, ", pokemonVector[j].weight != INT_MAX ? pokemonVector[j].weight : -1);
-            printf("%d, ", pokemonVector[j].base_experience != INT_MAX ? pokemonVector[j].base_experience : -1);
-            printf("%d, ", pokemonVector[j].order != INT_MAX ? pokemonVector[j].order: -1);
-            printf("%d", pokemonVector[j].is_default != INT_MAX ? pokemonVector[j].is_default: -1);
-            printf("\n");
-        }
+        
+        //printf("%d\n",(int)pokemonVector.size());
         fclose(file);
+        //globalPokemonVector = &pokemonVector;
     } 
     else {
         printf("File not found: pokemon.csv\n");
@@ -2231,7 +2625,7 @@ void parsePokemonFile(){
 }
 
 void parseMovesFile(){
-    std::vector<Moves> movesVector;
+    //std::vector<Moves> movesVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/moves.csv";
     char *home = getenv("HOME");
@@ -2287,24 +2681,7 @@ void parseMovesFile(){
             size++;
         }
         //printf("%d",movesVector.size());
-        for(int k=0; k<movesVector.size(); k++){
-            printf("%d,", movesVector[k].id != INT_MAX ? movesVector[k].id : -1);
-            printf("%s, ", strcmp(movesVector[k].identifier, "") != 0 ? movesVector[k].identifier : "-1");
-            printf("%d, ", movesVector[k].generation_id != INT_MAX ? movesVector[k].generation_id : -1);
-            printf("%d, ", movesVector[k].type_id != INT_MAX ? movesVector[k].type_id : -1);
-            printf("%d, ", movesVector[k].power != INT_MAX ? movesVector[k].power : -1);
-            printf("%d, ", movesVector[k].pp != INT_MAX ? movesVector[k].pp : -1);
-            printf("%d, ", movesVector[k].accuracy != INT_MAX ? movesVector[k].accuracy : -1);
-            printf("%d, ", movesVector[k].priority != INT_MAX ? movesVector[k].priority : -1);
-            printf("%d, ", movesVector[k].target_id != INT_MAX ? movesVector[k].target_id : -1);
-            printf("%d, ", movesVector[k].damage_class_id != INT_MAX ? movesVector[k].damage_class_id : -1);
-            printf("%d, ", movesVector[k].effect_id != INT_MAX ? movesVector[k].effect_id : -1);
-            printf("%d, ", movesVector[k].effect_chance != INT_MAX ? movesVector[k].effect_chance : -1);
-            printf("%d, ", movesVector[k].contest_type_id != INT_MAX ? movesVector[k].contest_type_id : -1);
-            printf("%d, ", movesVector[k].contest_effect_id != INT_MAX ? movesVector[k].contest_effect_id : -1);
-            printf("%d", movesVector[k].super_contest_effect_id != INT_MAX ? movesVector[k].super_contest_effect_id : -1);
-            printf("\n");
-        }
+        
         fclose(file);
     } 
     else {
@@ -2313,7 +2690,7 @@ void parseMovesFile(){
 }
 
 void parsePokemonMovesFile(){
-    std::vector<PokemonMoves> pokemonMovesVector;
+    //std::vector<PokemonMoves> pokemonMovesVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon_moves.csv";
     char *home = getenv("HOME");
@@ -2348,15 +2725,7 @@ void parsePokemonMovesFile(){
             size++;
         }
         //printf("%d",pokemonMovesVector.size());
-        for(int k=0; k<pokemonMovesVector.size(); k++){
-            printf("%d,", pokemonMovesVector[k].pokemon_id != INT_MAX ? pokemonMovesVector[k].pokemon_id : -1);
-            printf("%d, ", pokemonMovesVector[k].version_group_id != INT_MAX ? pokemonMovesVector[k].version_group_id : -1);
-            printf("%d, ", pokemonMovesVector[k].move_id != INT_MAX ? pokemonMovesVector[k].move_id : -1);
-            printf("%d, ", pokemonMovesVector[k].pokemon_move_method_id != INT_MAX ? pokemonMovesVector[k].pokemon_move_method_id : -1);
-            printf("%d, ", pokemonMovesVector[k].level != INT_MAX ? pokemonMovesVector[k].level : -1);
-            printf("%d", pokemonMovesVector[k].order != INT_MAX ? pokemonMovesVector[k].order : -1);
-            printf("\n");
-        }
+        
         fclose(file);
     } 
     else {
@@ -2365,7 +2734,7 @@ void parsePokemonMovesFile(){
 }
 
 void parsePokemonSpeciesFile(){
-    std::vector<PokemonSpecies> pokemonSpeciesVector;
+    //std::vector<PokemonSpecies> pokemonSpeciesVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon_species.csv";
     char *home = getenv("HOME");
@@ -2428,27 +2797,7 @@ void parsePokemonSpeciesFile(){
             size++;
         }
         //printf("%d",pokemonSpeciesVector.size());
-        for(int k=0; k<pokemonSpeciesVector.size(); k++){
-            printf("%d,", pokemonSpeciesVector[k].id != INT_MAX ? pokemonSpeciesVector[k].id : -1);
-            printf("%s, ", strcmp(pokemonSpeciesVector[k].identifier, "") != 0 ? pokemonSpeciesVector[k].identifier : "-1");
-            printf("%d, ", pokemonSpeciesVector[k].generation_id != INT_MAX ? pokemonSpeciesVector[k].generation_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].evolves_from_species_id != INT_MAX ? pokemonSpeciesVector[k].evolves_from_species_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].evolution_chain_id != INT_MAX ? pokemonSpeciesVector[k].evolution_chain_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].color_id != INT_MAX ? pokemonSpeciesVector[k].color_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].shape_id != INT_MAX ? pokemonSpeciesVector[k].shape_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].habitat_id != INT_MAX ? pokemonSpeciesVector[k].habitat_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].gender_rate != INT_MAX ? pokemonSpeciesVector[k].gender_rate : -1);
-            printf("%d, ", pokemonSpeciesVector[k].capture_rate != INT_MAX ? pokemonSpeciesVector[k].capture_rate : -1);
-            printf("%d, ", pokemonSpeciesVector[k].base_happiness != INT_MAX ? pokemonSpeciesVector[k].base_happiness : -1);
-            printf("%d, ", pokemonSpeciesVector[k].is_baby != INT_MAX ? pokemonSpeciesVector[k].is_baby : -1);
-            printf("%d, ", pokemonSpeciesVector[k].hatch_counter != INT_MAX ? pokemonSpeciesVector[k].hatch_counter : -1);
-            printf("%d, ", pokemonSpeciesVector[k].has_gender_differences != INT_MAX ? pokemonSpeciesVector[k].has_gender_differences : -1);
-            printf("%d, ", pokemonSpeciesVector[k].growth_rate_id != INT_MAX ? pokemonSpeciesVector[k].growth_rate_id : -1);
-            printf("%d, ", pokemonSpeciesVector[k].forms_switchable != INT_MAX ? pokemonSpeciesVector[k].forms_switchable : -1);
-            printf("%d, ", pokemonSpeciesVector[k].order != INT_MAX ? pokemonSpeciesVector[k].order : -1);
-            printf("%d", pokemonSpeciesVector[k].conquest_order != INT_MAX ? pokemonSpeciesVector[k].conquest_order : -1);
-            printf("\n");
-        }
+        
         fclose(file);
     }
     else {
@@ -2457,7 +2806,7 @@ void parsePokemonSpeciesFile(){
 }
 
 void parseExperienceFile(){
-    std::vector<Experience> experienceVector;
+    //std::vector<Experience> experienceVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/experience.csv";
     char *home = getenv("HOME");
@@ -2486,12 +2835,7 @@ void parseExperienceFile(){
             size++;
         }
         //printf("%d",experienceVector.size());
-        for(int k=0; k<experienceVector.size(); k++){
-            printf("%d,", experienceVector[k].growth_rate_id != INT_MAX ? experienceVector[k].growth_rate_id : -1);
-            printf("%d, ", experienceVector[k].level != INT_MAX ? experienceVector[k].level : -1);
-            printf("%d", experienceVector[k].experience != INT_MAX ? experienceVector[k].experience : -1);
-            printf("\n");
-        }
+        
         fclose(file);
     }
     else {
@@ -2500,7 +2844,7 @@ void parseExperienceFile(){
 }
 
 void parseTypeNamesFile(){
-    std::vector<TypeNames> typeNamesVector;
+    //std::vector<TypeNames> typeNamesVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/type_names.csv";
     char *home = getenv("HOME");
@@ -2533,12 +2877,7 @@ void parseTypeNamesFile(){
             size++;
         }
         //printf("%d",typeNamesVector.size());
-        for(int k=0; k<typeNamesVector.size(); k++){
-            printf("%d,", typeNamesVector[k].type_id != INT_MAX ? typeNamesVector[k].type_id : -1);
-            printf("%d, ", typeNamesVector[k].local_language_id != INT_MAX ? typeNamesVector[k].local_language_id : -1);
-            printf("%s", strcmp(typeNamesVector[k].name, "") != 0 ? typeNamesVector[k].name : "-1");
-            printf("\n");
-        }
+        
         fclose(file);
     }
     else {
@@ -2548,7 +2887,7 @@ void parseTypeNamesFile(){
 }
     
 void parsePokemonStatsFile(){
-    std::vector<PokemonStats> pokemonStatsVector;
+    //std::vector<PokemonStats> pokemonStatsVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon_stats.csv";
     char *home = getenv("HOME");
@@ -2584,13 +2923,7 @@ void parsePokemonStatsFile(){
             size++;
         }
         //printf("%d",pokemonStatsVector.size());
-        for(int k=0; k<pokemonStatsVector.size(); k++){
-            printf("%d,", pokemonStatsVector[k].pokemon_id != INT_MAX ? pokemonStatsVector[k].pokemon_id : -1);
-            printf("%d, ", pokemonStatsVector[k].stat_id != INT_MAX ? pokemonStatsVector[k].stat_id : -1);
-            printf("%d, ", pokemonStatsVector[k].base_stat != INT_MAX ? pokemonStatsVector[k].base_stat : -1);
-            printf("%d", pokemonStatsVector[k].effort != INT_MAX ? pokemonStatsVector[k].effort : -1);
-            printf("\n");
-        }
+        
         fclose(file);
     }
     else {
@@ -2599,7 +2932,7 @@ void parsePokemonStatsFile(){
 }
 
 void parseStatsFile(){
-    std::vector<Stats> statsVector;
+    //std::vector<Stats> statsVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/stats.csv";
     char *home = getenv("HOME");
@@ -2641,14 +2974,7 @@ int id;
             size++;
         }
         //printf("%d",statsVector.size());
-        for(int k=0; k<statsVector.size(); k++){
-            printf("%d,", statsVector[k].id != INT_MAX ? statsVector[k].id : -1);
-            printf("%s, ", strcmp(statsVector[k].identifier, "") != 0 ? statsVector[k].identifier : "-1");
-            printf("%d, ", statsVector[k].damage_class_id != INT_MAX ? statsVector[k].damage_class_id : -1);
-            printf("%d, ", statsVector[k].is_battle_only != INT_MAX ? statsVector[k].is_battle_only : -1);
-            printf("%d", statsVector[k].game_index != INT_MAX ? statsVector[k].game_index : -1);
-            printf("\n");
-        }
+        
         fclose(file);
     }
     else {
@@ -2657,7 +2983,7 @@ int id;
 }
 
 void parsePokemonTypesFile(){
-    std::vector<PokemonTypes> pokemonTypesVector;
+    //std::vector<PokemonTypes> pokemonTypesVector;
     int size = 0;
     char path[300] = "/share/cs327/pokedex/pokedex/data/csv/pokemon_types.csv";
     char *home = getenv("HOME");
@@ -2686,60 +3012,60 @@ void parsePokemonTypesFile(){
             size++;
         }
         //printf("%d",pokemonTypesVector.size());
-        for(int k=0; k<pokemonTypesVector.size(); k++){
-            printf("%d,", pokemonTypesVector[k].pokemon_id != INT_MAX ? pokemonTypesVector[k].pokemon_id : -1);
-            printf("%d, ", pokemonTypesVector[k].type_id != INT_MAX ? pokemonTypesVector[k].type_id : -1);
-            printf("%d", pokemonTypesVector[k].slot != INT_MAX ? pokemonTypesVector[k].slot : -1);
-            printf("\n");
-        }
+        
         fclose(file);
+
     }
     else {
         printf("File not found: pokemon_types.csv\n");
     }
 }
 
+
+
 int main(int argc, char *argv[]){
 
-    //srand(time(NULL));//random seed
-    srand(100); //11223344
+    srand(time(NULL));//random seed
+    //srand(100); //11223344
    
     worldMap wm;
     int currX = 200;
     int currY = 200;
     int numTrainers = 8;
 
+    parsePokemonFile();
+    parseMovesFile();    
+    parsePokemonMovesFile();
+    parsePokemonSpeciesFile();
+    parseExperienceFile();
+    parseTypeNamesFile();
+    parsePokemonStatsFile();
+    parseStatsFile();
+    parsePokemonTypesFile();
+
     //parseMovesFile();
     if (argc >= 2 ){
         if (argc >= 3 && strcmp(argv[1], "--numtrainers") == 0) {
-                numTrainers = atoi(argv[2]);
-            } 
-        else if(strcmp(argv[1], "pokemon") == 0){
-            parsePokemonFile();
-        } else if(strcmp(argv[1], "moves") == 0) {
-            parseMovesFile();
-        } else if(strcmp(argv[1], "pokemon_moves") == 0){
-            parsePokemonMovesFile();
-        } else if(strcmp(argv[1], "pokemon_species") == 0){
-            parsePokemonSpeciesFile();
-        } else if(strcmp(argv[1], "experience")==0){
-            parseExperienceFile();
-        } else if(strcmp(argv[1], "type_names")==0){
-            parseTypeNamesFile();
-        } else if(strcmp(argv[1], "pokemon_stats")==0){
-            parsePokemonStatsFile();
-        } else if(strcmp(argv[1], "stats")==0){
-            parseStatsFile();
-        } else if(strcmp(argv[1], "pokemon_type")==0){
-            parsePokemonTypesFile();
+            numTrainers = atoi(argv[2]);
         } 
     }
+       
     
 
     printf("%d\n", numTrainers);
 
+    Pokemon pk(100);
+    pk.printPokemon();
+    pk.levelUp();
+    pk.printPokemon();
+    pk.levelUp();
+    pk.printPokemon();
+    pk.levelUp();
+    pk.printPokemon();
+    pk.levelUp();
+    pk.printPokemon();
     
-    return 0;
+    //return 0;
     
     initscr();
     createWorldMap(&wm);
