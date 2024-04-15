@@ -33,6 +33,7 @@
 #define PLAYERCHAR '@'
 
 #define DFC(x,y) (abs(x - 200) + abs(y - 200))
+#define MIN(x,y) (x < y ? x : y)
 
 int randomGenerator(int upper, int lower){
   return (rand() % (upper - lower + 1)) + lower;
@@ -267,6 +268,7 @@ class Pokemon{
     int id;
     char identfier[50];
     int health;
+    int currHealth;
     int level;
     int attack;
     int defense;
@@ -316,7 +318,7 @@ class Pokemon{
         strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
         PokemonStats ps;
         searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
-        health = baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
+        currhealth = health = baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
         if (distance <= 200){
             if (distance < 2){
                 level = 1;
@@ -499,6 +501,50 @@ typedef class PC{
     int globalX;
     int globalY;
     Pokemon* pokemons[6];
+    int numPK;
+    int potions;
+    int pokeballs;
+    int revives;
+
+    void useItem(int item, int poke){
+        switch(item){
+            case 1:
+                if(potions > 0){
+                    pokemons[poke]->currHealth += 20;
+                    if(pokemons[poke]->currHealth < pokemons[poke]->health){
+                        pokemons[poke]->currHealth = MIN(pokemons[poke]->health, pokemons[poke]->currHealth + 20);
+                    }
+                    potions--;
+                }
+                break;
+            case 2:
+                if(pokeballs > 0){
+                    pokeballs--;
+                }
+                break;
+            case 3:
+                if(revives > 0){
+                    pokemons[poke]->currHealth = pokemons[poke]->(int)health/2;
+                    revives--;
+                }
+                break;
+        }
+    }
+
+    void visitMart(){
+         numPK = 3;
+         potions = 3;
+         pokeballs = 3;
+         revives = 3;
+    }
+
+    void visitCenter(){
+        for (int i=0; i<numPK; i++){
+            pokemons[i]->currHealth = pokemons[i]->health;
+        }
+    }
+
+
 }PC;
 
 typedef class heapNode {
