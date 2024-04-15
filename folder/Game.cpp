@@ -318,7 +318,7 @@ class Pokemon{
         strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
         PokemonStats ps;
         searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
-        currhealth = health = baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
+        currHealth = health = baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
         if (distance <= 200){
             if (distance < 2){
                 level = 1;
@@ -398,7 +398,7 @@ class Pokemon{
         //         return true;
         //     }
         // }
-        // return false;
+        return false;
     }
 
 
@@ -524,7 +524,7 @@ typedef class PC{
                 break;
             case 3:
                 if(revives > 0){
-                    pokemons[poke]->currHealth = pokemons[poke]->(int)health/2;
+                    pokemons[poke]->currHealth = pokemons[poke]->health/2;
                     revives--;
                 }
                 break;
@@ -542,6 +542,47 @@ typedef class PC{
         for (int i=0; i<numPK; i++){
             pokemons[i]->currHealth = pokemons[i]->health;
         }
+    }
+
+    void openBag(){
+        clear();
+        mvprintw(0,0, "You have %d potions. Press 1 to use potion", potions);
+        mvprintw(1,0, "You have %d pokeballs. (Can't use pokeball cause no Pokemon around)", pokeballs);
+        mvprintw(2,0, "You have %d revives. Press 3 to use revive", revives);
+        mvprintw(3,0, "Press q to esc");
+        refresh();
+        char ch; 
+        while((ch = getch()) != 27){ 
+            if (ch == '1'){
+                mvprintw(4,0, "Which Pokemon do you want to use the potion on?");
+                for(int i=0; i<numPK; i++){
+                    mvprintw(5+i,0, "%d: %s", i+1, pokemons[i]->identfier);
+                }
+                refresh();
+                int poke;
+                while((poke = getch()) != 'q'){
+                    if(poke >= 1 && poke <= numPK){
+                        useItem(1, poke-1);
+                        break;
+                    }
+                }
+            } else if (ch == '3'){
+                mvprintw(4,0, "Which Pokemon do you want to use the revive on?");
+                for(int i=0; i<numPK; i++){
+                    mvprintw(5+i,0, "%d: %s", i+1, pokemons[i]->identfier);
+                }
+                refresh();
+                int poke;
+                while((poke = getch()) != 'q'){
+                    if(poke >= 1 && poke <= numPK){
+                        useItem(3, poke-1);
+                        break;
+                    }
+                }
+            }
+        }
+        
+
     }
 
 
@@ -1255,8 +1296,12 @@ void createWorldMap(worldMap *wm){
     wm->player->globalX = 200;
     wm->player->globalY = 200;
 
-    //initialize player pokemons
+    //initialize player pokemons and items
     pcChooseStarterPokemon(wm->player);
+    wm->player->numPK = 1;
+    wm->player->potions = 3;
+    wm->player->pokeballs = 3;
+    wm->player->revives = 3;
 }
 
 /*spawns a pc in the terrain map*/
@@ -2228,7 +2273,14 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                 endwin();
                 exit(0);
                 //return;
-            }else{
+            } else if (in == 'B'){ //Open bag
+                wm->player->openBag();
+                printMap(terrainMap, hn->pc);
+            }
+            
+            
+            
+            else{
                 //printw("unknown character. Try again!");
 
             }  
@@ -3114,6 +3166,7 @@ int main(int argc, char *argv[]){
     //return 0;
     
     initscr();
+    keypad(stdscr, TRUE);
     createWorldMap(&wm);
     createMap(currX, currY, &wm, numTrainers);
     //lprintf("(%d, %d)\n", currX-200, currY-200);
