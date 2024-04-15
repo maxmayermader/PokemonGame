@@ -2649,7 +2649,8 @@ void encounterPokemon(PC *pc){
             if (runProb == 6){
                 runCondition = false;
             } else {
-                mvprintw(2,0, "You couldn't run away!");
+                mvprintw(5,5, "You couldn't run away!");
+                refresh();
             }
         } else if (in == 's'){
             //switch pokemon
@@ -2681,7 +2682,6 @@ void encounterPokemon(PC *pc){
                 currPcPoke = 9;
             }
         }
-        clear();
         mvprintw(0,0, "A wild %s appeared! They are level %d.", spawnedPokemon->identfier, spawnedPokemon->level);
         mvprintw(1,0, "You can 'f' to fight, 'B' for bag, 'r' to run, and 's' to switch Pokemon");
         refresh();
