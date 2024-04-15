@@ -2342,13 +2342,16 @@ void parsePokemonMovesFile(){
             token = strtok(NULL, ",");
             pokemonMoves.level = (token != NULL) ? atoi(token) : INT_MAX;
             token = strtok(NULL, ",");
-            pokemonMoves.order = (token != NULL) ? atoi(token) : INT_MAX;
+            pokemonMoves.order = (token != NULL && strcmp(token, "\n") != 0) ? atoi(token) : INT_MAX;
+            
+            
 
             pokemonMovesVector.push_back(pokemonMoves);
             size++;
         }
         //printf("%d",pokemonMovesVector.size());
         for(int k=0; k<pokemonMovesVector.size(); k++){
+            //for(int k=0; k<10; k++){
             printf("%d,", pokemonMovesVector[k].pokemon_id != INT_MAX ? pokemonMovesVector[k].pokemon_id : -1);
             printf("%d, ", pokemonMovesVector[k].version_group_id != INT_MAX ? pokemonMovesVector[k].version_group_id : -1);
             printf("%d, ", pokemonMovesVector[k].move_id != INT_MAX ? pokemonMovesVector[k].move_id : -1);
@@ -2710,6 +2713,7 @@ int main(int argc, char *argv[]){
     int numTrainers = 8;
 
     //parseMovesFile();
+    //parsePokemonMovesFile();
     if (argc >= 2 ){
         if (argc >= 3 && strcmp(argv[1], "--numtrainers") == 0) {
                 numTrainers = atoi(argv[2]);
