@@ -2629,19 +2629,63 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
 
 void encounterPokemon(PC *pc){
     Pokemon* spawnedPokemon = new Pokemon(DFC(pc->globalX, pc->globalY));
+    int currPcPoke = 0;
+    bool runCondition = true;
     clear();
-    mvprintw(0,0, "A wild %s appeared! They are level %d,  health is %d, attack is %d, defense is %d.", spawnedPokemon->identfier, spawnedPokemon->level, spawnedPokemon->health, spawnedPokemon->attack, spawnedPokemon->defense);
-    int i;
-    for(i = 0; i<(int)spawnedPokemon->pkMoves.size(); i++){
-        mvprintw(i+1,0, "They know %s", spawnedPokemon->pkMoves[i].identifier);
-    }
-    mvprintw(i+1,0, "Press 'esc' to run, or 'f' to fight!");
-    mvprintw(i+2,0, "ID is %d", spawnedPokemon->id);
+    mvprintw(0,0, "A wild %s appeared! They are level %d.", spawnedPokemon->identfier, spawnedPokemon->level);
+    mvprintw(1,0, "You can 'f' to fight, 'B' for bag, 'r' to run, and 's' to switch Pokemon");
     refresh();
-    keypad(stdscr, TRUE);
-    int ch;
-        while ((ch = getch()) != 27){}
-    return;
+    while(runCondition){
+        int in = getch();
+        if(in == 'f'){
+            //fight
+            //fight(pc, spawnedPokemon);
+            break;
+        } else if (in == 'B'){
+            //bag
+            pc->openBag();
+        } else if (in == 'r'){
+            int runProb = randomGenerator(6, pc->numPK);
+            if (runProb == 6){
+                runCondition = false;
+            } else {
+                mvprintw(2,0, "You couldn't run away!");
+            }
+        } else if (in == 's'){
+            //switch pokemon
+            clear();
+            mvprintw(0,0, "Choose a Pokemon to switch to");
+            for(int i = 0; i < pc->numPK; i++){
+                mvprintw(i+1,0, "Pokemon %d: %s", i+1, pc->pokemons[i]->identfier);
+            }
+            int in = getch();
+            if(in == '1'){
+                currPcPoke = 0;
+            } else if (in == '2'){
+                currPcPoke = 1;
+            } else if (in == '3'){
+                currPcPoke = 2;
+            } else if (in == '4'){
+                currPcPoke = 3;
+            } else if (in == '5'){
+                currPcPoke = 4;
+            } else if (in == '6'){
+                currPcPoke = 5;
+            } else if (in == '7'){
+                currPcPoke = 6;
+            } else if (in == '8'){
+                currPcPoke = 7;
+            } else if (in == '9'){
+                currPcPoke = 8;
+            } else if (in == '0'){
+                currPcPoke = 9;
+            }
+        }
+        clear();
+        mvprintw(0,0, "A wild %s appeared! They are level %d.", spawnedPokemon->identfier, spawnedPokemon->level);
+        mvprintw(1,0, "You can 'f' to fight, 'B' for bag, 'r' to run, and 's' to switch Pokemon");
+        refresh();
+    }
 
 }
 
