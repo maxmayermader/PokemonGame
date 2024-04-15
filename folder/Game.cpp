@@ -318,7 +318,7 @@ class Pokemon{
         strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
         PokemonStats ps;
         searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
-        currHealth = health = baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
+        health = baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
         if (distance <= 200){
             if (distance < 2){
                 level = 1;
@@ -373,7 +373,7 @@ class Pokemon{
         strcpy(move2, moves.identifier); 
         pkMoves.push_back(moves);
 
-        health = floor((baseHealth + randomGenerator(15,0))*2*level/ 100) + level + 10;
+        currHealth = health = floor((baseHealth + randomGenerator(15,0))*2*level/ 100) + level + 10;
         attack = floor((baseAttack + randomGenerator(15,0))*2*level/ 100) + 5;
         defense = floor((baseDefense + randomGenerator(15,0))*2*level/ 100) + 5;
         speed = floor((baseSpeed + randomGenerator(15,0))*2*level/ 100) + 5;
@@ -510,11 +510,12 @@ typedef class PC{
         switch(item){
             case 1:
                 if(potions > 0){
-                    pokemons[poke]->currHealth += 20;
+                    //pokemons[poke]->currHealth += 20;
                     if(pokemons[poke]->currHealth < pokemons[poke]->health){
                         pokemons[poke]->currHealth = MIN(pokemons[poke]->health, pokemons[poke]->currHealth + 20);
+                        potions--;
                     }
-                    potions--;
+                    //potions--;
                 }
                 break;
             case 2:
@@ -523,7 +524,7 @@ typedef class PC{
                 }
                 break;
             case 3:
-                if(revives > 0){
+                if(revives > 0 and pokemons[poke]->currHealth == 0){
                     pokemons[poke]->currHealth = pokemons[poke]->health/2;
                     revives--;
                 }
@@ -549,7 +550,7 @@ typedef class PC{
         mvprintw(0,0, "You have %d potions. Press 1 to use potion", potions);
         mvprintw(1,0, "You have %d pokeballs. (Can't use pokeball cause no Pokemon around)", pokeballs);
         mvprintw(2,0, "You have %d revives. Press 3 to use revive", revives);
-        mvprintw(3,0, "Press q to esc");
+        mvprintw(3,0, "Press esc to close bag");
         refresh();
         char ch; 
         while((ch = getch()) != 27){ 
@@ -560,10 +561,10 @@ typedef class PC{
                 }
                 refresh();
                 int poke;
-                while((poke = getch()) != 'q'){
-                    if(poke >= 1 && poke <= numPK){
-                        useItem(1, poke-1);
-                        break;
+                while((poke = getch()) != 27){
+                    if(poke >= 49 && poke <= numPK+48){
+                        useItem(1, poke-48-1);
+                        //break;
                     }
                 }
             } else if (ch == '3'){
@@ -573,13 +574,19 @@ typedef class PC{
                 }
                 refresh();
                 int poke;
-                while((poke = getch()) != 'q'){
-                    if(poke >= 1 && poke <= numPK){
-                        useItem(3, poke-1);
+                while((poke = getch()) != 27){
+                    if(poke >= 49 && poke <= numPK+48){
+                        useItem(3, poke-48-1);
                         break;
                     }
                 }
             }
+            clear();
+            mvprintw(0,0, "You have %d potions. Press 1 to use potion", potions);
+            mvprintw(1,0, "You have %d pokeballs. (Can't use pokeball cause no Pokemon around)", pokeballs);
+            mvprintw(2,0, "You have %d revives. Press 3 to use revive", revives);
+            mvprintw(3,0, "Press esc to close bag");
+            refresh();
         }
         
 
@@ -1259,23 +1266,52 @@ void pcChooseStarterPokemon(PC *pc){
     mvprintw(2,0, "Name is %s! They are level %d,  health is %d, attack is %d, defense is %d.", pk2->identfier, pk2->level, pk2->health, pk2->attack, pk2->defense);
     mvprintw(3,0, "Name is %s! They are level %d,  health is %d, attack is %d, defense is %d.", pk3->identfier, pk3->level, pk3->health, pk3->attack, pk3->defense);
     refresh();
-
-    int choice = 0;
-    
-    choice = getch();
-    if (choice == '1'){
-        pc->pokemons[0] = pk1;
-        delete pk2;
-        delete pk3;
-    } else if (choice == '2'){
-        pc->pokemons[0] = pk2;
-        delete pk1;
-        delete pk3;
-    } else if (choice == '3'){
-        pc->pokemons[0] = pk3;
-        delete pk1;
-        delete pk2;
+    char choice;
+    while((choice = getch()) != 27){
+        if (choice == '1'){
+            pc->pokemons[0] = pk1;
+            delete pk2;
+            delete pk3;
+            break;
+        } else if (choice == '2'){
+            pc->pokemons[0] = pk2;
+            delete pk1;
+            delete pk3;
+            break;
+        } else if (choice == '3'){
+            pc->pokemons[0] = pk3;
+            delete pk1;
+            delete pk2;
+            break;
+        } else if (choice == 'q' || choice == 'Q'){
+            exit(0);
+        } 
+        else {
+            mvprintw(4,0, "Invalid choice. Please enter 1, 2, or 3.");
+        }
     }
+    // mvprintw(0,0, "Choose your starter Pokemon(enter 1, 2, or 3): ");
+    // mvprintw(1,0, "Name is %s! They are level %d,  health is %d, attack is %d, defense is %d.", pk1->identfier, pk1->level, pk1->health, pk1->attack, pk1->defense);
+    // mvprintw(2,0, "Name is %s! They are level %d,  health is %d, attack is %d, defense is %d.", pk2->identfier, pk2->level, pk2->health, pk2->attack, pk2->defense);
+    // mvprintw(3,0, "Name is %s! They are level %d,  health is %d, attack is %d, defense is %d.", pk3->identfier, pk3->level, pk3->health, pk3->attack, pk3->defense);
+    // refresh();
+
+    // int choice = 0;
+    
+    // choice = getch();
+    // if (choice == '1'){
+    //     pc->pokemons[0] = pk1;
+    //     delete pk2;
+    //     delete pk3;
+    // } else if (choice == '2'){
+    //     pc->pokemons[0] = pk2;
+    //     delete pk1;
+    //     delete pk3;
+    // } else if (choice == '3'){
+    //     pc->pokemons[0] = pk3;
+    //     delete pk1;
+    //     delete pk2;
+    // }
 }
 
 /*Set all pointers to NULL*/
