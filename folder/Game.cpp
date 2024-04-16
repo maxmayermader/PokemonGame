@@ -545,10 +545,10 @@ typedef class PC{
         }
     }
 
-    void openBag(){
+    int openBag(int wild){
         clear();
         mvprintw(0,0, "You have %d potions. Press 1 to use potion", potions);
-        mvprintw(1,0, "You have %d pokeballs. (Can't use pokeball cause no Pokemon around)", pokeballs);
+        mvprintw(1,0, "You have %d pokeballs. Press 2 to capture wild Pokemon", pokeballs);
         mvprintw(2,0, "You have %d revives. Press 3 to use revive", revives);
         mvprintw(3,0, "Press esc to close bag");
         refresh();
@@ -567,7 +567,26 @@ typedef class PC{
                         //break;
                     }
                 }
-            } else if (ch == '3'){
+            } else if(ch == '2'){
+                if(wild == 1){
+                    if (numPK < 6){
+                        return 1;
+                    } else {
+                        return 2;
+                    }
+                } else {
+                    mvprintw(4,0, "You have %d pokeballs. Press 2 to capture wild Pokemon", pokeballs);
+                }
+                refresh();
+                //int poke;
+                // while((poke = getch()) != 27){
+                //     if(poke >= 49 && poke <= numPK+48){
+                //         useItem(2, poke-48-1);
+                //         break;
+                //     }
+                // }
+            } //useItem(3, poke-48-1
+            else if (ch == '3'){
                 mvprintw(4,0, "Which Pokemon do you want to use the revive on?");
                 for(int i=0; i<numPK; i++){
                     mvprintw(5+i,0, "%d: %s", i+1, pokemons[i]->identfier);
@@ -588,8 +607,7 @@ typedef class PC{
             mvprintw(3,0, "Press esc to close bag");
             refresh();
         }
-        
-
+        return 0;
     }
 
 
@@ -2310,7 +2328,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                 exit(0);
                 //return;
             } else if (in == 'B'){ //Open bag
-                wm->player->openBag();
+                wm->player->openBag(0);
                 printMap(terrainMap, hn->pc);
             }
             
@@ -2643,7 +2661,16 @@ void encounterPokemon(PC *pc){
             break;
         } else if (in == 'B'){
             //bag
-            pc->openBag();
+           if(pc->openBag(1)==1){
+                mvprintw(5,5, "You caught the wild %s!", spawnedPokemon->identfier);
+                pc->pokemons[pc->numPK] = spawnedPokemon;
+                pc->numPK++;
+                refresh();
+                runCondition = false;
+           } else if(pc->openBag(1)==2){
+                mvprintw(5,5, "The Pokemon Fled);
+                refresh();
+           } 
         } else if (in == 'r'){
             int runProb = randomGenerator(6, pc->numPK);
             if (runProb == 6){
@@ -3231,17 +3258,6 @@ int main(int argc, char *argv[]){
     
 
     printf("%d\n", numTrainers);
-
-    Pokemon pk(100);
-    pk.printPokemon();
-    pk.levelUp();
-    pk.printPokemon();
-    pk.levelUp();
-    pk.printPokemon();
-    pk.levelUp();
-    pk.printPokemon();
-    pk.levelUp();
-    pk.printPokemon();
     
     //return 0;
     
