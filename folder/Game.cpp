@@ -2782,6 +2782,7 @@ void encounterPokemon(PC *pc){
             } else {
                 mvprintw(5,5, "You couldn't run away!");
                 refresh();
+                sleep(1);
             }
         } else if (in == 's'){
             //switch pokemon
@@ -2803,15 +2804,7 @@ void encounterPokemon(PC *pc){
                 pc->currPoke = 4;
             } else if (in == '6'){
                 pc->currPoke = 5;
-            } else if (in == '7'){
-                pc->currPoke = 6;
-            } else if (in == '8'){
-                pc->currPoke = 7;
-            } else if (in == '9'){
-                pc->currPoke = 8;
-            } else if (in == '0'){
-                pc->currPoke = 9;
-            }
+            } 
         }
         clear();
         mvprintw(0,0, "A wild %s appeared! They are level %d.", spawnedPokemon->identfier, spawnedPokemon->level);
