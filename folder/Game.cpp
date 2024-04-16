@@ -417,7 +417,7 @@ class Pokemon{
         PokemonMoves pm2;
         Moves moves;
         searchPokemonMovesVector(id, level, &pm1, &pm2, pkMoves);
-        if(searchMovesVector(pm1.move_id, &moves))
+        if(searchMovesVector(pm1.move_id, &moves) && 5 >= (int)pkMoves.size()){
             pkMoves.push_back(moves);
     }
 
@@ -2641,6 +2641,23 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
     return calcCost(2, terrainMap->terrain[pc->row][pc->col]);
 }
 
+void attack(Pokemon *attacker, Pokemon *defender){
+    int damage = 0;
+    if (move == 1){
+        damage = attacker->attack - defender->defense;
+        if (damage < 0){
+            damage = 0;
+        }
+        defender->health -= damage;
+    } else {
+        damage = attacker->specialAttack - defender->specialDefense;
+        if (damage < 0){
+            damage = 0;
+        }
+        defender->health -= damage;
+    }
+}
+
 void fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc){ //TODO
     int move = randomGenerator(2, 1);
     if (move == 1){
@@ -2662,6 +2679,50 @@ void fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
     if (npc != NULL){
         
     }
+    
+    clear(); // Clear the screen
+
+    // Display the enemy Pokemon's name, health, and level
+    mvprintw(0, 0, "Enemy Pokemon: %s", wildPokemon->identfier);
+    mvprintw(1, 0, "Health: %d", wildPokemon->currHealth);
+    mvprintw(2, 0, "Level: %d", wildPokemon->level);
+
+    // Display the player's Pokemon's name, health, and level
+    mvprintw(4, 0, "Your Pokemon: %s", pc->pokemons[pc->currPoke]->identfier);
+    mvprintw(5, 0, "Health: %d", pc->pokemons[pc->currPoke]->health);
+    mvprintw(6, 0, "Level: %d", pc->pokemons[pc->currPoke]->level);
+
+    // List the player's Pokemon moves
+    mvprintw(8, 0, "Your Pokemon's Moves:");
+    for(int i = 0; i < (int)pc->pokemons[pc->currPoke]->pkMoves.size(); i++) {
+        mvprintw(9+i, 0, "%d. %s", i+1, pc->pokemons[0]->pkMoves[i].identifier);
+    }
+
+    refresh(); // Refresh the screen to show the changes
+
+    char in = getch(); // Get the user's input
+    if (in == '1'){
+        attack(pc->pokemons[pc->currPoke], wildPokemon);
+        fightNPCTurn(npc, wildPokemon, pc);
+    } else if (in == '2'){
+        attack(pc->pokemons[pc->currPoke], wildPokemon);
+        fightNPCTurn(npc, wildPokemon, pc);
+    } else if (in == '3'){
+        attack(pc->pokemons[pc->currPoke], wildPokemon);
+        fightNPCTurn(npc, wildPokemon, pc);
+    } else if (in == '4'){
+        attack(pc->pokemons[pc->currPoke], wildPokemon);
+        fightNPCTurn(npc, wildPokemon, pc);
+    } else if (in == '5'){
+        attack(pc->pokemons[pc->currPoke], wildPokemon);
+        fightNPCTurn(npc, wildPokemon, pc);
+    }
+
+
+    // If the user presses '1', '2', '3', or '4', the player's Pokemon will use the corresponding move
+
+
+
 
     // int in;
     // int currPcPoke = 0;
@@ -2717,7 +2778,7 @@ void encounterPokemon(PC *pc){
         int in = getch();
         if(in == 'f'){
             //fight
-            //fight(pc, spawnedPokemon);
+            fight(pc, spawnedPokemon, NULL);
         } else if (in == 'B'){
             //bag
            if(pc->openBag(1)==1){
