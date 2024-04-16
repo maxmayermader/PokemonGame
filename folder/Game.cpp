@@ -472,11 +472,14 @@ typedef class NPC{
     int currPoke;
 
     bool isDefeated(){
-        for(int i=0; i<numPK; i++){
-            if(pokemons[i]->currHealth > 0){
-                return false;
-            }
+        if(currPoke < numPK){
+            return false;
         }
+        // for(int i=0; i<numPK; i++){
+        //     if(pokemons[i]->currHealth > 0){
+        //         return false;
+        //     }
+        // }
         defeated = 1;
         return true;
     }
