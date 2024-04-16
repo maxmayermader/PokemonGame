@@ -11,6 +11,7 @@
 #include <climits>
 #include <vector>
 #include <cmath>
+#include <unistd.h>
 
 #define MAX_SIZE 100  
 #define ROW 21//21 //Y
@@ -2667,9 +2668,12 @@ void encounterPokemon(PC *pc){
                 pc->numPK++;
                 refresh();
                 runCondition = false;
+                sleep(3);
            } else if(pc->openBag(1)==2){
-                mvprintw(5,5, "The Pokemon Fled);
+                mvprintw(5,5, "The Pokemon Fled");
                 refresh();
+                runCondition = false;
+                sleep(3);
            } 
         } else if (in == 'r'){
             int runProb = randomGenerator(6, pc->numPK);
@@ -3236,7 +3240,7 @@ int main(int argc, char *argv[]){
     worldMap wm;
     int currX = 200;
     int currY = 200;
-    int numTrainers = 8;
+    int numTrainers = 1;
 
     parsePokemonFile();
     parseMovesFile();    
