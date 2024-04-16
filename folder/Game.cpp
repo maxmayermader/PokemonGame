@@ -576,7 +576,7 @@ typedef class PC{
                         return 2;
                     }
                 } else {
-                    mvprintw(4,0, "You have %d pokeballs. Press 2 to capture wild Pokemon", pokeballs);
+                    mvprintw(4,0, "You can only catch wild Pokemon.");
                 }
                 refresh();
                 //int poke;
@@ -2646,6 +2646,56 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
     return calcCost(2, terrainMap->terrain[pc->row][pc->col]);
 }
 
+void fight(PC *pc, Pokemon *wildPokemon){
+    int in;
+    int turn = 0;
+    int pcMove = 0;
+    int wildMove = 0;
+    int pcMoveDamage = 0;
+    int wildMoveDamage = 0;
+    int pcHealth = pc->pokemons[0]->health;
+    int wildHealth = wildPokemon->health;
+    while(pcHealth > 0 && wildHealth > 0){
+        if (turn == 0){
+            mvprintw(0,0, "Choose a move");
+            for(int i = 0; i < (int)pc->pokemons[0]->pkMoves.size(); i++){
+                mvprintw(i+1,0, "Move %d: %s", i+1, pc->pokemons[0]->pkMoves[i].identifier);
+            }
+            in = getch();
+            if(in == '1'){
+                pcMove = 0;
+            } else if (in == '2'){
+                pcMove = 1;
+            } else if (in == '3'){
+                pcMove = 2;
+            } else if (in == '4'){
+                pcMove = 3;
+            }
+            pcMoveDamage = pc->pokemons[0]->pkMoves[pcMove].power;
+            wildHealth -= pcMoveDamage;
+            mvprintw(5,0, "You used %s! The wild %s has %d health left", pc->pokemons[0]->pkMoves[pcMove].identifier, wildPokemon->identfier, wildHealth);
+            refresh();
+            turn = 1;
+        } else {
+            wildMove = randomGenerator(4, 0);
+            wildMoveDamage = wildPokemon->pkMoves[wildMove].power;
+            pcHealth -= wildMoveDamage;
+            mvprintw(6,0, "The wild %s used %s! You have %d health left", wildPokemon->identfier, wildPokemon->pkMoves[wildMove].identifier, pcHealth);
+            refresh();
+            turn = 0;
+        }
+    }
+    if (pcHealth <= 0){
+        mvprintw(7,0, "You lost the battle");
+        refresh();
+        sleep(3);
+    } else {
+        mvprintw(7,0, "You won the battle");
+        refresh();
+        sleep(3);
+    }
+}
+
 void encounterPokemon(PC *pc){
     Pokemon* spawnedPokemon = new Pokemon(DFC(pc->globalX, pc->globalY));
     int currPcPoke = 0;
@@ -2713,6 +2763,7 @@ void encounterPokemon(PC *pc){
                 currPcPoke = 9;
             }
         }
+        clear();
         mvprintw(0,0, "A wild %s appeared! They are level %d.", spawnedPokemon->identfier, spawnedPokemon->level);
         mvprintw(1,0, "You can 'f' to fight, 'B' for bag, 'r' to run, and 's' to switch Pokemon");
         refresh();
