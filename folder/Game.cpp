@@ -419,6 +419,7 @@ class Pokemon{
         searchPokemonMovesVector(id, level, &pm1, &pm2, pkMoves);
         if(searchMovesVector(pm1.move_id, &moves) && 5 >= (int)pkMoves.size()){
             pkMoves.push_back(moves);
+        }
     }
 
     void printPokemon(){
@@ -2642,36 +2643,16 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
 }
 
 void attack(Pokemon *attacker, Pokemon *defender){
-    int damage = 0;
-    if (move == 1){
-        damage = attacker->attack - defender->defense;
-        if (damage < 0){
-            damage = 0;
-        }
-        defender->health -= damage;
-    } else {
-        damage = attacker->specialAttack - defender->specialDefense;
-        if (damage < 0){
-            damage = 0;
-        }
-        defender->health -= damage;
-    }
+    
+
 }
 
 void fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc){ //TODO
     int move = randomGenerator(2, 1);
     if (move == 1){
-        int damage = npc->pokemons[0]->attack - pc->pokemons[0]->defense;
-        if (damage < 0){
-            damage = 0;
-        }
-        pc->pokemons[0]->health -= damage;
+        
     } else {
-        int damage = npc->pokemons[0]->specialAttack - pc->pokemons[0]->specialDefense;
-        if (damage < 0){
-            damage = 0;
-        }
-        pc->pokemons[0]->health -= damage;
+        
     }
 }
 
