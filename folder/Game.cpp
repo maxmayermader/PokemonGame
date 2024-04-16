@@ -465,10 +465,21 @@ typedef class NPC{
     int row; 
     int col;
     int direc;
-    int weightArr[NPCROW][NPCCOL]; //weightMap. Might change it to pointer arr
+    int weightArr[NPCROW][NPCCOL]; //Weight array for dijkstra
     int defeated;
     Pokemon* pokemons[6];
     int numPK;
+    int currPoke;
+
+    bool isDefeated(){
+        for(int i=0; i<numPK; i++){
+            if(pokemons[i]->currHealth > 0){
+                return false;
+            }
+        }
+        defeated = 1;
+        return true;
+    }
 }NPC;
 
 //NPC Enums
@@ -1361,6 +1372,7 @@ void spawnNPC(worldMap *wm, mapclass *terrainMap, int npcType){
     }
     npc->numPK = 1;
     npc->pokemons[0] = new Pokemon(DFC(terrainMap->playerT->globalX, terrainMap->playerT->globalY));
+    npc->currPoke=0;
     for(int i=1; i<6; i++){
         if(randomGenerator(10, 1) <= 6){
             npc->pokemons[i] = new Pokemon(DFC(terrainMap->playerT->globalX, terrainMap->playerT->globalY));
@@ -2644,7 +2656,9 @@ void fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc){ //TODO
 }
 
 void fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
-
+    if (npc != NULL){
+        
+    }
 
     // int in;
     // int currPcPoke = 0;
