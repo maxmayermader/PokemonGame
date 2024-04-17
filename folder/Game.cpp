@@ -2308,17 +2308,8 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                 trainerList(terrainMap, hn->pc);
                 printMap(terrainMap, hn->pc);
             }else if (in=='>'){
-                if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'C') {
+                if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'C' || terrainMap->terrain[hn->pc->row][hn->pc->col] == 'M') {
                     enterBuilding();
-                    mvprintw(0,0,"All Pokemons have been healed");
-                    hn->pc->visitCenter();
-                    refresh();
-                }
-                else if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'M'){
-                    enterBuilding();
-                    mvprintw(0,0,"Bag is full");
-                    hn->pc->visitMart();
-                    refresh();
                 }
                 // movePC(wm, terrainMap, hn->pc, "NW");
                 printMap(terrainMap, hn->pc);
@@ -2461,14 +2452,19 @@ return;
    
 }
 
-void enterBuilding(){
+void enterBuilding(char building, PC *pc){
     clear();
     mvprintw(1,1, "You entered a building");
-    refresh();
-    char in='m';
-    while(in != '<'){
-        in = getchar();
+    if (building == 'C') {
+        mvprintw(2,1, "Pokemon healed");
+        pc->visitCenter();
+    } else if (building == 'M') {
+        mvprintw(2,1, "Bag filled");
+        pc->visitMart();
     }
+    refresh();
+    char in;
+    while((in = getchar()) != '<'){}
 }
 
 void copyToScreen(char buffer[1000][80], char c, char ns, char ew, int row, int col, int i) {
@@ -2692,11 +2688,14 @@ int attack(Pokemon *attacker, Pokemon *defender, Moves *move){
 }
 
 void fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc){ //TODO
+    if (npc != NULL){
+        wp = npc->pokemons[npc->currPoke];
+    }
     int move = randomGenerator(2, 1);
     if (move == 1){
-        attack(npc->pokemons[npc->currPoke], pc->pokemons[pc->currPoke], &npc->pokemons[npc->currPoke]->pkMoves[0]);
+        attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[0]);
     } else {
-        attack(npc->pokemons[npc->currPoke], pc->pokemons[pc->currPoke], &npc->pokemons[npc->currPoke]->pkMoves[1]);
+        attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[1]);
     }
 }
 
@@ -2755,6 +2754,10 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
             } else {
                 return WILDDEFEATED;
             }
+        } else {
+            mvprintw(8, 10, "Move missed!");
+            refresh();
+            sleep(1);
         }
         fightNPCTurn(npc, wildPokemon, pc);
     } else if (in == '2'){
@@ -2839,6 +2842,13 @@ void encounterPokemon(PC *pc){
             } else if (in == '6'){
                 pc->currPoke = 5;
             } 
+        }
+        if (pc->isDefeated()){
+            runCondition = false;
+            clear();
+            mvprintw(0,0, "You have been defeated!");
+            refresh();
+            sleep(2);
         }
         clear();
         mvprintw(0,0, "A wild %s appeared! They are level %d.", spawnedPokemon->identfier, spawnedPokemon->level);
