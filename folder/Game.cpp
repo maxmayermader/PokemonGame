@@ -2293,11 +2293,12 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                 trainerList(terrainMap, hn->pc);
                 printMap(terrainMap, hn->pc);
             }else if (in=='>'){
-                if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'C')
+                if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'C') {
                     enterBuilding();
                     mvprintw(0,0,"All Pokemons have been healed");
                     hn->pc->visitCenter();
                     refresh();
+                }
                 else if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'M'){
                     enterBuilding();
                     mvprintw(0,0,"Bag is full");
@@ -2666,7 +2667,6 @@ void attack(Pokemon *attacker, Pokemon *defender, Moves *move){
         int damage = (((2*attacker->level/5 + 2) * move->power * (attacker->attack/defender->defense)/50) + 2)*crit*rand*stab*type;
         defender->currHealth -= damage;
     }
-
 }
 
 void fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc){ //TODO
@@ -2687,13 +2687,25 @@ void fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
 
     // Display the enemy Pokemon's name, health, and level
     mvprintw(0, 0, "Enemy Pokemon: %s", wildPokemon->identfier);
-    mvprintw(1, 0, "Health: %d", wildPokemon->currHealth);
-    mvprintw(2, 0, "Level: %d", wildPokemon->level);
+    mvprintw(1, 0, "Level: %d", wildPokemon->level);
+    mvprintw(2, 0, "Health: %d", wildPokemon->currHealth);
+    mvprintw(2, 10, "|");
+    for(int j=0; j<29; j++){
+        int till = (int)((float)wildPokemon->currHealth/(float)wildPokemon->health*29);
+        if(j<till){
+            mvprintw(2, j+11, "-");
+        } else {
+            mvprintw(2, j+11, " ");
+        }
+    }
+    mvprintw(2, 40, "|");
 
     // Display the player's Pokemon's name, health, and level
-    mvprintw(4, 0, "Your Pokemon: %s", pc->pokemons[pc->currPoke]->identfier);
-    mvprintw(5, 0, "Health: %d", pc->pokemons[pc->currPoke]->health);
-    mvprintw(6, 0, "Level: %d", pc->pokemons[pc->currPoke]->level);
+    mvprintw(4, 20, "Your Pokemon: %s", pc->pokemons[pc->currPoke]->identfier);
+    mvprintw(5, 20, "Level: %d", pc->pokemons[pc->currPoke]->level);
+    mvprintw(6, 20, "Health: %d", pc->pokemons[pc->currPoke]->health);
+
+    
 
     // List the player's Pokemon moves
     mvprintw(8, 0, "Your Pokemon's Moves:");
