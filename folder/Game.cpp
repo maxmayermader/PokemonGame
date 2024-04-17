@@ -2671,24 +2671,22 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
 
 int attack(Pokemon *attacker, Pokemon *defender, Moves *move, int isPC){
     if (move->accuracy >= randomGenerator(100, 1)){
-        mvprintw(20, 40, "Bruh1");
         int crit = (randomGenerator(255, 0) < floor(attacker->baseSpeed/2)) ? 1.5 : 1;
         int rand = randomGenerator(100, 85);
         int stab = move->type_id == attacker->type ? 1.5 : 1;
         int type = 1;
         int damage = (((2*attacker->level/5 + 2) * move->power * (attacker->attack/defender->defense)/50) + 2)*crit*rand*stab*type;
-        mvprintw(20, 40, "Bruh2");
         defender->currHealth -= damage;
+        if (isPC == 1){
+            mvprintw(8, 30, "It did %d damage!", damage);
+            refresh();
+        } else {
+            mvprintw(8, 30, "It did %d damage!", damage);
+            refresh();
+        }
         if (defender->currHealth <= 0){
             defender->currHealth = 0;
             return ENEMYDEFEATED;
-        }
-        if (isPC == 1){
-            mvprintw(8, 10, "It did %d damage!", damage);
-            refresh();
-        } else {
-            mvprintw(8, 10, "It did %d damage!", damage);
-            refresh();
         }
         
     }
@@ -2752,7 +2750,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
         if(j<till){
             mvprintw(6, j+36, "-");
         } else if (j==till){
-            mvprintw(2, j+16, "+");
+            mvprintw(6, j+36, "+");
         } else {
             mvprintw(6, j+36, " ");
         }
@@ -2772,7 +2770,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
     char in = getch(); // Get the user's input
     clrtoeol();
     if (in == '1'){
-        mvprintw(8, 0, "You chose %s. ", pc->pokemons[pc->currPoke]->pkMoves[0].identifier);
+        mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[0].identifier);
         if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0], 1) == ENEMYDEFEATED){
             if (npc != NULL){
                 npc->currPoke++;
@@ -2781,9 +2779,9 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
             }
         } else {
             mvprintw(8, 10, "Move missed!");
-            refresh();
-            sleep(2);
         }
+        refresh();
+        sleep(2);
         fightNPCTurn(npc, wildPokemon, pc);
     } else if (in == '2'){
         attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[1], 1);
@@ -2817,7 +2815,7 @@ void encounterPokemon(PC *pc){
         if(in == 'f' && fc == 0){
             //fight
             if(fight(pc, spawnedPokemon, NULL) == WILDDEFEATED){
-                mvprintw(8,0, "You defeated the wild %s! You Can capture or run", spawnedPokemon->identfier);
+                mvprintw(9,0, "You defeated the wild %s! You Can capture or run", spawnedPokemon->identfier);
                 refresh();
                 fc = 1;
                 sleep(4);
