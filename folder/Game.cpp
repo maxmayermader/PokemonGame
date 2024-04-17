@@ -381,6 +381,11 @@ class Pokemon{
         speed = floor((baseSpeed + randomGenerator(15,0))*2*level/ 100) + 5;
         specialDefense = floor((baseSpecialDefense + randomGenerator(15,0))*2/ 100) + 5;
         specialAttack = floor((baseSpecialAttack + randomGenerator(15,0))*2/ 100) + 5;
+
+        //get type
+        PokemonTypes *pt = (PokemonTypes*)malloc(sizeof(PokemonTypes));
+        searchPokemonTypesVector(id, pt);
+        type = pt->type_id;
  
     }
 
