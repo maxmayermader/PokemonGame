@@ -2686,24 +2686,23 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
 }
 
 /**
- * Determines which Pokemon, the player's or the non-player character's, gets to attack first in a battle.
+ * Determines the order of moves in a Pokemon battle.
  * 
- * @param pc Pointer to the player's PC object.
- * @param npc Pointer to the non-player character's NPC object.
+ * @param pc Pointer to the player character.
+ * @param wildPokemon Pointer to the wild Pokemon.
  * @param pcmove Pointer to the move chosen by the player.
- * @param npcmove Pointer to the move chosen by the non-player character.
- * 
- * @return 1 if the player's Pokemon goes first, 0 if the non-player character's Pokemon goes first.
+ * @param npcmove Pointer to the move chosen by the wild Pokemon.
+ * @return 1 if the player goes first, 0 if the wild Pokemon goes first.
  */
-int whoGoesFirst(PC *pc, NPC *npc, Moves *pcmove, Moves *npcmove){
+int whoGoesFirst(PC *pc, Pokemon *wildPokemon, Moves *pcmove, Moves *npcmove){
     if (pcmove->priority > npcmove->priority){
         return 1;
     } else if (pcmove->priority < npcmove->priority){
         return 0;
     } else {
-        if (pc->pokemons[pc->currPoke]->speed > npc->pokemons[npc->currPoke]->speed){
+        if (pc->pokemons[pc->currPoke]->speed > wildPokemon->speed){
             return 1;
-        } else if (pc->pokemons[pc->currPoke]->speed < npc->pokemons[npc->currPoke]->speed){
+        } else if (pc->pokemons[pc->currPoke]->speed < wildPokemon->speed){
             return 0;
         } else {
             return randomGenerator(1, 0);
@@ -2711,6 +2710,15 @@ int whoGoesFirst(PC *pc, NPC *npc, Moves *pcmove, Moves *npcmove){
     }
 }
 
+/**
+ * Calculates the damage dealt by a Pokemon's attack.
+ * 
+ * @param attacker Pointer to the attacking Pokemon.
+ * @param defender Pointer to the defending Pokemon.
+ * @param move Pointer to the move used.
+ * @param isPC Integer indicating whether the attacker is the player character (1 if yes, 0 if no).
+ * @return The amount of damage dealt.
+ */
 int attack(Pokemon *attacker, Pokemon *defender, Moves *move, int isPC){
     if (move->accuracy >= randomGenerator(100, 1)){
         int crit = (randomGenerator(255, 0) < floor(attacker->baseSpeed/2)) ? 1.5 : 1;
@@ -2737,11 +2745,10 @@ int attack(Pokemon *attacker, Pokemon *defender, Moves *move, int isPC){
     return 0;
 }
 
-int fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc){ //TODO
+int fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc, int pMove){ //TODO randomGenerator(2, 1)
     if (npc != NULL){
         wp = npc->pokemons[npc->currPoke];
     }
-    int pMove = randomGenerator(2, 1);
     if (pMove == 1){
         move(8,0);
         clrtoeol();
@@ -2810,8 +2817,17 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
 
     char in = getch(); // Get the user's input
     clrtoeol();
+    int npcMove = randomGenerator(2, 1);
+
+    if (in == '1'){
+        if (whoGoesFirst(pc, npc, ))
+    }
+
+
     if (in == '1'){
         mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[0].identifier);
+
+        whoGoesFirst(pc, npc, &pc->pokemons[pc->currPoke]->pkMoves[0], &wildPokemon->pkMoves[0]);
         if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0], 1) == ENEMYDEFEATED){
             if (npc != NULL){
                 npc->currPoke++;
