@@ -2687,7 +2687,8 @@ int attack(Pokemon *attacker, Pokemon *defender, Moves *move, int isPC){
             mvprintw(8, 10, "It did %d damage!", damage);
             refresh();
         } else {
-
+            mvprintw(8, 10, "It did %d damage!", damage);
+            refresh();
         }
         
     }
@@ -2698,11 +2699,21 @@ void fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc){ //TODO
     if (npc != NULL){
         wp = npc->pokemons[npc->currPoke];
     }
-    int move = randomGenerator(2, 1);
-    if (move == 1){
+    int pMove = randomGenerator(2, 1);
+    if (pMove == 1){
+        move(8,0);
+        clrtoeol();
+        mvprintw(10, 0, "Enemy chose %s. ", wp->pkMoves[0].identifier);
         attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[0], 0);
+        refresh();
+        sleep(2);
     } else {
+        move(8,0);
+        clrtoeol();
+        mvprintw(10, 0, "Enemy chose %s. ", wp->pkMoves[0].identifier);
         attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[1], 0);
+        refresh();
+        sleep(2);
     }
 }
 
