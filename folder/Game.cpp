@@ -33,6 +33,10 @@
 #define WATER '~'
 #define PLAYERCHAR '@'
 
+#define ENEMYDEFEATED 1
+#define PLAYERDEFEATED 2
+#define WILDDEFEATED 3
+
 #define DFC(x,y) (abs(x - 200) + abs(y - 200))
 #define MIN(x,y) (x < y ? x : y)
 
@@ -631,6 +635,15 @@ typedef class PC{
             refresh();
         }
         return 0;
+    }
+
+    bool isDefeated(){
+        for(int i=0; i<numPK; i++){
+            if(pokemons[i]->currHealth > 0){
+                return false;
+            }
+        }
+        return true;
     }
 
 
@@ -2658,7 +2671,7 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
     return calcCost(2, terrainMap->terrain[pc->row][pc->col]);
 }
 
-void attack(Pokemon *attacker, Pokemon *defender, Moves *move){
+int attack(Pokemon *attacker, Pokemon *defender, Moves *move){
     if (move->accuracy >= randomGenerator(100, 1)){
         int crit = (randomGenerator(255, 0) < floor(attacker->baseSpeed/2)) ? 1.5 : 1;
         int rand = randomGenerator(100, 85);
@@ -2666,19 +2679,24 @@ void attack(Pokemon *attacker, Pokemon *defender, Moves *move){
         int type = 1;
         int damage = (((2*attacker->level/5 + 2) * move->power * (attacker->attack/defender->defense)/50) + 2)*crit*rand*stab*type;
         defender->currHealth -= damage;
+        if (defender->currHealth <= 0){
+            defender->currHealth = 0;
+            return ENEMYDEFEATED;
+        }
     }
+    return 0;
 }
 
 void fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc){ //TODO
     int move = randomGenerator(2, 1);
     if (move == 1){
-        
+        attack(npc->pokemons[npc->currPoke], pc->pokemons[pc->currPoke], &npc->pokemons[npc->currPoke]->pkMoves[0]);
     } else {
-        
+        attack(npc->pokemons[npc->currPoke], pc->pokemons[pc->currPoke], &npc->pokemons[npc->currPoke]->pkMoves[1]);
     }
 }
 
-void fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
+int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
     if (npc != NULL){
         
     }
@@ -2727,7 +2745,13 @@ void fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
 
     char in = getch(); // Get the user's input
     if (in == '1'){
-        attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0]);
+        if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0]) == ENEMYDEFEATED){
+            if (npc != NULL){
+                npc->currPoke++;
+            } else {
+                return WILDDEFEATED;
+            }
+        }
         fightNPCTurn(npc, wildPokemon, pc);
     } else if (in == '2'){
         attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[1]);
@@ -2741,59 +2765,16 @@ void fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
     } else if (in == '5'){
         attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[4]);
         fightNPCTurn(npc, wildPokemon, pc);
-    }
+    }  
 
-
-    // If the user presses '1', '2', '3', or '4', the player's Pokemon will use the corresponding move
-
-
-
-
-    // int in;
-    // int currPcPoke = 0;
-    // int currWildPoke = 0;
-    // bool runCondition = true;
-    // clear();
-    // mvprintw(0,0, "A wild %s appeared! They are level %d.", wildPokemon->identfier, wildPokemon->level);
-    // mvprintw(1,0, "You can 'f' to fight, 'B' for bag, 'r' to run, and 's' to switch Pokemon");
-    // refresh();
-    // while(runCondition){
-    //     in = getch();
-    //     if(in == 'f'){
-    //         //fight
-    //         //fight(pc, spawnedPokemon);
-    //         break;
-    //     } else if (in == 'B'){
-    //         //bag
-    //        if(pc->openBag(1)==1){
-    //             mvprintw(5,5, "You caught the wild %s!", wildPokemon->identfier);
-    //             pc->pokemons[pc->numPK] = wildPokemon;
-    //             pc->numPK++;
-    //             refresh();
-    //             runCondition = false;
-    //             sleep(3);
-    //        } else if(pc->openBag(1)==2){
-    //             mvprintw(5,5, "The Pokemon Fled");
-    //             refresh();
-    //             runCondition = false;
-    //             sleep(3);
-    //        } 
-    //     } else if (in == 'r'){
-    //         int runProb = randomGenerator(6, pc->numPK);
-    //         if (runProb == 6){
-    //             runCondition = false;
-    //         } else {
-    //             mvprintw(5,5, "You couldn't run away!");
-    //             refresh();
-    //         }
-    //     } 
-    // }
-            
+    
+    return 0;         
 }
 
 void encounterPokemon(PC *pc){
     Pokemon* spawnedPokemon = new Pokemon(DFC(pc->globalX, pc->globalY));
     pc->currPoke = 0;
+    int fc = 0;
     bool runCondition = true;
     clear();
     mvprintw(0,0, "A wild %s appeared! They are level %d.", spawnedPokemon->identfier, spawnedPokemon->level);
@@ -2801,9 +2782,14 @@ void encounterPokemon(PC *pc){
     refresh();
     while(runCondition){
         int in = getch();
-        if(in == 'f'){
+        if(in == 'f' && fc == 0){
             //fight
-            fight(pc, spawnedPokemon, NULL);
+            if(fight(pc, spawnedPokemon, NULL) == WILDDEFEATED){
+                mvprintw(5,5, "You defeated the wild %s! You Can capture or run", spawnedPokemon->identfier);
+                refresh();
+                fc = 1;
+                sleep(2);
+            }
         } else if (in == 'B'){
             //bag
            if(pc->openBag(1)==1){
@@ -2821,7 +2807,7 @@ void encounterPokemon(PC *pc){
            } 
         } else if (in == 'r'){
             int runProb = randomGenerator(6, pc->numPK);
-            if (runProb == 6){
+            if (runProb == 6 || fc == 1){
                 runCondition = false;
             } else {
                 mvprintw(5,5, "You couldn't run away!");
