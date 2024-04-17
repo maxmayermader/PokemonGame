@@ -2724,7 +2724,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
     mvprintw(6, 20, "Health: %d", pc->pokemons[pc->currPoke]->health);
     mvprintw(6, 35, "|");
     for(int j=0; j<29; j++){
-        int till = (int)((float)pc->pokemons[pc->currPoke]->health/(float)pc->pokemons[pc->currPoke]->baseHealth*29);
+        int till = (int)((float)pc->pokemons[pc->currPoke]->currHealth/(float)pc->pokemons[pc->currPoke]->health*29);
         if(j<till){
             mvprintw(6, j+36, "-");
         } else {
