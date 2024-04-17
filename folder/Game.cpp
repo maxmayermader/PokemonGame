@@ -2296,12 +2296,12 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                 if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'C')
                     enterBuilding();
                     mvprintw(0,0,"All Pokemons have been healed");
-                    pc->visitCenter();
+                    hn->pc->visitCenter();
                     refresh();
                 else if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'M'){
                     enterBuilding();
                     mvprintw(0,0,"Bag is full");
-                    pc->visitMart();
+                    hn->pc->visitMart();
                     refresh();
                 }
                 // movePC(wm, terrainMap, hn->pc, "NW");
