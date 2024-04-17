@@ -2725,7 +2725,7 @@ int attack(Pokemon *attacker, Pokemon *defender, Moves *move, int isPC){
         int rand = randomGenerator(100, 85);
         int stab = move->type_id == attacker->type ? 1.5 : 1;
         int type = 1;
-        int damage = (((2*attacker->level/5 + 2) * move->power * (attacker->attack/defender->defense)/50) + 2)*crit*rand*stab*type;
+        int damage = (((((2*attacker->level/5) + 2) * (move->power) * (attacker->attack/defender->defense))/50) + 2)*crit*rand*stab*type;
         defender->currHealth -= damage;
         if (isPC == 1){
             mvprintw(8, 30, "It did %d damage!", damage);
@@ -2820,7 +2820,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
     int npcMove = randomGenerator(2, 1);
 
     if (in == '1'){
-        if (whoGoesFirst(pc, wildPokemon, pc->pokemons[pc->currPoke]->pkMoves[0], &wildPokemon->pkMoves[npcMove]) == 1){
+        if (whoGoesFirst(pc, wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0], &wildPokemon->pkMoves[npcMove]) == 1){
             mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[0].identifier);
             if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0], 1) == ENEMYDEFEATED){
                 if (npc != NULL){
@@ -2845,6 +2845,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
                 mvprintw(9,0 ,"Your Pokemon was knocked out!");
                 refresh();
                 sleep(3);
+                return PLAYERDEFEATED;
             }
             mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[0].identifier);
             if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0], 1) == ENEMYDEFEATED){
