@@ -2642,8 +2642,11 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
     return calcCost(2, terrainMap->terrain[pc->row][pc->col]);
 }
 
-void attack(Pokemon *attacker, Pokemon *defender){
-    
+void attack(Pokemon *attacker, Pokemon *defender, Moves *move){
+    if (move->accuracy >= randomGenerator(100, 1)){
+        int damage = ((2*attacker->level/5 + 2) * move->power * (attacker->attack/defender->defense)/50) + 2;
+        defender->currHealth -= damage;
+    }
 
 }
 
@@ -2676,26 +2679,26 @@ void fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
     // List the player's Pokemon moves
     mvprintw(8, 0, "Your Pokemon's Moves:");
     for(int i = 0; i < (int)pc->pokemons[pc->currPoke]->pkMoves.size(); i++) {
-        mvprintw(9+i, 0, "%d. %s", i+1, pc->pokemons[0]->pkMoves[i].identifier);
+        mvprintw(9+i, 0, "%d. %s", i+1, pc->pokemons[pc->currPoke]->pkMoves[i].identifier);
     }
 
     refresh(); // Refresh the screen to show the changes
 
     char in = getch(); // Get the user's input
     if (in == '1'){
-        attack(pc->pokemons[pc->currPoke], wildPokemon);
+        attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0]);
         fightNPCTurn(npc, wildPokemon, pc);
     } else if (in == '2'){
-        attack(pc->pokemons[pc->currPoke], wildPokemon);
+        attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[1]);
         fightNPCTurn(npc, wildPokemon, pc);
     } else if (in == '3'){
-        attack(pc->pokemons[pc->currPoke], wildPokemon);
+        attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[2]);
         fightNPCTurn(npc, wildPokemon, pc);
     } else if (in == '4'){
-        attack(pc->pokemons[pc->currPoke], wildPokemon);
+        attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[3]);
         fightNPCTurn(npc, wildPokemon, pc);
     } else if (in == '5'){
-        attack(pc->pokemons[pc->currPoke], wildPokemon);
+        attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[4]);
         fightNPCTurn(npc, wildPokemon, pc);
     }
 
@@ -2768,12 +2771,12 @@ void encounterPokemon(PC *pc){
                 pc->numPK++;
                 refresh();
                 runCondition = false;
-                sleep(3);
+                sleep(2);
            } else if(pc->openBag(1)==2){
                 mvprintw(5,5, "The Pokemon Fled");
                 refresh();
                 runCondition = false;
-                sleep(3);
+                sleep(2);
            } 
         } else if (in == 'r'){
             int runProb = randomGenerator(6, pc->numPK);
