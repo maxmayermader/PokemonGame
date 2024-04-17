@@ -596,7 +596,7 @@ typedef class PC{
                         //break;
                     }
                 }
-            } else if(ch == '2'){
+            } else if(ch == '2'){ //TODO
                 if(wild == 1){
                     if (numPK < 6){
                         return 1;
@@ -2703,21 +2703,22 @@ void fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc){ //TODO
     if (pMove == 1){
         move(8,0);
         clrtoeol();
-        mvprintw(10, 0, "Enemy chose %s. ", wp->pkMoves[0].identifier);
+        mvprintw(8, 0, "Enemy chose %s. ", wp->pkMoves[0].identifier);
         attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[0], 0);
         refresh();
-        sleep(2);
+        sleep(5);
     } else {
         move(8,0);
         clrtoeol();
-        mvprintw(10, 0, "Enemy chose %s. ", wp->pkMoves[0].identifier);
+        mvprintw(8, 0, "Enemy chose %s. ", wp->pkMoves[0].identifier);
         attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[1], 0);
         refresh();
-        sleep(2);
+        sleep(5);
     }
 }
 
 int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
+    move(8,0);
     if (npc != NULL){
         
     }
@@ -2769,8 +2770,9 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
     refresh(); // Refresh the screen to show the changes
 
     char in = getch(); // Get the user's input
+    clrtoeol();
     if (in == '1'){
-        mvprintw(9, 0, "You chose %s. ", pc->pokemons[pc->currPoke]->pkMoves[0].identifier);
+        mvprintw(8, 0, "You chose %s. ", pc->pokemons[pc->currPoke]->pkMoves[0].identifier);
         if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0], 1) == ENEMYDEFEATED){
             if (npc != NULL){
                 npc->currPoke++;
@@ -2778,9 +2780,9 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
                 return WILDDEFEATED;
             }
         } else {
-            mvprintw(10, 10, "Move missed!");
+            mvprintw(8, 10, "Move missed!");
             refresh();
-            sleep(1);
+            sleep(2);
         }
         fightNPCTurn(npc, wildPokemon, pc);
     } else if (in == '2'){
@@ -2815,15 +2817,15 @@ void encounterPokemon(PC *pc){
         if(in == 'f' && fc == 0){
             //fight
             if(fight(pc, spawnedPokemon, NULL) == WILDDEFEATED){
-                mvprintw(5,5, "You defeated the wild %s! You Can capture or run", spawnedPokemon->identfier);
+                mvprintw(8,0, "You defeated the wild %s! You Can capture or run", spawnedPokemon->identfier);
                 refresh();
                 fc = 1;
-                sleep(2);
+                sleep(4);
             }
         } else if (in == 'B'){
             //bag
            if(pc->openBag(1)==1){
-                mvprintw(5,5, "You caught the wild %s!", spawnedPokemon->identfier);
+                mvprintw(9,10, "You caught the wild %s!", spawnedPokemon->identfier);
                 pc->pokemons[pc->numPK] = spawnedPokemon;
                 pc->numPK++;
                 refresh();
