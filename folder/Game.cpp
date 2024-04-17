@@ -2689,21 +2689,31 @@ void fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
     mvprintw(0, 0, "Enemy Pokemon: %s", wildPokemon->identfier);
     mvprintw(1, 0, "Level: %d", wildPokemon->level);
     mvprintw(2, 0, "Health: %d", wildPokemon->currHealth);
-    mvprintw(2, 10, "|");
+    mvprintw(2, 15, "|");
     for(int j=0; j<29; j++){
         int till = (int)((float)wildPokemon->currHealth/(float)wildPokemon->health*29);
         if(j<till){
-            mvprintw(2, j+11, "-");
+            mvprintw(2, j+16, "-");
         } else {
-            mvprintw(2, j+11, " ");
+            mvprintw(2, j+16, " ");
         }
     }
-    mvprintw(2, 40, "|");
+    mvprintw(2, 45, "|");
 
     // Display the player's Pokemon's name, health, and level
     mvprintw(4, 20, "Your Pokemon: %s", pc->pokemons[pc->currPoke]->identfier);
     mvprintw(5, 20, "Level: %d", pc->pokemons[pc->currPoke]->level);
     mvprintw(6, 20, "Health: %d", pc->pokemons[pc->currPoke]->health);
+    mvprintw(6, 35, "|");
+    for(int j=0; j<29; j++){
+        int till = (int)((float)pc->pokemons[pc->currPoke]->health/(float)pc->pokemons[pc->currPoke]->baseHealth*29);
+        if(j<till){
+            mvprintw(6, j+36, "-");
+        } else {
+            mvprintw(6, j+36, " ");
+        }
+    }
+    mvprintw(6, 65, "|");
 
     
 
@@ -2816,7 +2826,7 @@ void encounterPokemon(PC *pc){
             } else {
                 mvprintw(5,5, "You couldn't run away!");
                 refresh();
-                sleep(1);
+                sleep(0.5);
             }
         } else if (in == 's'){
             //switch pokemon
@@ -3362,8 +3372,8 @@ void parsePokemonTypesFile(){
 
 int main(int argc, char *argv[]){
 
-    srand(time(NULL));//random seed
-    //srand(100); //11223344
+    //srand(time(NULL));//random seed
+    srand(10); //11223344
    
     worldMap wm;
     int currX = 200;
