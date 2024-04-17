@@ -2720,12 +2720,12 @@ int whoGoesFirst(PC *pc, Pokemon *wildPokemon, Moves *pcmove, Moves *npcmove){
  * @return The amount of damage dealt.
  */
 int attack(Pokemon *attacker, Pokemon *defender, Moves *move, int isPC){
-    if (move->accuracy >= randomGenerator(100, 1)){
-        int crit = (randomGenerator(255, 0) < floor(attacker->baseSpeed/2)) ? 1.5 : 1;
-        int rand = randomGenerator(100, 85);
-        int stab = move->type_id == attacker->type ? 1.5 : 1;
+    if (rand() % 100 <= move->accuracy){
+        float crit = (randomGenerator(255, 0) < floor(attacker->baseSpeed/2)) ? 1.5 : 1;
+        float rand = (float)randomGenerator(100, 85) / 100;
+        float stab = move->type_id == attacker->type ? 1.5 : 1;
         int type = 1;
-        int damage = (((((2*attacker->level/5) + 2) * (move->power) * (attacker->attack/defender->defense))/50) + 2)*crit*rand*stab*type;
+        int damage = (((((2*(float)attacker->level/5) + 2) * ((float)move->power) * ((float)attacker->attack/(float)defender->defense))/50) + 2)*crit*rand*stab*type;
         defender->currHealth -= damage;
         if (isPC == 1){
             mvprintw(8, 30, "It did %d damage!", damage);
@@ -2753,12 +2753,24 @@ int fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc, int pMove){ //TODO randomGenerat
         move(8,0);
         clrtoeol();
         mvprintw(8, 0, "Enemy chose %s. ", wp->pkMoves[0].identifier);
-        if (attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[0], 0) == ENEMYDEFEATED){return PLAYERDEFEATED;}
+        int npcAttack = attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[0], 0);
+        if (npcAttack == ENEMYDEFEATED){return PLAYERDEFEATED;}
+        else if(npcAttack == 0){
+            mvprintw(8, 30, "Move missed!");
+            refresh();
+            sleep(2);
+        }
     } else {
         move(8,0);
         clrtoeol();
         mvprintw(8, 0, "Enemy chose %s. ", wp->pkMoves[0].identifier);
-        if (attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[1], 0) == ENEMYDEFEATED){return PLAYERDEFEATED;} 
+        int npcAttack = attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[1], 0);
+        if (npcAttack == ENEMYDEFEATED){return PLAYERDEFEATED;} 
+        else if(npcAttack == 0){
+            mvprintw(8, 30, "Move missed!");
+            refresh();
+            sleep(2);
+        }
     }
     return 0;
 }
