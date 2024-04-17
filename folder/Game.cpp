@@ -2293,8 +2293,17 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                 trainerList(terrainMap, hn->pc);
                 printMap(terrainMap, hn->pc);
             }else if (in=='>'){
-                if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'C' || terrainMap->terrain[hn->pc->row][hn->pc->col] == 'M')
+                if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'C')
                     enterBuilding();
+                    mvprintw(0,0,"All Pokemons have been healed");
+                    pc->visitCenter();
+                    refresh();
+                else if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'M'){
+                    enterBuilding();
+                    mvprintw(0,0,"Bag is full");
+                    pc->visitMart();
+                    refresh();
+                }
                 // movePC(wm, terrainMap, hn->pc, "NW");
                 printMap(terrainMap, hn->pc);
             }else if (in==' '||in=='.'||in=='5'){
@@ -2650,11 +2659,11 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
 
 void attack(Pokemon *attacker, Pokemon *defender, Moves *move){
     if (move->accuracy >= randomGenerator(100, 1)){
-        int crit;
+        int crit = (randomGenerator(255, 0) < floor(attacker->baseSpeed/2)) ? 1.5 : 1;
         int rand = randomGenerator(100, 85);
-        int stab = move->type_id == attacker-> || move->type == attacker->type2 ? 1.5 : 1;
+        int stab = move->type_id == attacker->type ? 1.5 : 1;
         int type = 1;
-        int damage = ((2*attacker->level/5 + 2) * move->power * (attacker->attack/defender->defense)/50) + 2;
+        int damage = (((2*attacker->level/5 + 2) * move->power * (attacker->attack/defender->defense)/50) + 2)*crit*rand*stab*type;
         defender->currHealth -= damage;
     }
 
