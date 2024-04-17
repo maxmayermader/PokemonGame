@@ -713,7 +713,7 @@ int getQueSize(){
     int calcCost(int npc, char terrainType);
     int canMove(mapclass *terrainMap, int symb, int row, int col, int prevRow, int prevCol);
     int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc);
-    void enterBuilding();
+    void enterBuilding(char building, PC *pc);
     void trainerList(mapclass *terrainMap, PC *pc);
     void enterBattle(NPC *npc, PC *pc);
     void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum);
@@ -2309,7 +2309,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                 printMap(terrainMap, hn->pc);
             }else if (in=='>'){
                 if (terrainMap->terrain[hn->pc->row][hn->pc->col] == 'C' || terrainMap->terrain[hn->pc->row][hn->pc->col] == 'M') {
-                    enterBuilding();
+                    enterBuilding(terrainMap->terrain[hn->pc->row][hn->pc->col], hn->pc);
                 }
                 // movePC(wm, terrainMap, hn->pc, "NW");
                 printMap(terrainMap, hn->pc);
@@ -2669,7 +2669,7 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
     return calcCost(2, terrainMap->terrain[pc->row][pc->col]);
 }
 
-int attack(Pokemon *attacker, Pokemon *defender, Moves *move){
+int attack(Pokemon *attacker, Pokemon *defender, Moves *move, int isPC){
     if (move->accuracy >= randomGenerator(100, 1)){
         mvprintw(20, 40, "Bruh1");
         int crit = (randomGenerator(255, 0) < floor(attacker->baseSpeed/2)) ? 1.5 : 1;
@@ -2683,6 +2683,13 @@ int attack(Pokemon *attacker, Pokemon *defender, Moves *move){
             defender->currHealth = 0;
             return ENEMYDEFEATED;
         }
+        if (isPC == 1){
+            mvprintw(8, 10, "It did %d damage!", damage);
+            refresh();
+        } else {
+
+        }
+        
     }
     return 0;
 }
@@ -2693,9 +2700,9 @@ void fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc){ //TODO
     }
     int move = randomGenerator(2, 1);
     if (move == 1){
-        attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[0]);
+        attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[0], 0);
     } else {
-        attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[1]);
+        attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[1], 0);
     }
 }
 
@@ -2739,38 +2746,39 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
     
 
     // List the player's Pokemon moves
-    mvprintw(8, 0, "Your Pokemon's Moves:");
+    mvprintw(10, 0, "Your Pokemon's Moves:");
     for(int i = 0; i < (int)pc->pokemons[pc->currPoke]->pkMoves.size(); i++) {
-        mvprintw(9+i, 0, "%d. %s", i+1, pc->pokemons[pc->currPoke]->pkMoves[i].identifier);
+        mvprintw(11+i, 0, "%d. %s", i+1, pc->pokemons[pc->currPoke]->pkMoves[i].identifier);
     }
 
     refresh(); // Refresh the screen to show the changes
 
     char in = getch(); // Get the user's input
     if (in == '1'){
-        if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0]) == ENEMYDEFEATED){
+        mvprintw(9, 0, "You chose %s. ", pc->pokemons[pc->currPoke]->pkMoves[0].identifier);
+        if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0], 1) == ENEMYDEFEATED){
             if (npc != NULL){
                 npc->currPoke++;
             } else {
                 return WILDDEFEATED;
             }
         } else {
-            mvprintw(8, 10, "Move missed!");
+            mvprintw(10, 10, "Move missed!");
             refresh();
             sleep(1);
         }
         fightNPCTurn(npc, wildPokemon, pc);
     } else if (in == '2'){
-        attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[1]);
+        attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[1], 1);
         fightNPCTurn(npc, wildPokemon, pc);
     } else if (in == '3'){
-        attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[2]);
+        attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[2], 1);
         fightNPCTurn(npc, wildPokemon, pc);
     } else if (in == '4'){
-        attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[3]);
+        attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[3], 1);
         fightNPCTurn(npc, wildPokemon, pc);
     } else if (in == '5'){
-        attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[4]);
+        attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[4], 1);
         fightNPCTurn(npc, wildPokemon, pc);
     }  
 
