@@ -542,7 +542,7 @@ typedef class PC{
     int pokeballs;
     int revives;
 
-    void useItem(int item, int poke){
+    int useItem(int item, int poke){
         switch(item){
             case 1:
                 if(potions > 0){
@@ -550,6 +550,7 @@ typedef class PC{
                     if(pokemons[poke]->currHealth < pokemons[poke]->health){
                         pokemons[poke]->currHealth = MIN(pokemons[poke]->health, pokemons[poke]->currHealth + 20);
                         potions--;
+                        return 1;
                     }
                     //potions--;
                 }
@@ -557,12 +558,14 @@ typedef class PC{
             case 2:
                 if(pokeballs > 0){
                     pokeballs--;
+                    return 2;
                 }
                 break;
             case 3:
                 if(revives > 0 and pokemons[poke]->currHealth == 0){
                     pokemons[poke]->currHealth = pokemons[poke]->health/2;
                     revives--;
+                    return 3;
                 }
                 break;
         }
@@ -605,8 +608,9 @@ typedef class PC{
                 }
             } else if(ch == '2'){ //TODO
                 if(wild == 1){
-                    if (numPK < 6){
-                        return 1;
+                    if (numPK < 6 ){
+                        if (useItem(2,-1) == 2) {return 1;}
+                        else {return 2;}
                     } else {
                         return 2;
                     }
@@ -2803,7 +2807,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
     // Display the player's Pokemon's name, health, and level
     mvprintw(4, 20, "Your Pokemon: %s", pc->pokemons[pc->currPoke]->identfier);
     mvprintw(5, 20, "Level: %d", pc->pokemons[pc->currPoke]->level);
-    mvprintw(6, 20, "Health: %d", pc->pokemons[pc->currPoke]->health);
+    mvprintw(6, 20, "Health: %d", pc->pokemons[pc->currPoke]->currHealth);
     mvprintw(6, 35, "|");
     for(int j=0; j<29; j++){
         int till = (int)((float)pc->pokemons[pc->currPoke]->currHealth/(float)pc->pokemons[pc->currPoke]->health*29);
