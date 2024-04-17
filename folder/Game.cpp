@@ -2685,6 +2685,32 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
     return calcCost(2, terrainMap->terrain[pc->row][pc->col]);
 }
 
+/**
+ * Determines which Pokemon, the player's or the non-player character's, gets to attack first in a battle.
+ * 
+ * @param pc Pointer to the player's PC object.
+ * @param npc Pointer to the non-player character's NPC object.
+ * @param pcmove Pointer to the move chosen by the player.
+ * @param npcmove Pointer to the move chosen by the non-player character.
+ * 
+ * @return 1 if the player's Pokemon goes first, 0 if the non-player character's Pokemon goes first.
+ */
+int whoGoesFirst(PC *pc, NPC *npc, Moves *pcmove, Moves *npcmove){
+    if (pcmove->priority > npcmove->priority){
+        return 1;
+    } else if (pcmove->priority < npcmove->priority){
+        return 0;
+    } else {
+        if (pc->pokemons[pc->currPoke]->speed > npc->pokemons[npc->currPoke]->speed){
+            return 1;
+        } else if (pc->pokemons[pc->currPoke]->speed < npc->pokemons[npc->currPoke]->speed){
+            return 0;
+        } else {
+            return randomGenerator(1, 0);
+        }
+    }
+}
+
 int attack(Pokemon *attacker, Pokemon *defender, Moves *move, int isPC){
     if (move->accuracy >= randomGenerator(100, 1)){
         int crit = (randomGenerator(255, 0) < floor(attacker->baseSpeed/2)) ? 1.5 : 1;
@@ -2901,6 +2927,17 @@ void encounterPokemon(PC *pc){
     mvprintw(0,0, "A wild %s appeared! They are level %d.", spawnedPokemon->identfier, spawnedPokemon->level);
     mvprintw(1,0, "You can 'f' to fight, 'B' for bag, 'r' to run, and 's' to switch Pokemon");
     refresh();
+    
+    // //Who goes first
+    // if (spawnedPokemon->speed >= pc->pokemons[pc->currPoke]->speed){
+    //     if (fightNPCTurn(NULL, spawnedPokemon, pc) == PLAYERDEFEATED){
+    //         pc->findFirstPoke();
+    //         mvprintw(9,0 ,"Your Pokemon was knocked out!");
+    //         refresh();
+    //         sleep(3);
+    //     }
+    // }
+
     while(runCondition){
         int in = getch();
         if(in == 'f' && fc == 0){
