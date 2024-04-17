@@ -44,6 +44,8 @@ int randomGenerator(int upper, int lower){
   return (rand() % (upper - lower + 1)) + lower;
 }
 
+//Debug//  mvprintw(20, 40, "Bruh1");
+
 /*PokemonFile Class*/
 class PokemonFile{
     public:
@@ -2673,11 +2675,13 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
 
 int attack(Pokemon *attacker, Pokemon *defender, Moves *move){
     if (move->accuracy >= randomGenerator(100, 1)){
+        mvprintw(20, 40, "Bruh1");
         int crit = (randomGenerator(255, 0) < floor(attacker->baseSpeed/2)) ? 1.5 : 1;
         int rand = randomGenerator(100, 85);
         int stab = move->type_id == attacker->type ? 1.5 : 1;
         int type = 1;
         int damage = (((2*attacker->level/5 + 2) * move->power * (attacker->attack/defender->defense)/50) + 2)*crit*rand*stab*type;
+        mvprintw(20, 40, "Bruh2");
         defender->currHealth -= damage;
         if (defender->currHealth <= 0){
             defender->currHealth = 0;
