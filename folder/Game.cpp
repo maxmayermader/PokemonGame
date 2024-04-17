@@ -434,6 +434,13 @@ class Pokemon{
         }
     }
 
+    bool isKnockedOut(){
+        if(currHealth <= 0){
+            return true;
+        }
+        return false;
+    }
+
     void printPokemon(){
         printf("ID: %d\n", id);
         printf("Identifier: %s\n", identfier);
@@ -646,6 +653,15 @@ typedef class PC{
             }
         }
         return true;
+    }
+
+    void findFirstPoke(){
+        for(int i=0; i<numPK; i++){
+            if(pokemons[i]->currHealth > 0){
+                currPoke = i;
+                break;
+            }
+        }
     }
 
 
@@ -2693,7 +2709,7 @@ int attack(Pokemon *attacker, Pokemon *defender, Moves *move, int isPC){
     return 0;
 }
 
-void fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc){ //TODO
+int fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc){ //TODO
     if (npc != NULL){
         wp = npc->pokemons[npc->currPoke];
     }
@@ -2702,17 +2718,18 @@ void fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc){ //TODO
         move(8,0);
         clrtoeol();
         mvprintw(8, 0, "Enemy chose %s. ", wp->pkMoves[0].identifier);
-        attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[0], 0);
         refresh();
         sleep(5);
+        if (attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[0], 0) == ENEMYDEFEATED){return PLAYERDEFEATED;}
     } else {
         move(8,0);
         clrtoeol();
         mvprintw(8, 0, "Enemy chose %s. ", wp->pkMoves[0].identifier);
-        attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[1], 0);
         refresh();
         sleep(5);
+        if (attack(wp, pc->pokemons[pc->currPoke], &wp->pkMoves[1], 0) == ENEMYDEFEATED){return PLAYERDEFEATED;} 
     }
+    return 0;
 }
 
 int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
@@ -2778,11 +2795,16 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
                 return WILDDEFEATED;
             }
         } else {
-            mvprintw(8, 10, "Move missed!");
+            mvprintw(8, 30, "Move missed!");
         }
         refresh();
         sleep(2);
-        fightNPCTurn(npc, wildPokemon, pc);
+        if (fightNPCTurn(npc, wildPokemon, pc) == PLAYERDEFEATED){
+            pc->findFirstPoke();
+            mvprintw(9,0 ,"Your Pokemon was knocked out!");
+            sleep(3);
+            refresh();
+        }
     } else if (in == '2'){
         attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[1], 1);
         fightNPCTurn(npc, wildPokemon, pc);
@@ -2849,23 +2871,29 @@ void encounterPokemon(PC *pc){
             clear();
             mvprintw(0,0, "Choose a Pokemon to switch to or press space to cancel.");
             for(int i = 0; i < pc->numPK; i++){
-                mvprintw(i+1,0, "Pokemon %d: %s", i+1, pc->pokemons[i]->identfier);
+                mvprintw(i+1,0, "Pokemon %d: %s. Health: %d", i+1, pc->pokemons[i]->identfier, pc->pokemons[i]->currHealth);
             }
             int in;
             while ((in = getch()) != 32){
-            if(in == '1'){
-                pc->currPoke = 0;
-            } else if (in == '2'){
-                pc->currPoke = 1;
-            } else if (in == '3'){
-                pc->currPoke = 2;
-            } else if (in == '4'){
-                pc->currPoke = 3;
-            } else if (in == '5'){
-                pc->currPoke = 4;
-            } else if (in == '6'){
-                pc->currPoke = 5;
-            } 
+                if(in == '1'){
+                    pc->currPoke = 0;
+                    break;
+                } else if (in == '2'){
+                    pc->currPoke = 1;
+                    break;
+                } else if (in == '3'){
+                    pc->currPoke = 2;
+                    break;
+                } else if (in == '4'){
+                    pc->currPoke = 3;
+                    break;
+                } else if (in == '5'){
+                    pc->currPoke = 4;
+                    break;
+                } else if (in == '6'){
+                    pc->currPoke = 5;
+                    break;
+                } 
             }
         }
         if (pc->isDefeated()){
