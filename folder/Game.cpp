@@ -267,6 +267,7 @@ bool searchPokemonTypesVector(int id, PokemonTypes *pt){
 class Pokemon{
     public:
     int id;
+    int type;
     char identfier[50];
     int health;
     int currHealth;
@@ -2644,6 +2645,10 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
 
 void attack(Pokemon *attacker, Pokemon *defender, Moves *move){
     if (move->accuracy >= randomGenerator(100, 1)){
+        int crit;
+        int rand = randomGenerator(100, 85);
+        int stab = move->type_id == attacker-> || move->type == attacker->type2 ? 1.5 : 1;
+        int type = 1;
         int damage = ((2*attacker->level/5 + 2) * move->power * (attacker->attack/defender->defense)/50) + 2;
         defender->currHealth -= damage;
     }
