@@ -569,6 +569,7 @@ typedef class PC{
                 }
                 break;
         }
+        return 0;
     }
 
     void visitMart(){
@@ -2371,17 +2372,11 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                 printMap(terrainMap, hn->pc);
             }
             
-            
-            
             else{
                 //printw("unknown character. Try again!");
 
             }  
-
-            
-            
     }
-            //usleep(1000000);
         } else {
             int type = hn->npc->symb;
             int wt = INFINTY;
