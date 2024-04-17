@@ -2847,11 +2847,12 @@ void encounterPokemon(PC *pc){
         } else if (in == 's'){
             //switch pokemon
             clear();
-            mvprintw(0,0, "Choose a Pokemon to switch to");
+            mvprintw(0,0, "Choose a Pokemon to switch to or press space to cancel.");
             for(int i = 0; i < pc->numPK; i++){
                 mvprintw(i+1,0, "Pokemon %d: %s", i+1, pc->pokemons[i]->identfier);
             }
-            int in = getch();
+            int in;
+            while ((in = getch()) != 32){
             if(in == '1'){
                 pc->currPoke = 0;
             } else if (in == '2'){
@@ -2865,6 +2866,7 @@ void encounterPokemon(PC *pc){
             } else if (in == '6'){
                 pc->currPoke = 5;
             } 
+            }
         }
         if (pc->isDefeated()){
             runCondition = false;
