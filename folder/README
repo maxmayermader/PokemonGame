@@ -1,4 +1,4 @@
-***Assignemnt1.08***
+***Assignemnt1.09***
 
 How to run:
     make
@@ -17,7 +17,7 @@ Bugs:
 
 
 Description:
-    Pokemon class, finding them and battling npcs
+    Pokemon battles
 
 ignore:
     git log > CHANGELOG

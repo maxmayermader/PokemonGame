@@ -740,7 +740,7 @@ int getQueSize(){
     void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum);
     void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h);
     void encounterPokemon(PC *pc);
-    int fight(PC *pc, Pokemon *wildPokemon, NPC *npc);
+    int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP);
     int fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc, int pMove);
     int attack(Pokemon *attacker, Pokemon *defender, Moves *move, int isPC);
 
@@ -916,7 +916,6 @@ void heapify(heap* h, int index)
 }
  
  //potential leakage
- //TODO
 heapNode* extractMin(heap* h){
     heapNode* deleteItem;
     
@@ -1338,6 +1337,7 @@ void pcChooseStarterPokemon(PC *pc){
     Pokemon* pk1 = new Pokemon(0);
     Pokemon* pk2 = new Pokemon(0);
     Pokemon* pk3 = new Pokemon(0);
+    Pokemon* pk4 = new Pokemon(200);
 
     clear();
     mvprintw(0,0, "Choose your starter Pokemon(enter 1, 2, or 3): ");
@@ -1361,6 +1361,12 @@ void pcChooseStarterPokemon(PC *pc){
             pc->pokemons[0] = pk3;
             delete pk1;
             delete pk2;
+            break;
+        } else if (choice == '6'){
+            pc->pokemons[0] = pk4;
+            delete pk1;
+            delete pk2;
+            delete pk3;
             break;
         } else if (choice == 'q' || choice == 'Q'){
             exit(0);
@@ -1495,7 +1501,6 @@ void createMap(int x, int y, worldMap *wm, int npcNum){
 
     wm->arr[x][y] = newMap; //add new terrain map to world map
 
-    //TODO : fix later
     newMap->playerT = wm->player;
     // newMap->playerT->row = wm->player->row;
     // newMap->playerT->col = wm->player->col;
@@ -2394,6 +2399,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
                         enterBattle(newHN->npc, wm->player);
+                        printMap(terrainMap, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -2407,6 +2413,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
                         enterBattle(newHN->npc, wm->player);
+                        printMap(terrainMap, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -2420,6 +2427,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
                         enterBattle(newHN->npc, wm->player);
+                        printMap(terrainMap, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -2432,6 +2440,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
                         enterBattle(newHN->npc, wm->player);
+                        printMap(terrainMap, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -2443,6 +2452,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
                         enterBattle(newHN->npc, wm->player);
+                        printMap(terrainMap, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -2455,6 +2465,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
                     newHN->pc = NULL;
                     if (newHN->npc->row+1 == wm->player->row && newHN->npc->col+1 == wm->player->col && newHN->npc->defeated == 0){
                         enterBattle(newHN->npc, wm->player);
+                        printMap(terrainMap, wm->player);
                     }
                     insert(h, newHN);
                     free(hn);
@@ -2611,39 +2622,19 @@ void enterBattle(NPC *npc, PC *pc) { //TODO
     bool runCondition = true;
 
     while(runCondition){
+        Pokemon *spawnedPokemon = npc->pokemons[pc->currPoke];
         int in = getch();
         if(in == 'f' && fc == 0){
             //fight
-            if(fight(pc, spawnedPokemon, NULL) == WILDDEFEATED){ //TODO
-                mvprintw(9,0, "You defeated the wild %s! You Can capture or run", spawnedPokemon->identfier);
+            if(fight(pc, spawnedPokemon, npc, 0) == WILDDEFEATED){ //TODO
+                mvprintw(9,0, "You defeated the enemy %s!", spawnedPokemon->identfier);
+                npc->currPoke++;
                 refresh();
-                fc = 1;
-                sleep(4);
+                sleep(3);
             }
         } else if (in == 'B'){
             //bag
-           if(pc->openBag(1)==1){
-                mvprintw(9,10, "You caught the wild %s!", spawnedPokemon->identfier);
-                pc->pokemons[pc->numPK] = spawnedPokemon;
-                pc->numPK++;
-                refresh();
-                runCondition = false;
-                sleep(2);
-           } else if(pc->openBag(1)==2){
-                mvprintw(5,5, "The Pokemon Fled");
-                refresh();
-                runCondition = false;
-                sleep(2);
-           } 
-        } else if (in == 'r'){
-            int runProb = randomGenerator(6, pc->numPK);
-            if (runProb == 6 || fc == 1){
-                runCondition = false;
-            } else {
-                mvprintw(5,5, "You couldn't run away!");
-                refresh();
-                sleep(0.5);
-            }
+           pc->openBag(-1);
         } else if (in == 's'){
             //switch pokemon
             clear();
@@ -2655,21 +2646,27 @@ void enterBattle(NPC *npc, PC *pc) { //TODO
             while ((in = getch()) != 32){
                 if(in == '1' && pc->pokemons[0]->currHealth > 0){
                     pc->currPoke = 0;
+                    fight(pc, spawnedPokemon, npc, 1);
                     break;
                 } else if (in == '2' && pc->pokemons[1]->currHealth > 0){
                     pc->currPoke = 1;
+                    fight(pc, spawnedPokemon, npc, 1);
                     break;
                 } else if (in == '3' && pc->pokemons[2]->currHealth > 0){
                     pc->currPoke = 2;
+                    fight(pc, spawnedPokemon, npc, 1);
                     break;
                 } else if (in == '4' && pc->pokemons[3]->currHealth > 0){
                     pc->currPoke = 3;
+                    fight(pc, spawnedPokemon, npc, 1);
                     break;
                 } else if (in == '5' && pc->pokemons[4]->currHealth > 0){
                     pc->currPoke = 4;
+                    fight(pc, spawnedPokemon, npc, 1);
                     break;
                 } else if (in == '6' && pc->pokemons[5]->currHealth > 0){
                     pc->currPoke = 5;
+                    fight(pc, spawnedPokemon, npc, 1);
                     break;
                 } 
             }
@@ -2681,9 +2678,20 @@ void enterBattle(NPC *npc, PC *pc) { //TODO
             refresh();
             sleep(2);
         }
+        if (npc->isDefeated()){
+            runCondition = false;
+            for (int i=0; i< pc->numPK; i++){
+                pc->pokemons[i]->levelUp();
+            }
+            clear();
+            mvprintw(0,0, "You have defeated the trainer!");
+            refresh();
+            sleep(2);
+        }
         clear();
         mvprintw(0,0, "A wild %s appeared! They are level %d.", spawnedPokemon->identfier, spawnedPokemon->level);
         mvprintw(1,0, "You can 'f' to fight, 'B' for bag, 'r' to run, and 's' to switch Pokemon");
+        mvprintw(11, 11, "Trainer has %d, %d", npc->numPK, npc->currPoke);
         refresh();
     }
    
@@ -2723,8 +2731,10 @@ int movePC(worldMap *wm, mapclass *terrainMap, PC *pc, int direc){
         case SKIP:
             break;
     }
-    if (terrainMap->npcArray[pc->row-1][pc->col-1] != NULL && terrainMap->npcArray[pc->row-1][pc->col-1]->defeated == 0)
+    if (terrainMap->npcArray[pc->row-1][pc->col-1] != NULL && terrainMap->npcArray[pc->row-1][pc->col-1]->defeated == 0) {
         enterBattle(terrainMap->npcArray[pc->row-1][pc->col-1], pc);
+        printMap(terrainMap, pc);
+    }
     if(terrainMap->terrain[pc->row][pc->col] == GRASS){
        int ranVal = randomGenerator(10, 1);
 
@@ -2826,10 +2836,10 @@ int fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc, int pMove){ //TODO randomGenerat
     return 0;
 }
 
-int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
+int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP){ //TODO
     move(8,0);
     if (npc != NULL){
-        
+        wildPokemon = npc->pokemons[npc->currPoke];
     }
     
     clear(); // Clear the screen
@@ -2883,7 +2893,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
     int npcMove = randomGenerator(2, 1);
 
     if (in == '1'){
-        if (whoGoesFirst(pc, wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0], &wildPokemon->pkMoves[npcMove]) == 1){
+        if (whoGoesFirst(pc, wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0], &wildPokemon->pkMoves[npcMove]) == 1 && switchP == 0 ){
             mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[0].identifier);
             if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0], 1) == ENEMYDEFEATED){
                 if (npc != NULL){
@@ -2924,7 +2934,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
             sleep(2);
         }
     } else if (in == '2'){
-        if (whoGoesFirst(pc, wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[1], &wildPokemon->pkMoves[npcMove]) == 1){
+        if (whoGoesFirst(pc, wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[1], &wildPokemon->pkMoves[npcMove]) == 1 && switchP == 0){
             mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[1].identifier);
             if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[1], 1) == ENEMYDEFEATED){
                 if (npc != NULL){
@@ -2965,7 +2975,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
             sleep(2);
         }
     } else if(in == '3'){
-        if (whoGoesFirst(pc, wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[2], &wildPokemon->pkMoves[npcMove]) == 1){
+        if (whoGoesFirst(pc, wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[2], &wildPokemon->pkMoves[npcMove]) == 1 && switchP == 0){
             mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[2].identifier);
             if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[2], 1) == ENEMYDEFEATED){
                 if (npc != NULL){
@@ -3006,7 +3016,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
             sleep(2);
         }
     } else if(in == '4'){
-        if (whoGoesFirst(pc, wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[3], &wildPokemon->pkMoves[npcMove]) == 1){
+        if (whoGoesFirst(pc, wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[3], &wildPokemon->pkMoves[npcMove]) == 1 && switchP == 0){
             mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[3].identifier);
             if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[3], 1) == ENEMYDEFEATED){
                 if (npc != NULL){
@@ -3065,7 +3075,7 @@ void encounterPokemon(PC *pc){
         int in = getch();
         if(in == 'f' && fc == 0){
             //fight
-            if(fight(pc, spawnedPokemon, NULL) == WILDDEFEATED){
+            if(fight(pc, spawnedPokemon, NULL, 0) == WILDDEFEATED){
                 mvprintw(9,0, "You defeated the wild %s! You Can capture or run", spawnedPokemon->identfier);
                 refresh();
                 fc = 1;
@@ -3106,21 +3116,27 @@ void encounterPokemon(PC *pc){
             while ((in = getch()) != 32){
                 if(in == '1' && pc->pokemons[0]->currHealth > 0){
                     pc->currPoke = 0;
+                    fight(pc, spawnedPokemon, NULL, 1);
                     break;
                 } else if (in == '2' && pc->pokemons[1]->currHealth > 0){
                     pc->currPoke = 1;
+                    fight(pc, spawnedPokemon, NULL, 1);
                     break;
                 } else if (in == '3' && pc->pokemons[2]->currHealth > 0){
                     pc->currPoke = 2;
+                    fight(pc, spawnedPokemon, NULL, 1);
                     break;
                 } else if (in == '4' && pc->pokemons[3]->currHealth > 0){
                     pc->currPoke = 3;
+                    fight(pc, spawnedPokemon, NULL, 1);
                     break;
                 } else if (in == '5' && pc->pokemons[4]->currHealth > 0){
                     pc->currPoke = 4;
+                    fight(pc, spawnedPokemon, NULL, 1);
                     break;
                 } else if (in == '6' && pc->pokemons[5]->currHealth > 0){
                     pc->currPoke = 5;
+                    fight(pc, spawnedPokemon, NULL, 1);
                     break;
                 } 
             }
@@ -3129,16 +3145,6 @@ void encounterPokemon(PC *pc){
             runCondition = false;
             clear();
             mvprintw(0,0, "You have been defeated!");
-            refresh();
-            sleep(2);
-        }
-        if (npc->isDefeated()){
-            runCondition = false;
-            for (int i=0; i< pc->numPK; i++){
-                pc->pokemon[i]->levelUp();
-            }
-            clear();
-            mvprintw(0,0, "You have defeated the trainer!");
             refresh();
             sleep(2);
         }
