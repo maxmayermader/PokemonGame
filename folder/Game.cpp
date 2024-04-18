@@ -2601,39 +2601,9 @@ void trainerList(mapclass *terrainMap, PC *pc){
 
 void enterBattle(NPC *npc, PC *pc) {
     clear();
-    int input;
-    npc->defeated = 1;
-    // printf("u win");
-    mvprintw(1, 0, "Trainer wants to battle! They have...");
-    for(int i = 0; i < npc->numPK; i++) {
-        mvprintw(i+2, 0, " a %s ! They are level %d,  health is %d, attack is %d, defense is %d. They know %s and %s.", npc->pokemons[i]->identfier, npc->pokemons[i]->level, npc->pokemons[i]->health, npc->pokemons[i]->attack, npc->pokemons[i]->defense, npc->pokemons[i]->move1, npc->pokemons[i]->move2);
-    }
-    mvprintw(npc->numPK+2, 0, "Your Pokemon %s level %d has... health %d, attack is %d, defense is %d. ", pc->pokemons[0]->identfier, pc->pokemons[0]->level, pc->pokemons[0]->health, pc->pokemons[0]->attack, pc->pokemons[0]->defense);
-    mvprintw(npc->numPK+3, 0, "You win");
-    pc->pokemons[0]->levelUp();
-
-    mvprintw(npc->numPK+4,0, "You now have leveled up");
-
-    mvprintw(npc->numPK+5,0, "ID: %d", pc->pokemons[0]->id);
-    mvprintw(npc->numPK+6,0, "Identifier: %s", pc->pokemons[0]->identfier);
-    mvprintw(npc->numPK+7,0, "Health: %d", pc->pokemons[0]->health);
-    mvprintw(npc->numPK+8,0, "Level: %d", pc->pokemons[0]->level);
-    mvprintw(npc->numPK+9,0, "Attack: %d", pc->pokemons[0]->attack);
-    mvprintw(npc->numPK+10,0, "Defense: %d", pc->pokemons[0]->defense);
-    mvprintw(npc->numPK+11,0, "Gender: %d", pc->pokemons[0]->gender);
-    mvprintw(npc->numPK+12,0, "Base Health: %d", pc->pokemons[0]->baseHealth);
-    mvprintw(npc->numPK+13,0, "Shiny: %d", pc->pokemons[0]->shiny);
-    mvprintw(npc->numPK+14,0, "Speed: %d", pc->pokemons[0]->speed);
-    mvprintw(npc->numPK+15,0, "Special Attack: %d", pc->pokemons[0]->specialAttack);
-    mvprintw(npc->numPK+16,0, "Special Defense: %d", pc->pokemons[0]->specialDefense);
-    for(int i=0; i<(int)pc->pokemons[0]->pkMoves.size(); i++){
-        mvprintw(npc->numPK+17+i,0, "Move %d: %s     move id %d", i+1, pc->pokemons[0]->pkMoves[i].identifier, pc->pokemons[0]->pkMoves[i].id);
-    }
-    refresh();
-    input = getch();
-    while ((input = getch()) != 27) {
-
-    }
+    mvprintw(0, 0, "Trainer wants to battle! They have...");
+    pc->findFirstPoke(); //Get first pokemon not knocked out
+    
    
 }
 
@@ -2871,115 +2841,130 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc){ //TODO
             refresh();
             sleep(2);
         }
+    } else if (in == '2'){
+        if (whoGoesFirst(pc, wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[1], &wildPokemon->pkMoves[npcMove]) == 1){
+            mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[1].identifier);
+            if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[1], 1) == ENEMYDEFEATED){
+                if (npc != NULL){
+                    npc->currPoke++;
+                } else {
+                    return WILDDEFEATED;
+                }
+            } else {
+                mvprintw(8, 30, "Move missed!");
+            }
+            refresh();
+            sleep(2);
+            if (fightNPCTurn(npc, wildPokemon, pc, npcMove) == PLAYERDEFEATED){
+                pc->findFirstPoke();
+                mvprintw(9,0 ,"Your Pokemon was knocked out!");
+                refresh();
+                sleep(3);
+            }
+        } else {
+            if (fightNPCTurn(npc, wildPokemon, pc, npcMove) == PLAYERDEFEATED){
+                pc->findFirstPoke();
+                mvprintw(9,0 ,"Your Pokemon was knocked out!");
+                refresh();
+                sleep(3);
+                return PLAYERDEFEATED;
+            }
+            mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[1].identifier);
+            if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[1], 1) == ENEMYDEFEATED){
+                if (npc != NULL){
+                    npc->currPoke++;
+                } else {
+                    return WILDDEFEATED;
+                }
+            } else {
+                mvprintw(8, 30, "Move missed!");
+            }
+            refresh();
+            sleep(2);
+        }
+    } else if(in == '3'){
+        if (whoGoesFirst(pc, wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[2], &wildPokemon->pkMoves[npcMove]) == 1){
+            mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[2].identifier);
+            if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[2], 1) == ENEMYDEFEATED){
+                if (npc != NULL){
+                    npc->currPoke++;
+                } else {
+                    return WILDDEFEATED;
+                }
+            } else {
+                mvprintw(8, 30, "Move missed!");
+            }
+            refresh();
+            sleep(2);
+            if (fightNPCTurn(npc, wildPokemon, pc, npcMove) == PLAYERDEFEATED){
+                pc->findFirstPoke();
+                mvprintw(9,0 ,"Your Pokemon was knocked out!");
+                refresh();
+                sleep(3);
+            }
+        } else {
+            if (fightNPCTurn(npc, wildPokemon, pc, npcMove) == PLAYERDEFEATED){
+                pc->findFirstPoke();
+                mvprintw(9,0 ,"Your Pokemon was knocked out!");
+                refresh();
+                sleep(3);
+                return PLAYERDEFEATED;
+            }
+            mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[2].identifier);
+            if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[2], 1) == ENEMYDEFEATED){
+                if (npc != NULL){
+                    npc->currPoke++;
+                } else {
+                    return WILDDEFEATED;
+                }
+            } else {
+                mvprintw(8, 30, "Move missed!");
+            }
+            refresh();
+            sleep(2);
+        }
+    } else if(in == '4'){
+        if (whoGoesFirst(pc, wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[3], &wildPokemon->pkMoves[npcMove]) == 1){
+            mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[3].identifier);
+            if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[3], 1) == ENEMYDEFEATED){
+                if (npc != NULL){
+                    npc->currPoke++;
+                } else {
+                    return WILDDEFEATED;
+                }
+            } else {
+                mvprintw(8, 30, "Move missed!");
+            }
+            refresh();
+            sleep(2);
+            if (fightNPCTurn(npc, wildPokemon, pc, npcMove) == PLAYERDEFEATED){
+                pc->findFirstPoke();
+                mvprintw(9,0 ,"Your Pokemon was knocked out!");
+                refresh();
+                sleep(3);
+            }
+        } else {
+            if (fightNPCTurn(npc, wildPokemon, pc, npcMove) == PLAYERDEFEATED){
+                pc->findFirstPoke();
+                mvprintw(9,0 ,"Your Pokemon was knocked out!");
+                refresh();
+                sleep(3);
+                return PLAYERDEFEATED;
+            }
+            mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[3].identifier);
+            if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[3], 1) == ENEMYDEFEATED){
+                if (npc != NULL){
+                    npc->currPoke++;
+                } else {
+                    return WILDDEFEATED;
+                }
+            } else {
+                mvprintw(8, 30, "Move missed!");
+            }
+            refresh();
+            sleep(2);
+        } 
     }
-
-
-    // if (in == '1'){
-    //     mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[0].identifier);
-
-    //     whoGoesFirst(pc, npc, &pc->pokemons[pc->currPoke]->pkMoves[0], &wildPokemon->pkMoves[0]);
-    //     if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0], 1) == ENEMYDEFEATED){
-    //         if (npc != NULL){
-    //             npc->currPoke++;
-    //         } else {
-    //             return WILDDEFEATED;
-    //         }
-    //     } else {
-    //         mvprintw(8, 30, "Move missed!");
-    //     }
-    //     refresh();
-    //     sleep(2);
-    //     if (fightNPCTurn(npc, wildPokemon, pc) == PLAYERDEFEATED){
-    //         pc->findFirstPoke();
-    //         mvprintw(9,0 ,"Your Pokemon was knocked out!");
-    //         refresh();
-    //         sleep(3);
-    //     }
-    // } else if (in == '2'){
-    //     mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[1].identifier);
-    //     if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[1], 1) == ENEMYDEFEATED){
-    //         if (npc != NULL){
-    //             npc->currPoke++;
-    //         } else {
-    //             return WILDDEFEATED;
-    //         }
-    //     } else {
-    //         mvprintw(8, 30, "Move missed!");
-    //     }
-    //     refresh();
-    //     sleep(2);
-    //     if (fightNPCTurn(npc, wildPokemon, pc) == PLAYERDEFEATED){
-    //         pc->findFirstPoke();
-    //         mvprintw(9,0 ,"Your Pokemon was knocked out!");
-    //         refresh();
-    //         sleep(3);
-    //     }
-    // } else if (in == '3'){
-    //     mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[2].identifier);
-    //     if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[2], 1) == ENEMYDEFEATED){
-    //         if (npc != NULL){
-    //             npc->currPoke++;
-    //         } else {
-    //             return WILDDEFEATED;
-    //         }
-    //     } else {
-    //         mvprintw(8, 30, "Move missed!");
-    //     }
-    //     refresh();
-    //     sleep(2);
-    //     if (fightNPCTurn(npc, wildPokemon, pc) == PLAYERDEFEATED){
-    //         pc->findFirstPoke();
-    //         mvprintw(9,0 ,"Your Pokemon was knocked out!");
-    //         refresh();
-    //         sleep(3);
-    //     }
-    // } else if (in == '4'){
-    //     mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[3].identifier);
-    //     if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[3], 1) == ENEMYDEFEATED){
-    //         if (npc != NULL){
-    //             npc->currPoke++;
-    //         } else {
-    //             return WILDDEFEATED;
-    //         }
-    //     } else {
-    //         mvprintw(8, 30, "Move missed!");
-    //     }
-    //     refresh();
-    //     sleep(2);
-    //     if (fightNPCTurn(npc, wildPokemon, pc) == PLAYERDEFEATED){
-    //         pc->findFirstPoke();
-    //         mvprintw(9,0 ,"Your Pokemon was knocked out!");
-    //         refresh();
-    //         sleep(3);
-    //     }
-    // } else if (in == '5'){
-    //     mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[4].identifier);
-    //     if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[4], 1) == ENEMYDEFEATED){
-    //         if (npc != NULL){
-    //             npc->currPoke++;
-    //         } else {
-    //             return WILDDEFEATED;
-    //         }
-    //     } else {
-    //         mvprintw(8, 30, "Move missed!");
-    //     }   
-    //     refresh();
-    //     sleep(2);
-    //     if (fightNPCTurn(npc, wildPokemon, pc) == PLAYERDEFEATED){
-    //         pc->findFirstPoke();
-    //         mvprintw(9,0 ,"Your Pokemon was knocked out!");
-    //         refresh();
-    //         sleep(3);
-    //     }
-    // }
-
-    // } else if (in == '4'){
-    //     attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[3], 1);
-    //     fightNPCTurn(npc, wildPokemon, pc);
-    // } else if (in == '5'){
-    //     attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[4], 1);
-    //     fightNPCTurn(npc, wildPokemon, pc);
-    // }  
     
     return 0;         
 }
