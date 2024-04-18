@@ -429,7 +429,7 @@ class Pokemon{
         PokemonMoves pm2;
         Moves moves;
         searchPokemonMovesVector(id, level, &pm1, &pm2, pkMoves);
-        if(searchMovesVector(pm1.move_id, &moves) && 5 >= (int)pkMoves.size()){
+        if(searchMovesVector(pm1.move_id, &moves) && 4 > (int)pkMoves.size()){
             pkMoves.push_back(moves);
         }
     }
@@ -2797,8 +2797,11 @@ int attack(Pokemon *attacker, Pokemon *defender, Moves *move, int isPC){
         float rand = (float)randomGenerator(100, 85) / 100;
         float stab = move->type_id == attacker->type ? 1.5 : 1;
         int type = 1;
+        mvprintw(20, 80, "DBG%d", 2800);
         int damage = (((((2*(float)attacker->level/5) + 2) * ((float)move->power) * ((float)attacker->attack/(float)defender->defense))/50) + 2)*crit*rand*stab*type;
+        mvprintw(20, 80, "DBG%d", dbNum++);
         defender->currHealth -= damage;
+        mvprintw(20, 80, "DBG%d", 2804);
         if (isPC == 1){
             mvprintw(8, 30, "It did %d damage!", damage);
             refresh();
@@ -2906,6 +2909,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP){ //TODO
     if (in == '1'){
         if (whoGoesFirst(pc, wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0], &wildPokemon->pkMoves[npcMove]) == 1 && switchP == 0 ){
             mvprintw(8, 0, "You chose %s! ", pc->pokemons[pc->currPoke]->pkMoves[0].identifier);
+            mvprintw(20, 80, "DBG%d", 2912);
             if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0], 1) == ENEMYDEFEATED){
                 if (npc != NULL){
                     npc->currPoke++;
@@ -2916,6 +2920,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP){ //TODO
             } else {
                 mvprintw(8, 30, "Move missed!");
             }
+            mvprintw(20, 80, "DBG%d", 2923);
             refresh();
             sleep(2);
             if (fightNPCTurn(npc, wildPokemon, pc, npcMove) == PLAYERDEFEATED){
@@ -2959,6 +2964,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP){ //TODO
                 mvprintw(8, 30, "Move missed!");
             }
             refresh();
+            mvprintw(20, 80, "DBG%d", 2697);
             sleep(2);
             if (fightNPCTurn(npc, wildPokemon, pc, npcMove) == PLAYERDEFEATED){
                 pc->findFirstPoke();
@@ -3691,7 +3697,7 @@ void parsePokemonTypesFile(){
 int main(int argc, char *argv[]){
 
     //srand(time(NULL));//random seed
-    srand(10); //11223344
+    srand(303); //11223344
    
     worldMap wm;
     int currX = 200;
