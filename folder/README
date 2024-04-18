@@ -1,4 +1,4 @@
-***Assignemnt1.08***
+***Assignemnt1.09***
 
 How to run:
     make
@@ -13,12 +13,15 @@ Bugs:
 
     when you enter an interface press escape then move the pc to get map back
 
+    when printing sometimes the line won't clear all the way but the change in health (or miss) is reflected in the screen and next turn
+
+    if damage is too high program may crash
     
 
 
 Description:
-    Pokemon class, finding them and battling npcs
+    Pokemon battles
 
 ignore:
     git log > CHANGELOG
-    tar cvzf folder.tsr.gz folder/
+    tar cvzf folder.tar.gz folder/
