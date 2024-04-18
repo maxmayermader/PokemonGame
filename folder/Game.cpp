@@ -1337,7 +1337,13 @@ void pcChooseStarterPokemon(PC *pc){
     Pokemon* pk1 = new Pokemon(0);
     Pokemon* pk2 = new Pokemon(0);
     Pokemon* pk3 = new Pokemon(0);
-    Pokemon* pk4 = new Pokemon(200);
+    Pokemon* pk4 = new Pokemon(75);
+    pk4->levelUp();
+    pk4->levelUp();
+    pk4->levelUp();
+    pk4->levelUp();
+    pk4->levelUp();
+    pk4->levelUp();
 
     clear();
     mvprintw(0,0, "Choose your starter Pokemon(enter 1, 2, or 3): ");
@@ -2616,6 +2622,7 @@ void enterBattle(NPC *npc, PC *pc) { //TODO
     clear();
     mvprintw(0, 0, "Trainer wants to battle! They have. First Pokemon is %s", npc->pokemons[npc->currPoke]->identfier);
     mvprintw(1,0, "You can 'f' to fight, 'B' for bag, and 's' to switch Pokemon");
+    mvprintw(11, 11, "Trainer has %d, %d", npc->numPK, npc->currPoke);
     refresh();
     pc->findFirstPoke(); //Get first pokemon not knocked out
     int fc = 0;
@@ -2626,11 +2633,15 @@ void enterBattle(NPC *npc, PC *pc) { //TODO
         int in = getch();
         if(in == 'f' && fc == 0){
             //fight
-            if(fight(pc, spawnedPokemon, npc, 0) == WILDDEFEATED){ //TODO
+            int fightResult = fight(pc, spawnedPokemon, npc, 0);
+            if(fightResult == WILDDEFEATED){ //TODO
                 mvprintw(9,0, "You defeated the enemy %s!", spawnedPokemon->identfier);
-                npc->currPoke++;
+                //npc->currPoke++;
                 refresh();
                 sleep(3);
+            } else if (fightResult == 4){
+                runCondition = false;
+                break;
             }
         } else if (in == 'B'){
             //bag
@@ -2898,6 +2909,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP){ //TODO
             if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[0], 1) == ENEMYDEFEATED){
                 if (npc != NULL){
                     npc->currPoke++;
+                    return WILDDEFEATED;
                 } else {
                     return WILDDEFEATED;
                 }
@@ -2939,6 +2951,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP){ //TODO
             if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[1], 1) == ENEMYDEFEATED){
                 if (npc != NULL){
                     npc->currPoke++;
+                    return WILDDEFEATED; 
                 } else {
                     return WILDDEFEATED;
                 }
@@ -2980,6 +2993,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP){ //TODO
             if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[2], 1) == ENEMYDEFEATED){
                 if (npc != NULL){
                     npc->currPoke++;
+                    return WILDDEFEATED;
                 } else {
                     return WILDDEFEATED;
                 }
@@ -3021,6 +3035,7 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP){ //TODO
             if (attack(pc->pokemons[pc->currPoke], wildPokemon, &pc->pokemons[pc->currPoke]->pkMoves[3], 1) == ENEMYDEFEATED){
                 if (npc != NULL){
                     npc->currPoke++;
+                    return WILDDEFEATED;
                 } else {
                     return WILDDEFEATED;
                 }
@@ -3056,6 +3071,11 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP){ //TODO
             refresh();
             sleep(2);
         } 
+    }
+    if (npc != NULL){
+        if (npc->isDefeated()){
+            return 4;
+        }
     }
     
     return 0;         
@@ -3103,7 +3123,7 @@ void encounterPokemon(PC *pc){
             } else {
                 mvprintw(5,5, "You couldn't run away!");
                 refresh();
-                sleep(0.5);
+                sleep(1);
             }
         } else if (in == 's'){
             //switch pokemon
