@@ -44,7 +44,7 @@ int randomGenerator(int upper, int lower){
   return (rand() % (upper - lower + 1)) + lower;
 }
 
-//Debug//  mvprintw(20, 40, "Bruh1");
+/*Debug Num`*/  int dbNum = 0;
 
 /*PokemonFile Class*/
 class PokemonFile{

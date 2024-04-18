@@ -24,4 +24,4 @@ Description:
 
 ignore:
     git log > CHANGELOG
-    tar cvzf folder.tsr.gz folder/
+    tar cvzf folder.tar.gz folder/
