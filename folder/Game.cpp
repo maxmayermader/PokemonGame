@@ -2630,12 +2630,13 @@ void enterBattle(NPC *npc, PC *pc) { //TODO
 
     while(runCondition){
         Pokemon *spawnedPokemon = npc->pokemons[pc->currPoke];
+        char pokeName[50]; strcpy(pokeName, spawnedPokemon->identfier);
         int in = getch();
         if(in == 'f' && fc == 0){
             //fight
             int fightResult = fight(pc, spawnedPokemon, npc, 0);
             if(fightResult == WILDDEFEATED){ //TODO
-                mvprintw(9,0, "You defeated the enemy %s!", spawnedPokemon->identfier);
+                mvprintw(9,0, "You defeated the enemy %s!", pokeName);
                 //npc->currPoke++;
                 refresh();
                 sleep(3);
