@@ -743,6 +743,7 @@ int getQueSize(){
     int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP);
     int fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc, int pMove);
     int attack(Pokemon *attacker, Pokemon *defender, Moves *move, int isPC);
+    int saveGameState(worldMap *wm);
 
 //Prints map out to the terminal
 void printMap(mapclass *map, PC *pc){
@@ -3690,6 +3691,15 @@ void parsePokemonTypesFile(){
     else {
         printf("File not found: pokemon_types.csv\n");
     }
+}
+
+int saveGameState(worldMap *wm){
+
+    return 0;
+}
+
+void loadGameState(){
+
 }
 
 
