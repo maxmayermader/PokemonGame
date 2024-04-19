@@ -2629,14 +2629,13 @@ void enterBattle(NPC *npc, PC *pc) { //TODO
     bool runCondition = true;
 
     while(runCondition){
-        Pokemon *spawnedPokemon = npc->pokemons[pc->currPoke];
-        char pokeName[50]; strcpy(pokeName, spawnedPokemon->identfier);
+        Pokemon *spawnedPokemon = npc->pokemons[npc->currPoke];
         int in = getch();
         if(in == 'f' && fc == 0){
             //fight
             int fightResult = fight(pc, spawnedPokemon, npc, 0);
             if(fightResult == WILDDEFEATED){ //TODO
-                mvprintw(9,0, "You defeated the enemy %s!", pokeName);
+                mvprintw(9,0, "You defeated the enemy %s!", spawnedPokemon->identfier);
                 //npc->currPoke++;
                 refresh();
                 sleep(3);
@@ -2701,7 +2700,7 @@ void enterBattle(NPC *npc, PC *pc) { //TODO
             sleep(2);
         }
         clear();
-        mvprintw(0,0, "A wild %s appeared! They are level %d.", spawnedPokemon->identfier, spawnedPokemon->level);
+        mvprintw(0,0, "Enemy Pokemon %s appeared! They are level %d.", spawnedPokemon->identfier, spawnedPokemon->level);
         mvprintw(1,0, "You can 'f' to fight, 'B' for bag, 'r' to run, and 's' to switch Pokemon");
         mvprintw(11, 11, "Trainer has %d, %d", npc->numPK, npc->currPoke);
         refresh();
@@ -3703,7 +3702,7 @@ int main(int argc, char *argv[]){
     worldMap wm;
     int currX = 200;
     int currY = 200;
-    int numTrainers = 1;
+    int numTrainers = 10;
 
     parsePokemonFile();
     parseMovesFile();    
