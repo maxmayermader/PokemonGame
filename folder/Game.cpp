@@ -3723,7 +3723,7 @@ int saveGameState(worldMap *wm){
 }
 
 void loadGameState(){
-
+    
 }
 
 
@@ -3753,6 +3753,10 @@ int main(int argc, char *argv[]){
         if (argc >= 3 && strcmp(argv[1], "--numtrainers") == 0) {
             numTrainers = atoi(argv[2]);
         } 
+        else if (argc >= 3 && strcmp(argv[1], "--load") == 0) {
+            loadGameState();
+            exit(0);
+        }
     }
        
     
