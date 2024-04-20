@@ -291,6 +291,7 @@ class Pokemon{
     int baseSpecialAttack;
     int specialAttack;
     int shiny;
+    //TODO
     std::vector<Moves> pkMoves;
     char move1[50];
     char move2[50];
@@ -2384,6 +2385,8 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
             } else if (in == 'B'){ //Open bag
                 wm->player->openBag(0);
                 printMap(terrainMap, hn->pc);
+            } else if (in == 'W'){
+                saveGameState(wm);
             }
             
             else{
@@ -3694,8 +3697,26 @@ void parsePokemonTypesFile(){
 }
 
 int saveGameState(worldMap *wm){
+    endwin();
+    std::cout << "You are saving the game." << std::endl;
+    std::ofstream myfile;
+    myfile.open("saveTest1.txt");
+    myfile << "Writing this to a file.\n";
+     if (myfile.is_open())
+    {
+        myfile << "This is a line.\n";
+        myfile << "This is another line.\n";
+        myfile.close();
+    }
+    else std::cout << "Unable to open file";
+    myfile.close();
 
-    return 0;
+    std::ofstream outfile ("test.txt");
+    outfile << "my text here!" << std::endl;
+    outfile.close();
+
+    std::cout << "Game Saved.\nThanks for playing! See you soon." << std::endl;
+    exit(0);
 }
 
 void loadGameState(){
