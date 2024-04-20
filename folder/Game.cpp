@@ -3699,20 +3699,23 @@ void parsePokemonTypesFile(){
 int saveGameState(worldMap *wm){
     endwin();
     std::cout << "You are saving the game." << std::endl;
-    std::ofstream myfile;
-    myfile.open("saveTest1.txt");
-    myfile << "Writing this to a file.\n";
-     if (myfile.is_open())
-    {
-        myfile << "This is a line.\n";
-        myfile << "This is another line.\n";
-        myfile.close();
-    }
-    else std::cout << "Unable to open file";
-    myfile.close();
+    std::ofstream outfile ("savedGame.txt");
 
-    std::ofstream outfile ("test.txt");
-    outfile << "my text here!" << std::endl;
+
+    // std::ofstream myfile;
+    // myfile.open("saveTest1.txt");
+    // myfile << "Writing this to a file.\n";
+    //  if (myfile.is_open())
+    // {
+    //     myfile << "This is a line.\n";
+    //     myfile << "This is another line.\n";
+    //     myfile.close();
+    // }
+    // else std::cout << "Unable to open file";
+    // myfile.close();
+
+    
+    outfile << "my text here! bkyaat" << std::endl;
     outfile.close();
 
     std::cout << "Game Saved.\nThanks for playing! See you soon." << std::endl;
