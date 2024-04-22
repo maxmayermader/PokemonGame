@@ -710,12 +710,15 @@ typedef class mapclass{
     PC* playerT;
     int NPCSInit; 
     heap* terrainHeap;
+    int row;
+    int col;
 }mapclass;
 
 
 //Global map. Array of map pointers
 typedef class worldMap{
     public:
+    int seed;
     mapclass* arr[worldYSize][worldXSize];
     PC* player;
 }worldMap;
@@ -1502,6 +1505,7 @@ void placeNPCS(worldMap *wm, mapclass *terrainMap, int npcNum){
 void createMap(int x, int y, worldMap *wm, int npcNum){
     
     mapclass *newMap = (mapclass*)malloc(sizeof(mapclass)); //malloc new mapclass
+    newMap->row = x; newMap->col = y;//set row and col
     setMap(newMap, x, y, wm); //set mapclass terrain to pseudo NULL values
     createTerrain(newMap); //create a terrain and set it to newMap
     int distanceFromCenter = DFC(x, y); //calculate distance from center
@@ -3729,13 +3733,16 @@ void loadGameState(){
 
 
 int main(int argc, char *argv[]){
-
+    int seed;
+    //seed = time(NULL);
+    seed = 303;
     //srand(time(NULL));//random seed
-    srand(303); //11223344
+    srand(seed); //11223344
    
     worldMap wm;
-    int currX = 200;
-    int currY = 200;
+    wm.seed = seed;
+    int currR = 200;
+    int currC = 200;
     int numTrainers = 10;
 
     parsePokemonFile();
@@ -3768,7 +3775,7 @@ int main(int argc, char *argv[]){
     initscr();
     keypad(stdscr, TRUE);
     createWorldMap(&wm);
-    createMap(currX, currY, &wm, numTrainers);
+    createMap(currR, currC, &wm, numTrainers);
     //lprintf("(%d, %d)\n", currX-200, currY-200);
 
     printMap(wm.arr[200][200], wm.player);
