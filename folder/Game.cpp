@@ -718,6 +718,7 @@ typedef class mapclass{
 typedef class worldMap{
     public:
     int seed;
+    int numTrainers;
     mapclass* arr[worldYSize][worldXSize];
     PC* player;
 }worldMap;
@@ -3726,6 +3727,16 @@ int saveGameState(worldMap *wm){
 }
 
 void loadGameState(int encrypted){
+    parsePokemonFile();
+    parseMovesFile();    
+    parsePokemonMovesFile();
+    parsePokemonSpeciesFile();
+    parseExperienceFile();
+    parseTypeNamesFile();
+    parsePokemonStatsFile();
+    parseStatsFile();
+    parsePokemonTypesFile();
+    
     FILE *file = fopen("savedGame.txt", "r");
     worldMap wm;
     //PC
@@ -3760,34 +3771,54 @@ void loadGameState(int encrypted){
             // int gateE;//right
             // int connection1[2];
             // int connection2[2];
+
+            /*I can just generate the terrain from the seed*/
+
             // char terrain[ROW][COL];
             // NPC* npcArray[NPCROW][NPCCOL];
-            // PC* playerT; //I can just set to the wm->player
             // int NPCSInit; 
             // heap* terrainHeap;
+            for (int i=0; i<wm.numTrainers; i++){
+                NPC *npc = (NPC*)malloc(sizeof(NPC));
+                // int symb; 
+                // int row; 
+                // int col;
+                // int direc;
+                // int weightArr[NPCROW][NPCCOL]; 
+                // int defeated;
+                // Pokemon* pokemons[6];
+                // int numPK;
+                // int currPoke;
+                for (int poke = 0; poke < npc->numPK; poke++){
+                    npc->pokemons[poke] = (Pokemon*)malloc(sizeof(Pokemon));
+                    /////
+                }
+                /*add to heap*/
+            }
         }
     }
 
+    /*Add pc to heap with lowest weight*/
     
-    
-    
-    
+    initscr();
+    keypad(stdscr, TRUE);
+    printMap(wm.arr[200][200], wm.player);
+    moveEveryone(&wm, wm.arr[wm.player->row][wm.player->col], wm.numTrainers, wm.arr[wm.player->row][wm.player->col]->terrainHeap);
 }
 
 
 
 int main(int argc, char *argv[]){
     int seed;
-    //seed = time(NULL);
-    seed = 303;
-    //srand(time(NULL));//random seed
+    seed = time(NULL);
+    //seed = 303;
     srand(seed); //11223344
    
     worldMap wm;
     wm.seed = seed;
+    wm.numTrainers = 10;
     int currR = 200;
     int currC = 200;
-    int numTrainers = 10;
 
     parsePokemonFile();
     parseMovesFile();    
@@ -3802,7 +3833,7 @@ int main(int argc, char *argv[]){
     //parseMovesFile();
     if (argc >= 2 ){
         if (argc >= 3 && strcmp(argv[1], "--numtrainers") == 0) {
-            numTrainers = atoi(argv[2]);
+            wm.numTrainers = atoi(argv[2]);
         } 
         else if (argc >= 3 && strcmp(argv[1], "--load") == 0) {
             loadGameState(0);
@@ -3812,18 +3843,18 @@ int main(int argc, char *argv[]){
        
     
 
-    printf("%d\n", numTrainers);
+    printf("%d\n", wm.numTrainers);
     
     //return 0;
     
     initscr();
     keypad(stdscr, TRUE);
     createWorldMap(&wm);
-    createMap(currR, currC, &wm, numTrainers);
+    createMap(currR, currC, &wm, wm.numTrainers);
     //lprintf("(%d, %d)\n", currX-200, currY-200);
 
     printMap(wm.arr[200][200], wm.player);
-    moveEveryone(&wm, wm.arr[200][200], numTrainers, wm.arr[200][200]->terrainHeap);
+    moveEveryone(&wm, wm.arr[200][200], wm.numTrainers, wm.arr[200][200]->terrainHeap);
     
     endwin();
     return 0;
