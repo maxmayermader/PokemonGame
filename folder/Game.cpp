@@ -396,8 +396,9 @@ class Pokemon{
  
     }
 
-    Pokemon(int id, int level, int health, int currHealth, int attack, int defense, int speed, int gender, int specialDefense, int specialAttack, int shiny){
+    Pokemon(int id, int type, int level, int health, int currHealth, int attack, int defense, int speed, int gender, int specialDefense, int specialAttack, int shiny){
         this->id = id;
+        this->type = type;
         this->level = level;
         this->health = health;
         this->currHealth = currHealth;
@@ -421,10 +422,6 @@ class Pokemon{
         baseSpecialDefense = ps.base_stat;
         searchPokemonStatsVector(id, 6, &ps);
         baseSpeed = ps.base_stat;
-
-        PokemonTypes *pt = (PokemonTypes*)malloc(sizeof(PokemonTypes));
-        searchPokemonTypesVector(id, pt);
-        type = pt->type_id;
 
     }
 
@@ -717,6 +714,8 @@ typedef class Heap heap;
 //map class for terrain. 21x80 map
 typedef class mapclass{
     public:
+    int row;
+    int col;
 	int gateN;//top
 	int gateS;//bottom
 	int gateW;//left
@@ -728,8 +727,6 @@ typedef class mapclass{
     PC* playerT;
     int NPCSInit; 
     heap* terrainHeap;
-    int row;
-    int col;
 }mapclass;
 
 
@@ -3736,17 +3733,56 @@ int saveGameState(worldMap *wm){
     // }
     // else std::cout << "Unable to open file";
     // myfile.close();
-    outfile << wm->seed << ", " << wm->numTrainers << std::endl;
+    outfile << wm->seed << ", " << wm->numTrainers << std::endl; //save world map
+
+    //save pc
     outfile << wm->player->row <<", " << wm->player->col << ", " << wm->player->globalX << ", " << wm->player->globalY << ", " << wm->player->numPK << ", " << wm->player->currPoke << ", " << wm->player->potions << ", " << wm->player->pokeballs << ", " << wm->player->revives << std::endl;
-    for (int i=0; i<wm->player->numPK; i++){
-        outfile << wm->player->pokemons[i]->id << ", " << wm->player->pokemons[i]->type << ", " << wm->player->pokemons[i]->identfier << ", " << wm->player->pokemons[i]->health << ", " << wm->player->pokemons[i]->currHealth << ", " << wm->player->pokemons[i]->level << ", " 
-        << wm->player->pokemons[i]->attack << ", " << wm->player->pokemons[i]->defense << ", " << wm->player->pokemons[i]->gender << ", " << wm->player->pokemons[i]->baseHealth << ", " << wm->player->pokemons[i]->baseDefense << ", " << wm->player->pokemons[i]->speed << ", " 
-        << wm->player->pokemons[i]->baseSpeed << ", " << wm->player->pokemons[i]->baseSpecialDefense << ", " << wm->player->pokemons[i]->specialDefense << ", " << wm->player->pokemons[i]->baseSpecialAttack << ", " << wm->player->pokemons[i]->specialAttack << ", " << wm->player->pokemons[i]->shiny << ", ";
+    for (int i=0; i<wm->player->numPK; i++){ //Save pokemon
+        outfile << wm->player->pokemons[i]->id << ", " << wm->player->pokemons[i]->type << ", " << wm->player->pokemons[i]->health << ", " << wm->player->pokemons[i]->currHealth << ", " << wm->player->pokemons[i]->level 
+        << wm->player->pokemons[i]->attack << ", " << wm->player->pokemons[i]->defense << ", " << wm->player->pokemons[i]->gender  << ", " << wm->player->pokemons[i]->speed << ", " << wm->player->pokemons[i]->specialDefense << ", " 
+        << wm->player->pokemons[i]->specialAttack << ", " << wm->player->pokemons[i]->shiny << ", ";
         for (int j=0; j<(int)wm->player->pokemons[i]->pkMoves.size(); j++){
             outfile << wm->player->pokemons[i]->pkMoves[j].id;
             if (j != (int)wm->player->pokemons[i]->pkMoves.size()-1){
                 outfile << ", ";
             } else {
+                outfile << std::endl;
+            }
+        }
+    }
+
+    //save terrain maps
+    for(int wmrow = 0; wmrow < worldXSize; wmrow++){
+        for(int wmcol = 0; wmcol < worldYSize; wmcol++){
+            if (wm->arr[wmrow][wmcol] != NULL){
+                outfile << wm->arr[wmrow][wmcol]->row << ", " << wm->arr[wmrow][wmcol]->col << ", " << wm->arr[wmrow][wmcol]->gateN << ", " << wm->arr[wmrow][wmcol]->gateS << ", " << wm->arr[wmrow][wmcol]->gateW << ", " << wm->arr[wmrow][wmcol]->gateE << ", (" << wm->arr[wmrow][wmcol]->connection1[0] << ", " << wm->arr[wmrow][wmcol]->connection1[1] << "), (" << wm->arr[wmrow][wmcol]->connection2[0] << ", " << wm->arr[wmrow][wmcol]->connection2[1] << "), " << wm->arr[wmrow][wmcol]->NPCSInit << std::endl;
+                // make save npcs
+                while (wm->arr[wmrow][wmcol]->terrainHeap->size > 0){
+                    //NPC *npc = (NPC*)extractMin(wm->arr[wmrow][wmcol]->h);
+                    heapNode* hn = extractMin(wm->arr[wmrow][wmcol]->terrainHeap);
+
+                    if (hn->pc != NULL){
+                        continue;
+                    }
+
+
+                    NPC *npc = hn->npc;
+                    outfile << "[ " << hn->weight << ", " << npc->symb << ", " << npc->row << ", " << npc->col << ", " << npc->direc << ", " << npc->defeated << ", " << npc->numPK << ", " << npc->currPoke << std::endl;
+                    for (int i=0; i<npc->numPK; i++){
+                        outfile << npc->pokemons[i]->id << ", " << npc->pokemons[i]->type << ", " << npc->pokemons[i]->health << ", " << npc->pokemons[i]->currHealth << ", " << npc->pokemons[i]->level 
+                        << npc->pokemons[i]->attack << ", " << npc->pokemons[i]->defense << ", " << npc->pokemons[i]->gender  << ", " << npc->pokemons[i]->speed << ", " << npc->pokemons[i]->specialDefense << ", " 
+                        << npc->pokemons[i]->specialAttack << ", " << npc->pokemons[i]->shiny << ", ";
+                        for (int j=0; j<(int)npc->pokemons[i]->pkMoves.size(); j++){
+                            outfile << npc->pokemons[i]->pkMoves[j].id;
+                            if (j != (int)npc->pokemons[i]->pkMoves.size()-1){
+                                outfile << ", ";
+                            } else {
+                                outfile << std::endl;
+                            }
+                        }
+                    }
+                    outfile << "]" << std::endl;
+                }
                 outfile << std::endl;
             }
         }
@@ -3845,8 +3881,8 @@ void loadGameState(int encrypted){
 
 int main(int argc, char *argv[]){
     int seed;
-    seed = time(NULL);
-    //seed = 303;
+    //seed = time(NULL);
+    seed = 11223344;
     srand(seed); //11223344
    
     worldMap wm;

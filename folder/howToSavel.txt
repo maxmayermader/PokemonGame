@@ -79,7 +79,7 @@ class heapNode:         7.
 How to save:
 1. Get worldMap variable and save it.
     i. save pc (see later on)
-    ii. 
+    ii. save terrain maps 
 
 1. save seed 
 2. save PC  
