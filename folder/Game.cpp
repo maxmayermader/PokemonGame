@@ -3800,7 +3800,7 @@ int saveGameState(worldMap *wm){
     exit(0);
 }
 
-void loadGameState(int encrypted){
+void loadGameState(char *fileName, int decypher){
     parsePokemonFile();
     parseMovesFile();    
     parsePokemonMovesFile();
@@ -3811,11 +3811,58 @@ void loadGameState(int encrypted){
     parseStatsFile();
     parsePokemonTypesFile();
     
-    FILE *file = fopen("savedGame.txt", "r");
+    FILE *file = fopen(fileName, "r");
     worldMap wm;
     wm.setWorldToNull();
     //PC
     //mapClass arr
+    if (file != NULL){
+        if (decypher != 0){
+            //TODO: decypher
+            //decypher file
+        } 
+
+        char line[100];
+
+        fgets(line, sizeof(line), file);
+        char *token = strtok(line, ",");
+        wm.seed = atoi(token);
+        token = strtok(NULL, ",");
+        wm.numTrainers = atoi(token);
+
+        fgets(line, sizeof(line), file);
+        token = strtok(line, ",");
+        wm.player->row = atoi(token);
+        token = strtok(NULL, ",");
+        wm.player->col = atoi(token);
+        token = strtok(NULL, ",");
+        wm.player->globalX = atoi(token);
+        token = strtok(NULL, ",");
+        wm.player->globalY = atoi(token);
+        token = strtok(NULL, ",");
+        wm.player->numPK = atoi(token);
+        token = strtok(NULL, ",");
+        wm.player->currPoke = atoi(token);
+        token = strtok(NULL, ",");
+        wm.player->potions = atoi(token);
+        token = strtok(NULL, ",");
+        wm.player->pokeballs = atoi(token);
+        token = strtok(NULL, ",");
+        wm.player->revives = atoi(token);
+        
+
+
+
+        while (fgets(line, sizeof(line), file)) { 
+            
+        }
+
+        
+
+    } else {
+        printf("File not found: %s\n", fileName);
+    }
+
 
 
 
@@ -3911,8 +3958,17 @@ int main(int argc, char *argv[]){
             wm.numTrainers = atoi(argv[2]);
         } 
         else if (argc >= 3 && strcmp(argv[1], "--load") == 0) {
-            loadGameState(0);
-            exit(0);
+            printf("Is the save encrypted? (y/n)\n");
+            char in = getchar();
+            if (in == 'y'){
+                //int decypher = atoi(argv[3]);
+                printf("Enter the decypher key: ");
+                int decypher;
+                scanf("%d", &decypher);
+                loadGameState(argv[2], decypher);
+            } else {
+                loadGameState(argv[2], 0);
+            }
         }
     }
        
