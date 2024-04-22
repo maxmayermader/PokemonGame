@@ -81,6 +81,16 @@ How to save:
     i. save pc (see later on)
     ii. 
 
+1. save seed 
+2. save PC  
+3. save PC Pokemon
+4. Save Pokemon Moves
+5. save terrain maps
+6. empty heap
+7. save NPC
+8. save pokemon
+9. save move ids
+
 
 
 

@@ -3717,9 +3717,20 @@ int saveGameState(worldMap *wm){
     // }
     // else std::cout << "Unable to open file";
     // myfile.close();
+    outfile << wm->seed << ", " << wm->numTrainers << std::endl;
+    outfile << wm->player->row <<", " << wm->player->col << ", " << wm->player->globalX << ", " << wm->player->globalY << ", " << wm->player->numPK << ", " << wm->player->currPoke << ", " << wm->player->potions << ", " << wm->player->pokeballs << ", " << wm->player->revives << std::endl;
+    for (int i=0; i<wm->player->numPK; i++){
+        outfile << wm->player->pokemons[i]->id << ", " << wm->player->pokemons[i]->type << ", " << wm->player->pokemons[i]->identfier << ", " << wm->player->pokemons[i]->health << ", " << wm->player->pokemons[i]->currHealth << ", " << wm->player->pokemons[i]->level << ", " 
+        << wm->player->pokemons[i]->attack << ", " << wm->player->pokemons[i]->defense << ", " << wm->player->pokemons[i]->gender << ", " << wm->player->pokemons[i]->baseHealth << ", " << wm->player->pokemons[i]->baseDefense << ", " << wm->player->pokemons[i]->speed << ", " 
+        << wm->player->pokemons[i]->baseSpeed << ", " << wm->player->pokemons[i]->baseSpecialDefense << ", " << wm->player->pokemons[i]->specialDefense << ", " << wm->player->pokemons[i]->baseSpecialAttack << ", " << wm->player->pokemons[i]->specialAttack << ", " << wm->player->pokemons[i]->shiny << ", ";
+        for (int j=0; j<(int)wm->player->pokemons[i]->pkMoves.size(); j++){
+            outfile << wm->player->pokemons[i]->pkMoves[j].id << std::endl;
+        }
+    }
 
-    
-    outfile << "my text here! bkyaat" << std::endl;
+
+
+
     outfile.close();
 
     std::cout << "Game Saved.\nThanks for playing! See you soon." << std::endl;
