@@ -531,7 +531,6 @@ typedef enum PCMOV{
 //PC class
 typedef class PC{
     public:
-    int symb;
     int row;
     int col;
     int globalX;
@@ -1327,7 +1326,7 @@ void setMap(mapclass *map, int x, int y, worldMap *wm){
         }
     }
 
-    map->playerT = (PC*)malloc(sizeof(PC));
+    //map->playerT = (PC*)malloc(sizeof(PC));
     //set all NPCs to NULL
     for(i=0; i<NPCROW; i++){
         for(j=0; j<NPCCOL; j++){
@@ -1436,11 +1435,11 @@ void spawnNPC(worldMap *wm, mapclass *terrainMap, int npcType){
         }
     }
     npc->numPK = 1;
-    npc->pokemons[0] = new Pokemon(DFC(terrainMap->playerT->globalX, terrainMap->playerT->globalY));
+    npc->pokemons[0] = new Pokemon(DFC(wm->player->globalX, wm->player->globalY));
     npc->currPoke=0;
     for(int i=1; i<6; i++){
         if(randomGenerator(10, 1) <= 6){
-            npc->pokemons[i] = new Pokemon(DFC(terrainMap->playerT->globalX, terrainMap->playerT->globalY));
+            npc->pokemons[i] = new Pokemon(DFC(wm->player->globalX, wm->player->globalY));
             npc->numPK++;
         } else {
             break;
@@ -1513,7 +1512,7 @@ void createMap(int x, int y, worldMap *wm, int npcNum){
 
     wm->arr[x][y] = newMap; //add new terrain map to world map
 
-    newMap->playerT = wm->player;
+    //newMap->playerT = wm->player;
     // newMap->playerT->row = wm->player->row;
     // newMap->playerT->col = wm->player->col;
 
@@ -3726,7 +3725,52 @@ int saveGameState(worldMap *wm){
     exit(0);
 }
 
-void loadGameState(){
+void loadGameState(int encrypted){
+    FILE *file = fopen("savedGame.txt", "r");
+    worldMap wm;
+    //PC
+    //mapClass arr
+
+
+
+    PC *pc = (PC*)malloc(sizeof(PC));
+    // int row;
+    // int col;
+    // int globalX;
+    // int globalY;
+    pc->numPK = 0;
+    // pc->currPoke = 0;
+    // pc->globalX = 0;
+    // int potions;
+    // int pokeballs;
+    // int revives;
+    // Pokemon* pokemons[6];
+
+    for (int i=0; i<pc->numPK; i++){
+        pc->pokemons[i] = (Pokemon*)malloc(sizeof(Pokemon));
+        /////
+    }
+
+    for(int wmrow = 0; wmrow < ROW; wmrow++){
+        for(int wmcol = 0; wmcol < COL; wmcol++){
+            wm.arr[wmrow][wmcol] = (mapclass*)malloc(sizeof(mapclass));
+            // int gateN;//top
+            // int gateS;//bottom
+            // int gateW;//left
+            // int gateE;//right
+            // int connection1[2];
+            // int connection2[2];
+            // char terrain[ROW][COL];
+            // NPC* npcArray[NPCROW][NPCCOL];
+            // PC* playerT; //I can just set to the wm->player
+            // int NPCSInit; 
+            // heap* terrainHeap;
+        }
+    }
+
+    
+    
+    
     
 }
 
@@ -3761,7 +3805,7 @@ int main(int argc, char *argv[]){
             numTrainers = atoi(argv[2]);
         } 
         else if (argc >= 3 && strcmp(argv[1], "--load") == 0) {
-            loadGameState();
+            loadGameState(0);
             exit(0);
         }
     }

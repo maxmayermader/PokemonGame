@@ -3,7 +3,6 @@ class worldMap:  1.
     pc player
 
 clas pc: 2.
-    int symb;
     int row;
     int col;
     int globalX;
@@ -49,7 +48,6 @@ class mapclass:   3.
     int connection2[2];
 	char terrain[ROW][COL];
     NPC* npcArray[NPCROW][NPCCOL];
-    PC* playerT; //I can just set to the wm->player
     int NPCSInit; 
     heap* terrainHeap;
 
