@@ -396,23 +396,42 @@ class Pokemon{
  
     }
 
-    bool searchForNewMove(){
-        // for(int i=1; i<(int)allPossibleMoves.size(); i++){
-        //     if(allPossibleMoves[i].level <= level){
+    Pokemon(int id, int level, int health, int currHealth, int attack, int defense, int speed, int gender, int specialDefense, int specialAttack, int shiny){
+        this->id = id;
+        this->level = level;
+        this->health = health;
+        this->currHealth = currHealth;
+        this->attack = attack;
+        this->defense = defense;
+        this->speed = speed;
 
-        //     }
-        //     for(int j=0; j<(int)pkMoves.size(); j++){
-        //         if(allPossibleMoves[i].id == pkMoves[j].id){
-        //             found = true;
-        //             break;
-        //         }
-        //     }
-        //     if(!found){
-        //         pkMoves.push_back(allPossibleMoves[i]);
-        //         return true;
-        //     }
-        // }
-        return false;
+        PokemonFile pf;
+        searchPokemonVector(id, &pf);
+        strcpy(identfier, pf.identifier);
+        PokemonStats ps;
+        searchPokemonStatsVector(id, 1, &ps);
+        baseHealth = ps.base_stat;
+        searchPokemonStatsVector(id, 2, &ps);
+        baseAttack = ps.base_stat;
+        searchPokemonStatsVector(id, 3, &ps);
+        baseDefense = ps.base_stat;
+        searchPokemonStatsVector(id, 4, &ps);
+        baseSpecialAttack = ps.base_stat;
+        searchPokemonStatsVector(id, 5, &ps);
+        baseSpecialDefense = ps.base_stat;
+        searchPokemonStatsVector(id, 6, &ps);
+        baseSpeed = ps.base_stat;
+
+        PokemonTypes *pt = (PokemonTypes*)malloc(sizeof(PokemonTypes));
+        searchPokemonTypesVector(id, pt);
+        type = pt->type_id;
+
+    }
+
+    void addMoveFromID(int id){
+        Moves moves;
+        searchMovesVector(id, &moves);
+        pkMoves.push_back(moves);   
     }
 
 
@@ -3724,7 +3743,12 @@ int saveGameState(worldMap *wm){
         << wm->player->pokemons[i]->attack << ", " << wm->player->pokemons[i]->defense << ", " << wm->player->pokemons[i]->gender << ", " << wm->player->pokemons[i]->baseHealth << ", " << wm->player->pokemons[i]->baseDefense << ", " << wm->player->pokemons[i]->speed << ", " 
         << wm->player->pokemons[i]->baseSpeed << ", " << wm->player->pokemons[i]->baseSpecialDefense << ", " << wm->player->pokemons[i]->specialDefense << ", " << wm->player->pokemons[i]->baseSpecialAttack << ", " << wm->player->pokemons[i]->specialAttack << ", " << wm->player->pokemons[i]->shiny << ", ";
         for (int j=0; j<(int)wm->player->pokemons[i]->pkMoves.size(); j++){
-            outfile << wm->player->pokemons[i]->pkMoves[j].id << std::endl;
+            outfile << wm->player->pokemons[i]->pkMoves[j].id;
+            if (j != (int)wm->player->pokemons[i]->pkMoves.size()-1){
+                outfile << ", ";
+            } else {
+                outfile << std::endl;
+            }
         }
     }
 
