@@ -3813,11 +3813,7 @@ void loadGameState(int encrypted){
     
     FILE *file = fopen("savedGame.txt", "r");
     worldMap wm;
-    for(i=0; i<worldYSize; i++){
-        for(j=0; j<worldXSize; j++){
-            wm->arr[i][j] = NULL;
-        }
-    }
+    wm.setWorldToNull();
     //PC
     //mapClass arr
 
