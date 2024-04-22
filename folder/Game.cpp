@@ -737,6 +737,15 @@ typedef class worldMap{
     int numTrainers;
     mapclass* arr[worldYSize][worldXSize];
     PC* player;
+
+    void setWorldToNull(){
+        for(int i=0; i<worldYSize; i++){
+            for(int j=0; j<worldXSize; j++){
+                arr[i][j] = NULL;
+            }
+        }
+    }
+
 }worldMap;
 
 //char startMap[ROW][COL];
@@ -1406,14 +1415,8 @@ void pcChooseStarterPokemon(PC *pc){
 
 /*Set all pointers to NULL*/
 void createWorldMap(worldMap *wm){
-    int i;
-    int j;
+    wm->setWorldToNull();
 
-    for(i=0; i<worldYSize; i++){
-        for(j=0; j<worldXSize; j++){
-            wm->arr[i][j] = NULL;
-        }
-    }
     //Initialize player
     wm->player = (PC*) malloc(sizeof(PC));
     //wm->player->symb = 0;
@@ -3810,6 +3813,11 @@ void loadGameState(int encrypted){
     
     FILE *file = fopen("savedGame.txt", "r");
     worldMap wm;
+    for(i=0; i<worldYSize; i++){
+        for(j=0; j<worldXSize; j++){
+            wm->arr[i][j] = NULL;
+        }
+    }
     //PC
     //mapClass arr
 
