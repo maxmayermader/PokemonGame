@@ -326,6 +326,7 @@ bool searchPokemonTypesVector(int id, PokemonTypes *pt){
 /*Pokemon class*/
 class Pokemon{
     public:
+    int searchID;
     int id;
     int type;
     char identfier[50];
@@ -376,7 +377,8 @@ class Pokemon{
 
     Pokemon(int distance){ //T H I S 
         PokemonFile pf;
-        searchPokemonVector(randomGenerator(1092, 1), &pf);
+        searchID = randomGenerator(1092, 1);
+        searchPokemonVector(searchID, &pf);
         id = pf.id; // Generate a random ID for the Pokemon, between 1 and 1092
         strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
         PokemonStats ps;
@@ -450,7 +452,8 @@ class Pokemon{
  
     }
 
-    Pokemon(int id, int type, int level, int health, int currHealth, int attack, int defense, int speed, int gender, int specialDefense, int specialAttack, int shiny){
+    Pokemon(int searchID, int id, int type, int level, int health, int currHealth, int attack, int defense, int speed, int gender, int specialDefense, int specialAttack, int shiny){
+        this->searchID = searchID;
         this->id = id;
         this->type = type;
         this->level = level;
@@ -461,7 +464,7 @@ class Pokemon{
         this->speed = speed;
 
         PokemonFile pf;
-        searchPokemonVector(id, &pf);
+        searchPokemonVector(searchID, &pf);
         strcpy(identfier, pf.identifier);
         PokemonStats ps;
         searchPokemonStatsVector(id, 1, &ps);
@@ -3783,7 +3786,7 @@ int saveGameState(worldMap *wm){
     //save pc
     outfile << wm->player->row <<", " << wm->player->col << ", " << wm->player->globalX << ", " << wm->player->globalY << ", " << wm->player->numPK << ", " << wm->player->currPoke << ", " << wm->player->potions << ", " << wm->player->pokeballs << ", " << wm->player->revives << std::endl;
     for (int i=0; i<wm->player->numPK; i++){ //Save pokemon
-        outfile << wm->player->pokemons[i]->id << ", " << wm->player->pokemons[i]->type << ", " << wm->player->pokemons[i]->health << ", " << wm->player->pokemons[i]->currHealth << ", " 
+        outfile << wm->player->pokemons[i]->id << ", " << wm->player->pokemons[i]->id << ", " << wm->player->pokemons[i]->type << ", " << wm->player->pokemons[i]->health << ", " << wm->player->pokemons[i]->currHealth << ", " 
         << wm->player->pokemons[i]->level << ", " << wm->player->pokemons[i]->attack << ", " << wm->player->pokemons[i]->defense << ", "  
         << wm->player->pokemons[i]->gender  << ", " << wm->player->pokemons[i]->speed << ", " << wm->player->pokemons[i]->specialDefense << ", " 
         << wm->player->pokemons[i]->specialAttack << ", " << wm->player->pokemons[i]->shiny << ", ";
@@ -3830,7 +3833,7 @@ int saveGameState(worldMap *wm){
                     //<< "[ "
                     outfile << hn->weight << ", " << npc->symb << ", " << npc->row << ", " << npc->col << ", " << npc->direc << ", " << npc->defeated << ", " << npc->numPK << ", " << npc->currPoke << std::endl;
                     for (int i=0; i<npc->numPK; i++){
-                        outfile << npc->pokemons[i]->id << ", " << npc->pokemons[i]->type << ", " << npc->pokemons[i]->health << ", " << npc->pokemons[i]->currHealth << ", " << npc->pokemons[i]->level 
+                        outfile << npc->pokemons[i]->searchID << ", " << npc->pokemons[i]->id << ", " << npc->pokemons[i]->type << ", " << npc->pokemons[i]->health << ", " << npc->pokemons[i]->currHealth << ", " << npc->pokemons[i]->level 
                         << npc->pokemons[i]->attack << ", " << npc->pokemons[i]->defense << ", " << npc->pokemons[i]->gender  << ", " << npc->pokemons[i]->speed << ", " << npc->pokemons[i]->specialDefense << ", " 
                         << npc->pokemons[i]->specialAttack << ", " << npc->pokemons[i]->shiny << ", ";
                         for (int j=0; j<(int)npc->pokemons[i]->pkMoves.size(); j++){
@@ -3913,6 +3916,8 @@ void loadGameState(const char *fileName, int decypher){
             fgets(line, sizeof(line), file);
             //*id  type  health  currHealth  level attack  defense  gender   speed  specialDefense specialAttack  shiny*  Moves
             token = strtok(line, ",");
+            int searchID = atoi(token);
+            token = strtok(line, ",");
             int pokeID = atoi(token);
             token = strtok(NULL, ",");
             int pokeType = atoi(token);
@@ -3938,7 +3943,7 @@ void loadGameState(const char *fileName, int decypher){
             int shiny = atoi(token);
 
             
-            Pokemon* pokemon = new Pokemon(pokeID, pokeType, level, health, currHealth, attack, defense, speed, gender, specialDefense, specialAttack, shiny);
+            Pokemon* pokemon = new Pokemon(searchID, pokeID, pokeType, level, health, currHealth, attack, defense, speed, gender, specialDefense, specialAttack, shiny);
             token = strtok(NULL, ",");
             while (token != NULL && strcmp(token, "\n") != 0){
                 int moveID = atoi(token);
@@ -4009,6 +4014,8 @@ void loadGameState(const char *fileName, int decypher){
                 for (int i=0; i<numPK; i++){
                     fgets(line, sizeof(line), file);
                     token = strtok(line, ",");
+                    int searchID = atoi(token);
+                    token = strtok(line, ",");
                     int pokeID = atoi(token);
                     token = strtok(NULL, ",");
                     int pokeType = atoi(token);
@@ -4033,7 +4040,7 @@ void loadGameState(const char *fileName, int decypher){
                     token = strtok(NULL, ",");
                     int shiny = atoi(token);
 
-                    Pokemon* pokemon = new Pokemon(pokeID, pokeType, level, health, currHealth, attack, defense, speed, gender, specialDefense, specialAttack, shiny);
+                    Pokemon* pokemon = new Pokemon(searchID, pokeID, pokeType, level, health, currHealth, attack, defense, speed, gender, specialDefense, specialAttack, shiny);
                     token = strtok(NULL, ",");
                     while (token != NULL && strcmp(token, "\n") != 0){
                         int moveID = atoi(token);
@@ -4063,8 +4070,8 @@ void loadGameState(const char *fileName, int decypher){
     // exit(8);
 
     keypad(stdscr, TRUE);
-    printMap(wm.arr[200][200], wm.player);
-    moveEveryone(&wm, wm.arr[wm.player->row][wm.player->col], wm.numTrainers, wm.arr[wm.player->row][wm.player->col]->terrainHeap);
+    printMap(wm.arr[wm.player->globalX][wm.player->globalY], wm.player);
+    moveEveryone(&wm, wm.arr[wm.player->globalX][wm.player->globalY], wm.numTrainers, wm.arr[wm.player->globalX][wm.player->globalY]->terrainHeap);
 }
 
 
@@ -4085,7 +4092,7 @@ int main(int argc, char *argv[]){
     parseStatsFile();
     parsePokemonTypesFile();
 
-    loadGameState("savedGame.txt", 0);
+    //loadGameState("savedGame.txt", 0);
 
     //parseMovesFile();
     if (argc >= 2 ){
