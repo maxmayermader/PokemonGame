@@ -711,6 +711,13 @@ class Heap {
  // define the class Heap name
 typedef class Heap heap;
 
+// forward declarations
+heap* createHeap();
+void insertHelper(heap* h, int index);
+void heapify(heap* h, int index);
+heapNode* extractMin(heap* h);
+void insert(heap* h, heapNode* data);
+
 //map class for terrain. 21x80 map
 typedef class mapclass{
     public:
@@ -882,13 +889,6 @@ void printMap(mapclass *map, PC *pc){
 
 
 
- 
-// forward declarations
-heap* createHeap();
-void insertHelper(heap* h, int index);
-void heapify(heap* h, int index);
-heapNode* extractMin(heap* h);
-void insert(heap* h, heapNode* data);
  
 // Define a createHeap function
 heap* createHeap()
