@@ -3805,10 +3805,10 @@ int saveGameState(worldMap *wm){
                 //save terrain
                 for (int i=0; i<ROW; i++){
                     for (int j=0; j<COL; j++){
-                        if (wm->arr[wmrow][wmcol]->terrain[i][j] == '\0') {
-                            std::cout << "Terrain is null" << std::endl;
-                            break;
-                        }
+                        // if (wm->arr[wmrow][wmcol]->terrain[i][j] == '\0') {
+                        //     std::cout << "Terrain is null" << std::endl;
+                        //     break;
+                        // }
                         outfile << wm->arr[wmrow][wmcol]->terrain[i][j];
                         
                     }
@@ -3985,6 +3985,7 @@ void loadGameState(const char *fileName, int decypher){
                 }
             }
             
+            fgets(line, sizeof(line), file);
             for (int i=0; i<wm.numTrainers; i++){
                 fgets(line, sizeof(line), file);
                 token = strtok(line, ",");
@@ -4056,10 +4057,10 @@ void loadGameState(const char *fileName, int decypher){
     //mapclass *mc = wm.arr[wm.player->row][wm.player->col];
     //std::cout << wm.arr[wm.player->row][wm.player->col] << std::endl;
     initscr();
-    printMap(wm.arr[wm.player->globalX][wm.player->globalY], wm.player);
-    sleep(5);
-    endwin();
-    exit(8);
+    // printMap(wm.arr[wm.player->globalX][wm.player->globalY], wm.player);
+    // sleep(5);
+    // endwin();
+    // exit(8);
 
     keypad(stdscr, TRUE);
     printMap(wm.arr[200][200], wm.player);
