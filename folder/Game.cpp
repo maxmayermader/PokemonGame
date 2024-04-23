@@ -46,6 +46,60 @@ int randomGenerator(int upper, int lower){
 
 /*Debug Num`*/  int dbNum = 0;
 
+
+//char startMap[ROW][COL];
+int queSize = 0;
+int getQueSize(){
+    return queSize;
+}
+/////Que Implemntation////
+ class Node {  
+    public:
+    int coord[2]; 
+    char seed; 
+    class Node* next;  
+};  
+class Node* front = NULL;  ////front of que
+class Node* rear = NULL;    ////end of que
+void enqueue(int element[2], char seed) {  
+    class Node* new_node = (class Node*)malloc(sizeof(class Node));  
+    new_node->coord[0] = element[0];
+    new_node->coord[1] = element[1];
+    new_node->seed = seed;  
+    new_node->next = NULL;  
+    if (front == NULL && rear == NULL) {  
+        front = rear = new_node;  
+        return;  
+    }  
+    rear->next = new_node;  
+    rear = new_node; 
+    queSize++; 
+}   
+int dequeue(int coord[2], char *s) {  
+    if (front == NULL) {  
+        //free(front);
+        printf("Queue is empty");  
+        return -1;  
+    }  
+    class Node* temp = front;  
+    coord[0] = temp->coord[0]; 
+    coord[1] = temp->coord[1]; 
+    *s = temp->seed;
+    if (front == rear) {  
+        front = rear = NULL;  
+    }  
+    else {  
+        front = front->next;  
+    }  
+
+    free(temp);  
+    queSize --;
+    return 0;  
+}  
+/////End Que Implemntation////
+
+
+
 /*PokemonFile Class*/
 class PokemonFile{
     public:
@@ -717,6 +771,7 @@ void insertHelper(heap* h, int index);
 void heapify(heap* h, int index);
 heapNode* extractMin(heap* h);
 void insert(heap* h, heapNode* data);
+void enqueue(int element[2], char seed);
 
 //map class for terrain. 21x80 map
 typedef class mapclass{
@@ -747,9 +802,241 @@ typedef class mapclass{
         this->connection2[0] = connection20;
         this->connection2[1] = connection21;
         this->NPCSInit = NPCSInit;
+
+        for (int i=0; i<NPCROW; i++){
+            for (int j=0; j<NPCCOL; j++){
+                npcArray[i][j] = NULL;
+            }
+        }
+
+        int i;
+        int j;
+        for(i = 0; i < ROW; i++){ //Set terrai  to null
+            for(j=0; j < COL; j++){
+                if (i == 0 || i == ROW-1 || j == 0 || j == COL-1){
+                    this->terrain[i][j] = '%';
+                    continue;
+                }
+                this->terrain[i][j] = '_';
+            }
+        }
         
 
         terrainHeap = createHeap();
+    }
+
+    void generateTerrain(){
+        int grass1[2] =     {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
+        int grass2[2] =     {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
+        int water[2] =      {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
+        int clearing1[2] =  {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
+        int clearing2[2] =  {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
+        int forest[2] =     {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
+        int mountain[2] =   {rand() % (ROW - 2) + 1, rand() % (COL - 2) + 1};
+
+        //add to que
+        enqueue(grass1, GRASS);
+        enqueue(water, WATER);
+        enqueue(clearing1, CLEARING);
+        enqueue(grass2, GRASS);
+        enqueue(forest, TREE);
+        enqueue(mountain, BOULDER);
+        enqueue(clearing2, CLEARING);
+
+        char currSeed;
+
+        while (front != NULL) {
+            int currCoord[2];
+            int randVal = rand() % 10;
+        
+            dequeue(currCoord, &currSeed);
+        
+            if (randVal < 2){
+                if (currCoord[0]+1 < ROW-1){
+                    if (this->terrain[currCoord[0]+1][currCoord[1]] == '_'){
+                        int arr[2] = {currCoord[0]+1, currCoord[1]};
+                        this->terrain[arr[0]][arr[1]] = currSeed;
+                        enqueue(arr, currSeed);
+                    }
+                }
+                if (currCoord[0]-1 > 0){
+                    if (this->terrain[currCoord[0]-1][currCoord[1]] == '_'){
+                        int arr[2] = {currCoord[0]-1, currCoord[1]};
+                        this->terrain[arr[0]][arr[1]] = currSeed;
+                        enqueue(arr, currSeed);
+                    }
+                }
+            }
+            if (currCoord[1]+1 < COL-1){
+                if (this->terrain[currCoord[0]][currCoord[1]+1] == '_'){
+                    int arr[2] = {currCoord[0], currCoord[1]+1};
+                    this->terrain[arr[0]][arr[1]] = currSeed;
+                    enqueue(arr, currSeed);
+                }
+            }
+            if (currCoord[1]-1 > 0){
+                if (this->terrain[currCoord[0]][currCoord[1]-1] == '_'){
+                    int arr[2] = {currCoord[0], currCoord[1]-1};
+                    this->terrain[arr[0]][arr[1]] = currSeed;
+                    enqueue(arr, currSeed);
+                }
+            }
+        }
+
+        this->generateRoads();
+    }
+
+    void generateRoads(){
+
+    int randX = rand() % (ROW-5+1-5) + 5;
+    int randY = rand() % (COL-20+1-20) + 20;
+
+    // int connectionX1[2] = {randX, entranceX1[1]};
+    // int connectionX2[2] = {randX, entranceX2[1]};
+    // int connectionY1[2] = {entranceY1[0], randY};
+    // int connectionY2[2] = {entranceY2[0], randY};
+
+    // map->connection1[0] = connectionX1[0];
+    // map->connection1[1] = connectionX1[1];
+    // map->connection2[0] = connectionY2[0];
+    // map->connection2[1] = connectionY2[1];
+    
+    int a,b;
+
+    //build roads for cols
+    //Go down
+    // for (a=entranceX1[0]; a <= connectionX1[0]; a++){
+    //     map->terrain[a][entranceX1[1]] = '#';
+    //     //printf("1  %d     %d\n", a, entranceX1[1]);
+    // }
+    // //go sideways
+    // if(connectionX1[1] < connectionX2[1]){ //go left
+    //     for(b=connectionX1[1]; b<=connectionX2[1]; b++){
+    //         map->terrain[connectionX2[0]][b] = '#';
+    //     }
+    // } else { //Go right
+    //     for(b=connectionX1[1]; b>=connectionX2[1]; b--){
+    //         map->terrain[connectionX2[0]][b] = '#';
+    //     }
+    // }
+    // //Go down
+    // for (a=connectionX2[0]; a <= entranceX2[0]; a++){
+    //     map->terrain[a][entranceX2[1]] = '#';
+    // }
+
+
+    // //Build rooads for rows
+    // //Go right
+    // for (a=entranceY1[1]; a <= connectionY1[1]; a++){
+    //     map->terrain[entranceY1[0]][a] = '#';
+    // }
+    // //Go up or down
+    // if(connectionY1[0] < connectionY2[0]){ //go down
+    //     for(b=connectionY1[0]; b<=connectionY2[0]; b++){
+    //         map->terrain[b][connectionY1[1]] = '#';
+    //     }
+    // } else { //Go up
+    //     for(b=connectionY1[0]; b>=connectionY2[0]; b--){
+    //         map->terrain[b][connectionY1[1]] = '#';
+    //     }
+    // }    
+    // //Go right
+    // for (a=connectionY2[1]; a <= entranceY2[1]; a++){
+    //     map->terrain[entranceY2[0]][a] = '#';
+    // }
+    
+    // //if(x == 200 && y == 200){
+    //     wm->player->row = connectionX1[0];
+    //     wm->player->col = connectionX1[1];
+    // //}
+
+    // //Close gates if at the edge
+    // if (y == 0) //close North gate
+    //     map->terrain[entranceX1[0]][entranceX1[1]] = '%';
+    // if(y == worldYSize-1) //close West gate
+    //     map->terrain[entranceY2[0]][entranceY2[1]] = '%';
+    // if (x == 0) //close East gate
+    //     map->terrain[entranceY1[0]][entranceY1[1]] = '%';
+    // if(x == worldXSize-1) //close south gate
+    //     map->terrain[entranceX2[0]][entranceX2[1]] = '%';
+
+
+    // int oddsForBuilding = ((-45*DFC(this->row, this->col))/200 + 50);
+    // int chancesOutOf100 = rand() % 100 + 1;
+
+    // //Make pokemart
+    // if (distanceFromCenter == 0){
+    //     //make pokemart
+    //     int i, j;
+    //     for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
+    //         for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
+    //             map->terrain[i][j] = 'M';
+    //             // b++;
+    //             // if (b == 4)
+    //             //     break;
+    //         }
+    //     }
+    // } else if ( chancesOutOf100 <= oddsForBuilding && distanceFromCenter <= 200) { //away from center but distance is less than 200
+    //     int i, j;
+    //     for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
+    //         for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
+    //             map->terrain[i][j] = 'M';
+    //             // b++;
+    //             // if (b == 4)
+    //             //     break;
+    //         }
+    //     }
+    // } else if (chancesOutOf100 <= 5){//flat 5% chance if 200 away from center
+    //     int i, j;
+    //     for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
+    //         for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
+    //             map->terrain[i][j] = 'M';
+    //             // b++;
+    //             // if (b == 4)
+    //             //     break;
+    //         }
+    //     }
+    // }
+
+
+    // chancesOutOf100 = rand() % 100 + 1;
+    // //make Center
+    // if (distanceFromCenter == 0){//if at center
+    //     int i, j;
+        
+    //     for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
+    //         for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
+    //             map->terrain[i][j] = 'C';
+    //             // b++;
+    //             // if (b == 4)
+    //             //     break;
+    //         }
+    //     }
+    // } else if ( chancesOutOf100 <= oddsForBuilding && distanceFromCenter <= 200) { //away from center but distance is less than 200
+    //     int i, j;
+        
+    //     for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
+    //         for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
+    //             map->terrain[i][j] = 'C';
+    //             // b++;
+    //             // if (b == 4)
+    //             //     break;
+    //         }
+    //     }
+    // } else if (chancesOutOf100 <= 5){ //flat 5% chance if 200 away from center
+    //     int i, j;
+        
+    //     for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
+    //         for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
+    //             map->terrain[i][j] = 'C';
+    //             // b++;
+    //             // if (b == 4)
+    //             //     break;
+    //         }
+    //     }
+    //}
+    
+    
     }
 
 }mapclass;
@@ -773,11 +1060,6 @@ typedef class worldMap{
 
 }worldMap;
 
-//char startMap[ROW][COL];
-int queSize = 0;
-int getQueSize(){
-    return queSize;
-}
 
 //prototype declerations
     void createMap(int x, int y, worldMap *wm, int npcNum);
@@ -1018,54 +1300,6 @@ void killHeap(heap* h){
     free(h);
 }
 /*End heap implementation*/
-
-/////Que Implemntation////
- class Node {  
-    public:
-    int coord[2]; 
-    char seed; 
-    class Node* next;  
-};  
-class Node* front = NULL;  ////front of que
-class Node* rear = NULL;    ////end of que
-void enqueue(int element[2], char seed) {  
-    class Node* new_node = (class Node*)malloc(sizeof(class Node));  
-    new_node->coord[0] = element[0];
-    new_node->coord[1] = element[1];
-    new_node->seed = seed;  
-    new_node->next = NULL;  
-    if (front == NULL && rear == NULL) {  
-        front = rear = new_node;  
-        return;  
-    }  
-    rear->next = new_node;  
-    rear = new_node; 
-    queSize++; 
-}   
-int dequeue(int coord[2], char *s) {  
-    if (front == NULL) {  
-        //free(front);
-        printf("Queue is empty");  
-        return -1;  
-    }  
-    class Node* temp = front;  
-    coord[0] = temp->coord[0]; 
-    coord[1] = temp->coord[1]; 
-    *s = temp->seed;
-    if (front == rear) {  
-        front = rear = NULL;  
-    }  
-    else {  
-        front = front->next;  
-    }  
-
-    free(temp);  
-    queSize --;
-    return 0;  
-}  
-/////End Que Implemntation////
-
-
 
 
 /*Code for creating roads and buildings*/
@@ -3935,7 +4169,12 @@ void loadGameState(const char *fileName, int decypher){
             int NPCSInit = atoi(token);
 
             wm.arr[row][col] = new mapclass(row, col, gateN, gateS, gateW, gateE, connection10, connection11, connection20, connection21, NPCSInit);
-
+            wm.arr[row][col]->generateTerrain();
+            initscr();
+            printMap(wm.arr[row][col], wm.player);
+            sleep(5);
+            endwin();
+            exit(0);
             
 
         }
