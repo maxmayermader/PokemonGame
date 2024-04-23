@@ -3418,7 +3418,7 @@ void parsePokemonMovesFile(){
             pokemonMoves.level = (token != NULL) ? atoi(token) : INT_MAX;
             token = strtok(NULL, ",");
             pokemonMoves.order = (token != NULL && strcmp(token, "\n") != 0) ? atoi(token) : INT_MAX;
-            
+
             pokemonMovesVector.push_back(pokemonMoves);
             size++;
         }
@@ -3868,11 +3868,28 @@ void loadGameState(char *fileName, int decypher){
             int attack = atoi(token);
             token = strtok(NULL, ",");
             int defense = atoi(token);
+            token = strtok(NULL, ",");
+            int gender = atoi(token);
+            token = strtok(NULL, ",");
+            int speed = atoi(token);
+            token = strtok(NULL, ",");
+            int specialDefense = atoi(token);
+            token = strtok(NULL, ",");
+            int specialAttack = atoi(token);
+            token = strtok(NULL, ",");
+            int shiny = atoi(token);
+
+            /*outfile << wm->player->pokemons[i]->id << ", " << wm->player->pokemons[i]->type << ", " << wm->player->pokemons[i]->health << ", " << wm->player->pokemons[i]->currHealth << ", " << wm->player->pokemons[i]->level 
+        << wm->player->pokemons[i]->attack << ", " << wm->player->pokemons[i]->defense << ", " << wm->player->pokemons[i]->gender  << ", " << wm->player->pokemons[i]->speed << ", " << wm->player->pokemons[i]->specialDefense << ", " 
+        << wm->player->pokemons[i]->specialAttack << ", " << wm->player->pokemons[i]->shiny << ", ";*/
             
-
-            Pokemon pokemon = new Pokemon(pokeID, pokeType, health, currHealth, level, attack, defense);
-            while ((token = strtok(NULL, ",")) != NULL){
-
+            // Pokemon(int id, int type, int level, int health, int currHealth, int attack, int defense, int speed, int gender, int specialDefense, int specialAttack, int shiny)
+            Pokemon pokemon = new Pokemon(pokeID, pokeType, level, health, currHealth, attack, defense, speed, gender, specialDefense, specialAttack, shiny);
+            token = strtok(NULL, ",");
+            while (strcmp(token, "\n") != 0){
+                int moveID = atoi(token);
+                pokemon.addMoveFromID(moveID);
+                token = strtok(NULL, ",");
             } 
 
         }
