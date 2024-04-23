@@ -727,6 +727,24 @@ typedef class mapclass{
     PC* playerT;
     int NPCSInit; 
     heap* terrainHeap;
+
+    mapclass(int row, int col, int gateN, int gateS, int gateW, int gateE, int connection10, int connection11, int connection20, int connection21, int NPCSInit){
+        this->row = row;
+        this->col = col;
+        this->gateN = gateN;
+        this->gateS = gateS;
+        this->gateW = gateW;
+        this->gateE = gateE;
+        this->connection1[0] = connection10;
+        this->connection1[1] = connection11;
+        this->connection2[0] = connection20;
+        this->connection2[1] = connection21;
+        this->NPCSInit = NPCSInit;
+        
+
+        terrainHeap = createHeap();
+    }
+
 }mapclass;
 
 
@@ -3904,16 +3922,19 @@ void loadGameState(const char *fileName, int decypher){
             int gateW = atoi(token);
             token = strtok(NULL, ",");
             int gateE = atoi(token);
+
             token = strtok(NULL, ", (");
             int connection10 = atoi(token);
             token = strtok(NULL, ",");
             int connection11 = atoi(token);
             token = strtok(NULL, ", (");
-            int connection20;
-            token = strtok(NULL, ",");
-            int connection21;
+            int connection20 = atoi(token);
+            token = strtok(NULL, ", (");
+            int connection21 = atoi(token);
             token = strtok(NULL, ",");
             int NPCSInit = atoi(token);
+
+            wm.arr[row][col] = new mapclass(row, col, gateN, gateS, gateW, gateE, connection10, connection11, connection20, connection21, NPCSInit);
 
         }
 
@@ -4013,7 +4034,7 @@ int main(int argc, char *argv[]){
     parseStatsFile();
     parsePokemonTypesFile();
 
-    //loadGameState("savedGame.txt", 0);
+    loadGameState("savedGame.txt", 0);
 
     //parseMovesFile();
     if (argc >= 2 ){
