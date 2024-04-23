@@ -3802,6 +3802,20 @@ int saveGameState(worldMap *wm){
         for(int wmcol = 0; wmcol < worldYSize; wmcol++){
             if (wm->arr[wmrow][wmcol] != NULL){
                 outfile << wm->arr[wmrow][wmcol]->row << ", " << wm->arr[wmrow][wmcol]->col << ", " << wm->arr[wmrow][wmcol]->gateN << ", " << wm->arr[wmrow][wmcol]->gateS << ", " << wm->arr[wmrow][wmcol]->gateW << ", " << wm->arr[wmrow][wmcol]->gateE << ", (" << wm->arr[wmrow][wmcol]->connection1[0] << ", " << wm->arr[wmrow][wmcol]->connection1[1] << "), (" << wm->arr[wmrow][wmcol]->connection2[0] << ", " << wm->arr[wmrow][wmcol]->connection2[1] << "), " << wm->arr[wmrow][wmcol]->NPCSInit << std::endl;
+                //save terrain
+                for (int i=0; i<ROW; i++){
+                    for (int j=0; j<COL; j++){
+                        if (wm->arr[wmrow][wmcol]->terrain[i][j] == '\0') {
+                            std::cout << "Terrain is null" << std::endl;
+                            break;
+                        }
+                        outfile << wm->arr[wmrow][wmcol]->terrain[i][j];
+                        
+                    }
+                }
+                outfile << std::endl;
+
+
                 // make save npcs
                 while (wm->arr[wmrow][wmcol]->terrainHeap->size > 0){
                     //NPC *npc = (NPC*)extractMin(wm->arr[wmrow][wmcol]->h);
@@ -3873,7 +3887,7 @@ void loadGameState(const char *fileName, int decypher){
 
         srand(wm.seed);
 
-
+        //save pc
         wm.player = (PC*)malloc(sizeof(PC));
         fgets(line, sizeof(line), file);
         token = strtok(line, ",");
@@ -3962,6 +3976,14 @@ void loadGameState(const char *fileName, int decypher){
 
             wm.arr[Trow][Tcol] = new mapclass(Trow, Tcol, gateN, gateS, gateW, gateE, connection10, connection11, connection20, connection21, NPCSInit);
             //TODO: get terrain.
+            char terrainLine[ROW*COL+1];
+            fgets(terrainLine, sizeof(terrainLine), file);
+            for (int i=0; i<ROW; i++){
+                for (int j=0; j<COL; j++){
+                    int index = i*COL+j;
+                    wm.arr[Trow][Tcol]->terrain[i][j] = terrainLine[index];
+                }
+            }
             
             for (int i=0; i<wm.numTrainers; i++){
                 fgets(line, sizeof(line), file);
