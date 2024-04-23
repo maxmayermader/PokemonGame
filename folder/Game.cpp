@@ -3741,8 +3741,9 @@ int saveGameState(worldMap *wm){
     //save pc
     outfile << wm->player->row <<", " << wm->player->col << ", " << wm->player->globalX << ", " << wm->player->globalY << ", " << wm->player->numPK << ", " << wm->player->currPoke << ", " << wm->player->potions << ", " << wm->player->pokeballs << ", " << wm->player->revives << std::endl;
     for (int i=0; i<wm->player->numPK; i++){ //Save pokemon
-        outfile << wm->player->pokemons[i]->id << ", " << wm->player->pokemons[i]->type << ", " << wm->player->pokemons[i]->health << ", " << wm->player->pokemons[i]->currHealth << ", " << wm->player->pokemons[i]->level 
-        << wm->player->pokemons[i]->attack << ", " << wm->player->pokemons[i]->defense << ", " << wm->player->pokemons[i]->gender  << ", " << wm->player->pokemons[i]->speed << ", " << wm->player->pokemons[i]->specialDefense << ", " 
+        outfile << wm->player->pokemons[i]->id << ", " << wm->player->pokemons[i]->type << ", " << wm->player->pokemons[i]->health << ", " << wm->player->pokemons[i]->currHealth << ", " 
+        << wm->player->pokemons[i]->level << ", " << wm->player->pokemons[i]->attack << ", " << wm->player->pokemons[i]->defense << ", "  
+        << wm->player->pokemons[i]->gender  << ", " << wm->player->pokemons[i]->speed << ", " << wm->player->pokemons[i]->specialDefense << ", " 
         << wm->player->pokemons[i]->specialAttack << ", " << wm->player->pokemons[i]->shiny << ", ";
         for (int j=0; j<(int)wm->player->pokemons[i]->pkMoves.size(); j++){
             outfile << wm->player->pokemons[i]->pkMoves[j].id;
@@ -3770,7 +3771,8 @@ int saveGameState(worldMap *wm){
 
 
                     NPC *npc = hn->npc;
-                    outfile << "[ " << hn->weight << ", " << npc->symb << ", " << npc->row << ", " << npc->col << ", " << npc->direc << ", " << npc->defeated << ", " << npc->numPK << ", " << npc->currPoke << std::endl;
+                    //<< "[ "
+                    outfile << hn->weight << ", " << npc->symb << ", " << npc->row << ", " << npc->col << ", " << npc->direc << ", " << npc->defeated << ", " << npc->numPK << ", " << npc->currPoke << std::endl;
                     for (int i=0; i<npc->numPK; i++){
                         outfile << npc->pokemons[i]->id << ", " << npc->pokemons[i]->type << ", " << npc->pokemons[i]->health << ", " << npc->pokemons[i]->currHealth << ", " << npc->pokemons[i]->level 
                         << npc->pokemons[i]->attack << ", " << npc->pokemons[i]->defense << ", " << npc->pokemons[i]->gender  << ", " << npc->pokemons[i]->speed << ", " << npc->pokemons[i]->specialDefense << ", " 
@@ -3784,15 +3786,12 @@ int saveGameState(worldMap *wm){
                             }
                         }
                     }
-                    outfile << "]" << std::endl;
+                    //outfile << "]" << std::endl;
                 }
-                outfile << std::endl;
+                //outfile << std::endl;
             }
         }
     }
-
-
-
 
     outfile.close();
 
@@ -3800,7 +3799,7 @@ int saveGameState(worldMap *wm){
     exit(0);
 }
 
-void loadGameState(char *fileName, int decypher){
+void loadGameState(const char *fileName, int decypher){
     parsePokemonFile();
     parseMovesFile();    
     parsePokemonMovesFile();
@@ -3854,6 +3853,7 @@ void loadGameState(char *fileName, int decypher){
 
         for(int i=0; i<wm.player->numPK; i++){
             fgets(line, sizeof(line), file);
+            //*id  type  health  currHealth  level attack  defense  gender   speed  specialDefense specialAttack  shiny*  Moves
             token = strtok(line, ",");
             int pokeID = atoi(token);
             token = strtok(NULL, ",");
@@ -3879,30 +3879,49 @@ void loadGameState(char *fileName, int decypher){
             token = strtok(NULL, ",");
             int shiny = atoi(token);
 
-            /*outfile << wm->player->pokemons[i]->id << ", " << wm->player->pokemons[i]->type << ", " << wm->player->pokemons[i]->health << ", " << wm->player->pokemons[i]->currHealth << ", " << wm->player->pokemons[i]->level 
-        << wm->player->pokemons[i]->attack << ", " << wm->player->pokemons[i]->defense << ", " << wm->player->pokemons[i]->gender  << ", " << wm->player->pokemons[i]->speed << ", " << wm->player->pokemons[i]->specialDefense << ", " 
-        << wm->player->pokemons[i]->specialAttack << ", " << wm->player->pokemons[i]->shiny << ", ";*/
             
-            // Pokemon(int id, int type, int level, int health, int currHealth, int attack, int defense, int speed, int gender, int specialDefense, int specialAttack, int shiny)
-            Pokemon pokemon = new Pokemon(pokeID, pokeType, level, health, currHealth, attack, defense, speed, gender, specialDefense, specialAttack, shiny);
+            Pokemon* pokemon = new Pokemon(pokeID, pokeType, level, health, currHealth, attack, defense, speed, gender, specialDefense, specialAttack, shiny);
             token = strtok(NULL, ",");
-            while (strcmp(token, "\n") != 0){
+            while (token != NULL && strcmp(token, "\n") != 0){
                 int moveID = atoi(token);
-                pokemon.addMoveFromID(moveID);
+                pokemon->addMoveFromID(moveID);
                 token = strtok(NULL, ",");
             } 
-
+            wm.player->pokemons[i] = pokemon;
         }
 
 
         while (fgets(line, sizeof(line), file)) { 
-            
+            token = strtok(line, ",");
+            int row = atoi(token);
+            token = strtok(NULL, ",");
+            int col = atoi(token);
+            token = strtok(NULL, ",");
+            int gateN = atoi(token);
+            token = strtok(NULL, ",");
+            int gateS = atoi(token);
+            token = strtok(NULL, ",");
+            int gateW = atoi(token);
+            token = strtok(NULL, ",");
+            int gateE = atoi(token);
+            token = strtok(NULL, ", (");
+            int connection10 = atoi(token);
+            token = strtok(NULL, ",");
+            int connection11 = atoi(token);
+            token = strtok(NULL, ", (");
+            int connection20;
+            token = strtok(NULL, ",");
+            int connection21;
+            token = strtok(NULL, ",");
+            int NPCSInit = atoi(token);
+
         }
 
         
 
     } else {
         printf("File not found: %s\n", fileName);
+        exit(1);
     }
 
 
@@ -3994,7 +4013,7 @@ int main(int argc, char *argv[]){
     parseStatsFile();
     parsePokemonTypesFile();
 
-    loadGameState("savedGame.txt", 0);
+    //loadGameState("savedGame.txt", 0);
 
     //parseMovesFile();
     if (argc >= 2 ){
