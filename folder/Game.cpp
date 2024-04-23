@@ -3936,6 +3936,8 @@ void loadGameState(const char *fileName, int decypher){
 
             wm.arr[row][col] = new mapclass(row, col, gateN, gateS, gateW, gateE, connection10, connection11, connection20, connection21, NPCSInit);
 
+            
+
         }
 
         
