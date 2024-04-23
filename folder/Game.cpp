@@ -3417,8 +3417,8 @@ void parsePokemonMovesFile(){
             token = strtok(NULL, ",");
             pokemonMoves.level = (token != NULL) ? atoi(token) : INT_MAX;
             token = strtok(NULL, ",");
-            pokemonMoves.order = (token != NULL) ? atoi(token) : INT_MAX;
-
+            pokemonMoves.order = (token != NULL && strcmp(token, "\n") != 0) ? atoi(token) : INT_MAX;
+            
             pokemonMovesVector.push_back(pokemonMoves);
             size++;
         }
@@ -3872,7 +3872,7 @@ void loadGameState(char *fileName, int decypher){
 
             Pokemon pokemon = new Pokemon(pokeID, pokeType, health, currHealth, level, attack, defense);
             while ((token = strtok(NULL, ",")) != NULL){
-                
+
             } 
 
         }
