@@ -2262,7 +2262,7 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
     move player in square for now
     */
 
-   int npcRow = ROW+2;
+    int npcRow = ROW+2;
     
     heapNode* hnNPC = (heapNode*)malloc(sizeof(heapNode));
     hnNPC->npc=NULL;
@@ -3935,9 +3935,9 @@ void loadGameState(const char *fileName, int decypher){
 
         while (fgets(line, sizeof(line), file)) { 
             token = strtok(line, ",");
-            int row = atoi(token);
+            int Trow = atoi(token);
             token = strtok(NULL, ",");
-            int col = atoi(token);
+            int Tcol = atoi(token);
             token = strtok(NULL, ",");
             int gateN = atoi(token);
             token = strtok(NULL, ",");
@@ -3958,13 +3958,13 @@ void loadGameState(const char *fileName, int decypher){
             token = strtok(NULL, ",");
             int NPCSInit = atoi(token);
 
-            wm.arr[row][col] = new mapclass(row, col, gateN, gateS, gateW, gateE, connection10, connection11, connection20, connection21, NPCSInit);
+            wm.arr[Trow][Tcol] = new mapclass(Trow, Tcol, gateN, gateS, gateW, gateE, connection10, connection11, connection20, connection21, NPCSInit);
             //TODO: get terrain.
             
             for (int i=0; i<wm.numTrainers; i++){
                 fgets(line, sizeof(line), file);
                 token = strtok(line, ",");
-                int weight = atoi(token);
+                int weight = atoi(token);  /*TODO: Test weights*/
                 token = strtok(NULL, ",");
                 char symb = token[0];
                 token = strtok(NULL, ",");
@@ -3998,10 +3998,27 @@ void loadGameState(const char *fileName, int decypher){
                     token = strtok(NULL, ",");
                     int defense = atoi(token);
                     token = strtok(NULL, ",");
+                    int gender = atoi(token);
+                    token = strtok(NULL, ",");
+                    int speed = atoi(token);
+                    token = strtok(NULL, ",");
+                    int specialDefense = atoi(token);
+                    token = strtok(NULL, ",");
+                    int specialAttack = atoi(token);
+                    token = strtok(NULL, ",");
+                    int shiny = atoi(token);
 
-            
+                    Pokemon* pokemon = new Pokemon(pokeID, pokeType, level, health, currHealth, attack, defense, speed, gender, specialDefense, specialAttack, shiny);
+                    token = strtok(NULL, ",");
+                    while (token != NULL && strcmp(token, "\n") != 0){
+                        int moveID = atoi(token);
+                        pokemon->addMoveFromID(moveID);
+                        token = strtok(NULL, ",");
+                    }
+                    npc->pokemons[i] = pokemon;
             
                 }
+                wm.arr[Trow][Tcol]->npcArray[npcRow][npcCol] = npc;
             }
         }
 
@@ -4011,8 +4028,14 @@ void loadGameState(const char *fileName, int decypher){
         printf("File not found: %s\n", fileName);
         exit(1);
     }
+
+
     
     initscr();
+    printMap(wm.arr[wm.player->row][wm.player->col], wm.player);
+    sleep(5);
+    exit(8);
+
     keypad(stdscr, TRUE);
     printMap(wm.arr[200][200], wm.player);
     moveEveryone(&wm, wm.arr[wm.player->row][wm.player->col], wm.numTrainers, wm.arr[wm.player->row][wm.player->col]->terrainHeap);
