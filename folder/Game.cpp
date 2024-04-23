@@ -3830,6 +3830,8 @@ void loadGameState(char *fileName, int decypher){
         token = strtok(NULL, ",");
         wm.numTrainers = atoi(token);
 
+
+        wm.player = (PC*)malloc(sizeof(PC));
         fgets(line, sizeof(line), file);
         token = strtok(line, ",");
         wm.player->row = atoi(token);
@@ -3849,8 +3851,31 @@ void loadGameState(char *fileName, int decypher){
         wm.player->pokeballs = atoi(token);
         token = strtok(NULL, ",");
         wm.player->revives = atoi(token);
-        
 
+        for(int i=0; i<wm.player->numPK; i++){
+            fgets(line, sizeof(line), file);
+            token = strtok(line, ",");
+            int pokeID = atoi(token);
+            token = strtok(NULL, ",");
+            int pokeType = atoi(token);
+            token = strtok(NULL, ",");
+            int health = atoi(token);
+            token = strtok(NULL, ",");
+            int currHealth = atoi(token);
+            token = strtok(NULL, ",");
+            int level = atoi(token);
+            token = strtok(NULL, ",");
+            int attack = atoi(token);
+            token = strtok(NULL, ",");
+            int defense = atoi(token);
+            
+
+            Pokemon pokemon = new Pokemon(pokeID, pokeType, health, currHealth, level, attack, defense);
+            while ((token = strtok(NULL, ",")) != NULL){
+                
+            } 
+
+        }
 
 
         while (fgets(line, sizeof(line), file)) { 
@@ -3866,59 +3891,59 @@ void loadGameState(char *fileName, int decypher){
 
 
 
-    PC *pc = (PC*)malloc(sizeof(PC));
-    // int row;
-    // int col;
-    // int globalX;
-    // int globalY;
-    pc->numPK = 0;
-    // pc->currPoke = 0;
-    // pc->globalX = 0;
-    // int potions;
-    // int pokeballs;
-    // int revives;
-    // Pokemon* pokemons[6];
+    // PC *pc = (PC*)malloc(sizeof(PC));
+    // // int row;
+    // // int col;
+    // // int globalX;
+    // // int globalY;
+    // pc->numPK = 0;
+    // // pc->currPoke = 0;
+    // // pc->globalX = 0;
+    // // int potions;
+    // // int pokeballs;
+    // // int revives;
+    // // Pokemon* pokemons[6];
 
-    for (int i=0; i<pc->numPK; i++){
-        pc->pokemons[i] = (Pokemon*)malloc(sizeof(Pokemon));
-        /////
-    }
+    // for (int i=0; i<pc->numPK; i++){
+    //     pc->pokemons[i] = (Pokemon*)malloc(sizeof(Pokemon));
+    //     /////
+    // }
 
-    for(int wmrow = 0; wmrow < ROW; wmrow++){
-        for(int wmcol = 0; wmcol < COL; wmcol++){
-            wm.arr[wmrow][wmcol] = (mapclass*)malloc(sizeof(mapclass));
-            // int gateN;//top
-            // int gateS;//bottom
-            // int gateW;//left
-            // int gateE;//right
-            // int connection1[2];
-            // int connection2[2];
+    // for(int wmrow = 0; wmrow < ROW; wmrow++){
+    //     for(int wmcol = 0; wmcol < COL; wmcol++){
+    //         wm.arr[wmrow][wmcol] = (mapclass*)malloc(sizeof(mapclass));
+    //         // int gateN;//top
+    //         // int gateS;//bottom
+    //         // int gateW;//left
+    //         // int gateE;//right
+    //         // int connection1[2];
+    //         // int connection2[2];
 
-            /*I can just generate the terrain from the seed*/
+    //         /*I can just generate the terrain from the seed*/
 
-            // char terrain[ROW][COL];
-            // NPC* npcArray[NPCROW][NPCCOL];
-            // int NPCSInit; 
-            // heap* terrainHeap;
-            for (int i=0; i<wm.numTrainers; i++){
-                NPC *npc = (NPC*)malloc(sizeof(NPC));
-                // int symb; 
-                // int row; 
-                // int col;
-                // int direc;
-                // int weightArr[NPCROW][NPCCOL]; 
-                // int defeated;
-                // Pokemon* pokemons[6];
-                // int numPK;
-                // int currPoke;
-                for (int poke = 0; poke < npc->numPK; poke++){
-                    npc->pokemons[poke] = (Pokemon*)malloc(sizeof(Pokemon));
-                    /////
-                }
-                /*add to heap*/
-            }
-        }
-    }
+    //         // char terrain[ROW][COL];
+    //         // NPC* npcArray[NPCROW][NPCCOL];
+    //         // int NPCSInit; 
+    //         // heap* terrainHeap;
+    //         for (int i=0; i<wm.numTrainers; i++){
+    //             NPC *npc = (NPC*)malloc(sizeof(NPC));
+    //             // int symb; 
+    //             // int row; 
+    //             // int col;
+    //             // int direc;
+    //             // int weightArr[NPCROW][NPCCOL]; 
+    //             // int defeated;
+    //             // Pokemon* pokemons[6];
+    //             // int numPK;
+    //             // int currPoke;
+    //             for (int poke = 0; poke < npc->numPK; poke++){
+    //                 npc->pokemons[poke] = (Pokemon*)malloc(sizeof(Pokemon));
+    //                 /////
+    //             }
+    //             /*add to heap*/
+    //         }
+    //     }
+    // }
 
     /*Add pc to heap with lowest weight*/
     
@@ -3951,6 +3976,8 @@ int main(int argc, char *argv[]){
     parsePokemonStatsFile();
     parseStatsFile();
     parsePokemonTypesFile();
+
+    loadGameState("savedGame.txt", 0);
 
     //parseMovesFile();
     if (argc >= 2 ){
