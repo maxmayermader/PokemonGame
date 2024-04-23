@@ -562,6 +562,22 @@ typedef class NPC{
     int numPK;
     int currPoke;
 
+    NPC(int symb, int npcRow, int npcCol, int direc, int defeated, int numPK, int currPoke){
+        this->symb = symb;
+        this->row = npcRow;
+        this->col = npcCol;
+        this->direc = direc;
+        this->defeated = defeated;
+        this->numPK = numPK;
+        this->currPoke = currPoke;
+
+        for (int i=0; i<NPCROW; i++){
+            for (int j=0; j<NPCCOL; j++){
+                weightArr[i][j] = INFINTY;
+            }
+        }
+    }
+
     bool isDefeated(){
         if(currPoke < numPK){
             return false;
@@ -806,18 +822,6 @@ typedef class mapclass{
         for (int i=0; i<NPCROW; i++){
             for (int j=0; j<NPCCOL; j++){
                 npcArray[i][j] = NULL;
-            }
-        }
-
-        int i;
-        int j;
-        for(i = 0; i < ROW; i++){ //Set terrai  to null
-            for(j=0; j < COL; j++){
-                if (i == 0 || i == ROW-1 || j == 0 || j == COL-1){
-                    this->terrain[i][j] = '%';
-                    continue;
-                }
-                this->terrain[i][j] = '_';
             }
         }
         
@@ -3955,9 +3959,50 @@ void loadGameState(const char *fileName, int decypher){
             int NPCSInit = atoi(token);
 
             wm.arr[row][col] = new mapclass(row, col, gateN, gateS, gateW, gateE, connection10, connection11, connection20, connection21, NPCSInit);
+            //TODO: get terrain.
             
-            
+            for (int i=0; i<wm.numTrainers; i++){
+                fgets(line, sizeof(line), file);
+                token = strtok(line, ",");
+                int weight = atoi(token);
+                token = strtok(NULL, ",");
+                char symb = token[0];
+                token = strtok(NULL, ",");
+                int npcRow = atoi(token);
+                token = strtok(NULL, ",");
+                int npcCol = atoi(token);
+                token = strtok(NULL, ",");
+                int direc = atoi(token);
+                token = strtok(NULL, ",");
+                int defeated = atoi(token);
+                token = strtok(NULL, ",");
+                int numPK = atoi(token);
+                token = strtok(NULL, ",");
+                int currPoke = atoi(token);
 
+                NPC *npc = new NPC(symb, npcRow, npcCol, direc, defeated, numPK, currPoke);
+                for (int i=0; i<numPK; i++){
+                    fgets(line, sizeof(line), file);
+                    token = strtok(line, ",");
+                    int pokeID = atoi(token);
+                    token = strtok(NULL, ",");
+                    int pokeType = atoi(token);
+                    token = strtok(NULL, ",");
+                    int health = atoi(token);
+                    token = strtok(NULL, ",");
+                    int currHealth = atoi(token);
+                    token = strtok(NULL, ",");
+                    int level = atoi(token);
+                    token = strtok(NULL, ",");
+                    int attack = atoi(token);
+                    token = strtok(NULL, ",");
+                    int defense = atoi(token);
+                    token = strtok(NULL, ",");
+
+            
+            
+                }
+            }
         }
 
         
