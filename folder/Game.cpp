@@ -3871,6 +3871,8 @@ void loadGameState(const char *fileName, int decypher){
         token = strtok(NULL, ",");
         wm.numTrainers = atoi(token);
 
+        srand(wm.seed);
+
 
         wm.player = (PC*)malloc(sizeof(PC));
         fgets(line, sizeof(line), file);
@@ -4029,11 +4031,12 @@ void loadGameState(const char *fileName, int decypher){
         exit(1);
     }
 
-
-    
+    //mapclass *mc = wm.arr[wm.player->row][wm.player->col];
+    //std::cout << wm.arr[wm.player->row][wm.player->col] << std::endl;
     initscr();
-    printMap(wm.arr[wm.player->row][wm.player->col], wm.player);
+    printMap(wm.arr[wm.player->globalX][wm.player->globalY], wm.player);
     sleep(5);
+    endwin();
     exit(8);
 
     keypad(stdscr, TRUE);
@@ -4043,14 +4046,8 @@ void loadGameState(const char *fileName, int decypher){
 
 
 
-int main(int argc, char *argv[]){
-    int seed;
-    //seed = time(NULL);
-    seed = 11223344;
-    srand(seed); //11223344
-   
+int main(int argc, char *argv[]){ 
     worldMap wm;
-    wm.seed = seed;
     wm.numTrainers = 10;
     int currR = 200;
     int currC = 200;
@@ -4086,6 +4083,12 @@ int main(int argc, char *argv[]){
             }
         }
     }
+
+    int seed;
+    //seed = time(NULL);
+    seed = 11223344;
+    srand(seed); //11223344
+    wm.seed = seed;
        
     
 
