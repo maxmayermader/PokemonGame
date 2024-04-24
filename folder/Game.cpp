@@ -836,6 +836,16 @@ typedef class mapclass{
         terrainHeap = createHeap();
     }
 
+    void addNPCToHeap(NPC *npc, int weight){
+        heapNode *hn = (heapNode*)malloc(sizeof(heapNode));
+        hn->npc = npc;
+        hn->weight = 0;
+        hn->row = -1;
+        hn->col = -1;
+        hn->pc = NULL;
+        insert(terrainHeap, hn);
+    }
+
 }mapclass;
 
 
@@ -871,7 +881,7 @@ typedef class worldMap{
     void trainerList(mapclass *terrainMap, PC *pc);
     void enterBattle(NPC *npc, PC *pc);
     void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum);
-    void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h);
+    void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h, int saved);
     void encounterPokemon(PC *pc);
     int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP);
     int fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc, int pMove);
@@ -1640,7 +1650,7 @@ void fly(int row, int col, worldMap *wm, int npcNum, int gate){
         }
         printMap(wm->arr[row][col], wm->player);
         refresh();
-        moveEveryone(wm, wm->arr[row][col], npcNum, wm->arr[row][col]->terrainHeap);
+        moveEveryone(wm, wm->arr[row][col], npcNum, wm->arr[row][col]->terrainHeap, 0);
     } else {
         createMap(row, col, wm, npcNum);
         if (gate == N){
@@ -1673,7 +1683,7 @@ void fly(int row, int col, worldMap *wm, int npcNum, int gate){
         }
         printMap(wm->arr[row][col], wm->player);
         refresh();
-        moveEveryone(wm, wm->arr[row][col], npcNum, wm->arr[row][col]->terrainHeap);
+        moveEveryone(wm, wm->arr[row][col], npcNum, wm->arr[row][col]->terrainHeap, 0);
     }
 }
 
@@ -2255,7 +2265,7 @@ int canMove(mapclass *terrainMap, int symb, int row, int col, int prevRow, int p
 
 
 
-void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
+void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h, int saved){
     /*
     init heap
     add player to heap
@@ -2268,6 +2278,11 @@ void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h){
     print when players turn
     move player in square for now
     */
+   if (saved == 1){
+    while (terrainMap->terrainHeap->size > 0){
+        extractMin(terrainMap->terrainHeap);
+    }
+   }
 
     int npcRow = ROW+2;
     
@@ -3800,6 +3815,9 @@ int encryptFile(const char *filename){
 int saveGameState(worldMap *wm){
     endwin();
     std::cout << "You are saving the game." << std::endl;
+    std::fstream fout;
+    fout.open("savedGame.txt", std::fstream::out);
+    fout.close();
     std::ofstream outfile ("savedGame.txt");
 
 
@@ -3860,9 +3878,9 @@ int saveGameState(worldMap *wm){
                         //Save npc pokemon
                         /*
                         outfile << wm->player->pokemons[i]->searchID << ", " << wm->player->pokemons[i]->id << ", " << wm->player->pokemons[i]->type << ", " << wm->player->pokemons[i]->health << ", " << wm->player->pokemons[i]->currHealth << ", " 
-        << wm->player->pokemons[i]->level << ", " << wm->player->pokemons[i]->attack << ", " << wm->player->pokemons[i]->defense << ", "  
-        << wm->player->pokemons[i]->gender  << ", " << wm->player->pokemons[i]->speed << ", " << wm->player->pokemons[i]->specialDefense << ", " 
-        << wm->player->pokemons[i]->specialAttack << ", " << wm->player->pokemons[i]->shiny << ", ";
+            << wm->player->pokemons[i]->level << ", " << wm->player->pokemons[i]->attack << ", " << wm->player->pokemons[i]->defense << ", "  
+            << wm->player->pokemons[i]->gender  << ", " << wm->player->pokemons[i]->speed << ", " << wm->player->pokemons[i]->specialDefense << ", " 
+            << wm->player->pokemons[i]->specialAttack << ", " << wm->player->pokemons[i]->shiny << ", ";
                         */
                         outfile << npc->pokemons[i]->searchID << ", " << npc->pokemons[i]->id << ", " << npc->pokemons[i]->type << ", " << npc->pokemons[i]->health << ", " << npc->pokemons[i]->currHealth << ", " << npc->pokemons[i]->level << ", "
                         << npc->pokemons[i]->attack << ", " << npc->pokemons[i]->defense << ", " << npc->pokemons[i]->gender  << ", " << npc->pokemons[i]->speed << ", " << npc->pokemons[i]->specialDefense << ", " 
@@ -4126,6 +4144,7 @@ void loadGameState(const char *searchFile, int decypher){
             
                 }
                 wm.arr[Trow][Tcol]->npcArray[npcRow][npcCol] = npc;
+                wm.arr[Trow][Tcol]->addNPCToHeap(npc, weight);
             }
         }
 
@@ -4146,7 +4165,7 @@ void loadGameState(const char *searchFile, int decypher){
 
     keypad(stdscr, TRUE);
     printMap(wm.arr[wm.player->globalX][wm.player->globalY], wm.player);
-    moveEveryone(&wm, wm.arr[wm.player->globalX][wm.player->globalY], wm.numTrainers, wm.arr[wm.player->globalX][wm.player->globalY]->terrainHeap);
+    moveEveryone(&wm, wm.arr[wm.player->globalX][wm.player->globalY], wm.numTrainers, wm.arr[wm.player->globalX][wm.player->globalY]->terrainHeap, 1);
 }
 
 
@@ -4167,7 +4186,7 @@ int main(int argc, char *argv[]){
     parseStatsFile();
     parsePokemonTypesFile();
 
-    //loadGameState("encryptedSave.txt", 341);
+    //loadGameState("savedGame.txt", 0);
 
     //parseMovesFile();
     if (argc >= 2 ){
@@ -4214,7 +4233,7 @@ int main(int argc, char *argv[]){
     //lprintf("(%d, %d)\n", currX-200, currY-200);
 
     printMap(wm.arr[200][200], wm.player);
-    moveEveryone(&wm, wm.arr[200][200], wm.numTrainers, wm.arr[200][200]->terrainHeap);
+    moveEveryone(&wm, wm.arr[200][200], wm.numTrainers, wm.arr[200][200]->terrainHeap, 0);
     
     endwin();
     return 0;
