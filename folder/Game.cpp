@@ -12,6 +12,7 @@
 #include <vector>
 #include <cmath>
 #include <unistd.h>
+//#include <bits/stdc++.h>
 
 #define MAX_SIZE 100  
 #define ROW 21//21 //Y
@@ -1880,7 +1881,7 @@ int getNextSmallestMove(mapclass *terrainMap, NPC* npc, int *row, int *col){
 
     for(i=-1; i<=1; i++){
         for(j=-1; j<=1; j++){
-            if(i != 0 && j != 0){
+            if((i == 0 && j != 0) || (i != 0 && j == 0)){
                 if(canMove(terrainMap, npc->symb, npc->row+1+i, npc->col+1+j, npc->row+1, npc->col+1) == 1){ 
                     if (minCost > npc->weightArr[npc->row+i][npc->col+j] ){
                         minCost = npc->weightArr[npc->row+i][npc->col+j];
@@ -1892,7 +1893,7 @@ int getNextSmallestMove(mapclass *terrainMap, NPC* npc, int *row, int *col){
         }
     }
     //mvprintw(ROW+6, 20, "small new row %d, new col %d min cost=%d", *row, *col, minCost);
-    refresh();
+    //refresh();
     return minCost;
 }
 
@@ -3728,6 +3729,7 @@ int id;
     }
 }
 
+
 void parsePokemonTypesFile(){
     //std::vector<PokemonTypes> pokemonTypesVector;
     int size = 0;
@@ -3767,23 +3769,41 @@ void parsePokemonTypesFile(){
     }
 }
 
+int encryptFile(const char *filename){
+    int key = randomGenerator(999, 100);
+    char c;
+
+    std::fstream fin, fout;
+ 
+    // Open input file
+    // ios::binary- reading file
+    // character by character
+    fin.open(filename, std::fstream::in);
+    fout.open("encryptedSave.txt", std::fstream::out);
+ 
+    // Reading original file till
+    // end of file
+    while (fin >> std::noskipws >> c) {
+        int temp = (c + key);
+ 
+        // Write temp as char in
+        // output file
+        fout << (char)temp;
+    }
+ 
+    // Closing both files
+    fin.close();
+    fout.close();
+    return key;
+}
+
 int saveGameState(worldMap *wm){
     endwin();
     std::cout << "You are saving the game." << std::endl;
     std::ofstream outfile ("savedGame.txt");
 
 
-    // std::ofstream myfile;
-    // myfile.open("saveTest1.txt");
-    // myfile << "Writing this to a file.\n";
-    //  if (myfile.is_open())
-    // {
-    //     myfile << "This is a line.\n";
-    //     myfile << "This is another line.\n";
-    //     myfile.close();
-    // }
-    // else std::cout << "Unable to open file";
-    // myfile.close();
+
     outfile << wm->seed << ", " << wm->numTrainers << std::endl; //save world map
 
     //save pc
@@ -3865,11 +3885,49 @@ int saveGameState(worldMap *wm){
 
     outfile.close();
 
+    char in;
+    std::cout << "Would you like to encrypt the file? (y/n)" << std::endl;
+    std::cin >> in;
+    if (in == 'y'){
+        std::cout << "Encrypting file..." << std::endl;
+        //encrypt file
+        int key = encryptFile("savedGame.txt");
+        std::cout << "File encrypted with key: " << key << std::endl;
+    } 
+
+
     std::cout << "Game Saved.\nThanks for playing! See you soon." << std::endl;
     exit(0);
 }
 
-void loadGameState(const char *fileName, int decypher){
+void decryptFile(const char *filename, int key){
+    char c;
+
+    std::fstream fin, fout;
+ 
+    // Open input file
+    // ios::binary- reading file
+    // character by character
+    fin.open(filename, std::fstream::in);
+    fout.open("savedGame.txt", std::fstream::out);
+ 
+    // Reading original file till
+    // end of file
+    while (fin >> std::noskipws >> c) {
+        int temp = (c - key);
+ 
+        // Write temp as char in
+        // output file
+        fout << (char)temp;
+    }
+ 
+    // Closing both files
+    fin.close();
+    fout.close();
+    
+}
+
+void loadGameState(const char *searchFile, int decypher){
     // parsePokemonFile();
     // parseMovesFile();    
     // parsePokemonMovesFile();
@@ -3879,6 +3937,13 @@ void loadGameState(const char *fileName, int decypher){
     // parsePokemonStatsFile();
     // parseStatsFile();
     // parsePokemonTypesFile();
+
+    char *fileName = strdup(searchFile);
+
+    if (decypher != 0){
+        decryptFile(fileName, decypher);
+        fileName = strcpy(fileName, "savedGame.txt");
+    } 
     
     FILE *file = fopen(fileName, "r");
     worldMap wm;
@@ -3886,10 +3951,7 @@ void loadGameState(const char *fileName, int decypher){
     //PC
     //mapClass arr
     if (file != NULL){
-        if (decypher != 0){
-            //TODO: decypher
-            //decypher file
-        } 
+        
 
         char line[100];
 
@@ -4105,7 +4167,7 @@ int main(int argc, char *argv[]){
     parseStatsFile();
     parsePokemonTypesFile();
 
-    //loadGameState("savedGame.txt", 0);
+    loadGameState("encryptedSave.txt", 341);
 
     //parseMovesFile();
     if (argc >= 2 ){
@@ -4113,17 +4175,23 @@ int main(int argc, char *argv[]){
             wm.numTrainers = atoi(argv[2]);
         } 
         else if (argc >= 3 && strcmp(argv[1], "--load") == 0) {
-            printf("Is the save encrypted? (y/n)\n");
-            char in = getchar();
-            if (in == 'y'){
-                //int decypher = atoi(argv[3]);
-                printf("Enter the decypher key: ");
-                int decypher;
-                scanf("%d", &decypher);
+            if (argc >= 4){
+                int decypher = atoi(argv[3]);
                 loadGameState(argv[2], decypher);
             } else {
                 loadGameState(argv[2], 0);
             }
+            // printf("Is the save encrypted? (y/n)\n");
+            // char in = getchar();
+            // if (in == 'y'){
+            //     //int decypher = atoi(argv[3]);
+            //     printf("Enter the decypher key: ");
+            //     int decypher;
+            //     scanf("%d", &decypher);
+            //     loadGameState(argv[2], decypher);
+            // } else {
+            //     loadGameState(argv[2], 0);
+            // }
         }
     }
 
