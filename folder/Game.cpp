@@ -2219,14 +2219,14 @@ int canMove(mapclass *terrainMap, int symb, int row, int col, int prevRow, int p
             }
         case PACER:
             if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
-            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY ){//is empty //calcCost(terrainMap->terrain[prevRow][prevCol], 1) != INFINTY
+            terrainMap->npcArray[row-1][col-1] == NULL && calcCost(PACER, terrainMap->terrain[row][col]) != INFINITY){              //terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY ){//is empty //calcCost(terrainMap->terrain[prevRow][prevCol], 1) != INFINTY
                 return 1;
             } else {
                 return -1;
             }
         case WANDERER:
-            if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
-            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY && //is empty
+            if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border     //terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY
+            terrainMap->npcArray[row-1][col-1] == NULL && calcCost(WANDERER, terrainMap->terrain[row][col]) != INFINITY && //is empty
             terrainMap->terrain[row][col] == terrainMap->terrain[prevRow][prevCol]){ //same kind of terrain
                 return 1;
             } else {
@@ -2236,7 +2236,7 @@ int canMove(mapclass *terrainMap, int symb, int row, int col, int prevRow, int p
             return 1;
         case EXPLORERS:
             if ((row > 0 && row < ROW - 1 && col > 0 && col < COL-1) && //check if in border
-            terrainMap->npcArray[row-1][col-1] == NULL && terrainMap->npcArray[prevRow-1][prevCol-1]->weightArr[prevRow-1][prevCol-1] != INFINTY){//is empty
+            terrainMap->npcArray[row-1][col-1] == NULL && calcCost(EXPLORERS, terrainMap->terrain[row][col]) != INFINITY){//is empty
                 return 1;
             } else {
                 return -1;
@@ -3838,7 +3838,13 @@ int saveGameState(worldMap *wm){
                     outfile << hn->weight << ", " << npc->symb << ", " << npc->row << ", " << npc->col << ", " << npc->direc << ", " << npc->defeated << ", " << npc->numPK << ", " << npc->currPoke << std::endl;
                     for (int i=0; i<npc->numPK; i++){
                         //Save npc pokemon
-                        outfile << npc->pokemons[i]->searchID << ", " << npc->pokemons[i]->id << ", " << npc->pokemons[i]->type << ", " << npc->pokemons[i]->health << ", " << npc->pokemons[i]->currHealth << ", " << npc->pokemons[i]->level 
+                        /*
+                        outfile << wm->player->pokemons[i]->searchID << ", " << wm->player->pokemons[i]->id << ", " << wm->player->pokemons[i]->type << ", " << wm->player->pokemons[i]->health << ", " << wm->player->pokemons[i]->currHealth << ", " 
+        << wm->player->pokemons[i]->level << ", " << wm->player->pokemons[i]->attack << ", " << wm->player->pokemons[i]->defense << ", "  
+        << wm->player->pokemons[i]->gender  << ", " << wm->player->pokemons[i]->speed << ", " << wm->player->pokemons[i]->specialDefense << ", " 
+        << wm->player->pokemons[i]->specialAttack << ", " << wm->player->pokemons[i]->shiny << ", ";
+                        */
+                        outfile << npc->pokemons[i]->searchID << ", " << npc->pokemons[i]->id << ", " << npc->pokemons[i]->type << ", " << npc->pokemons[i]->health << ", " << npc->pokemons[i]->currHealth << ", " << npc->pokemons[i]->level << ", "
                         << npc->pokemons[i]->attack << ", " << npc->pokemons[i]->defense << ", " << npc->pokemons[i]->gender  << ", " << npc->pokemons[i]->speed << ", " << npc->pokemons[i]->specialDefense << ", " 
                         << npc->pokemons[i]->specialAttack << ", " << npc->pokemons[i]->shiny << ", ";
                         for (int j=0; j<(int)npc->pokemons[i]->pkMoves.size(); j++){
