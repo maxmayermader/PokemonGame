@@ -1,7 +1,7 @@
 # PokemonGame
 
 ## Description
-PokemonGame is a text-based roguelike game where players can explore different maps, encounter Pokemon, and battle NPCs. The game also features save files with optional encryption for added security.
+PokemonGame is a text-based roguelike game where players can explore different maps, encounter Pokemon, and battle NPCs. The game also features save files with optional encryption for added security. You can visit branches to see progress.
 
 ## Features
 - Explore various maps with unique environments and challenges.
