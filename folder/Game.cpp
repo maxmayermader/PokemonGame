@@ -4167,7 +4167,7 @@ int main(int argc, char *argv[]){
     parseStatsFile();
     parsePokemonTypesFile();
 
-    loadGameState("encryptedSave.txt", 341);
+    //loadGameState("encryptedSave.txt", 341);
 
     //parseMovesFile();
     if (argc >= 2 ){
@@ -4196,8 +4196,8 @@ int main(int argc, char *argv[]){
     }
 
     int seed;
-    //seed = time(NULL);
-    seed = 11223344;
+    seed = time(NULL);
+    //seed = 11223344;
     srand(seed); //11223344
     wm.seed = seed;
        
