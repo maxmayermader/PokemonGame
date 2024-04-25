@@ -12,7 +12,6 @@
 #include <vector>
 #include <cmath>
 #include <unistd.h>
-//#include <bits/stdc++.h>
 
 #define MAX_SIZE 100  
 #define ROW 21//21 //Y
@@ -224,12 +223,6 @@ std::vector<Stats> statsVector;
 std::vector<PokemonTypes> pokemonTypesVector;
 
 bool searchPokemonVector(int id, PokemonFile *p){
-    // for (int i = 1; i < (int)pokemonVector.size(); i++){
-    //     if (pokemonVector[i].id == id){
-    //         *p = pokemonVector[i];
-    //         return true;
-    //     }
-    // }
     *p = pokemonVector[id];
     return false;
 }
@@ -354,27 +347,7 @@ class Pokemon{
     std::vector<Moves> allPossibleMoves;
 
     
-    Pokemon(){ //Incomplete
-        // PokemonFile pf;
-        // searchPokemonVector(randomGenerator(1092, 1), &pf);
-        // id = pf.id;
-        // iv = randomGenerator(15, 0); // Generate a random Individual Value (IV) for the Pokemon, between 0 and 15 
-        // strcpy(identfier, pf.identifier); // Set the identifier for this Pokemon using the identifier from the PokemonFile object
-        // PokemonStats ps;
-        // searchPokemonStatsVector(id, 1, &ps); // Search the Pokemon stats vector for the stats corresponding to this Pokemon's ID
-        // health = baseHealth = ps.base_stat; // Set the base stat for this Pokemon using the base stat from the PokemonStats object
-        // level = 1; // Set the initial level for this Pokemon to 1
-        // searchPokemonStatsVector(id, 2, &ps);
-        // attack = baseAttack = ps.base_stat;
-        // searchPokemonStatsVector(id, 3, &ps);
-        // defense = baseDefense = ps.base_stat; 
-        // gender = randomGenerator(1,0); // Generate a random gender for this Pokemon, 0 or 1
-        // if (rand() % 8192 == 0){ // Determine if the Pokemon is shiny (rare variant) with a 1 in 8192 chance
-        //     shiny = 1;
-        // } else {
-        //     shiny = 0;
-        // }
-    }
+    Pokemon(){/**Incomplete*/}
 
     Pokemon(int distance){ //T H I S 
         PokemonFile pf;
@@ -977,8 +950,6 @@ void printMap(mapclass *map, PC *pc){
 }
 
 
-
- 
 // Define a createHeap function
 heap* createHeap()
 {
@@ -1081,7 +1052,6 @@ heapNode* extractMin(heap* h){
  
 // Define a insert function
 void insert(heap* h, heapNode* data){
- 
     // Checking if heap is full or not
     if (h->size < MAX_HEAP_SIZE) {
         // Inserting data into an array
@@ -1096,7 +1066,6 @@ void insert(heap* h, heapNode* data){
  
 void printHeap(heap* h)
 {
- 
     for (int i = 0; i < h->size; i++) {
         printf("%d ", h->arr[i]->weight);
     }
@@ -1109,7 +1078,21 @@ void killHeap(heap* h){
 /*End heap implementation*/
 
 
-/*Code for creating roads and buildings*/
+/**
+ * Creates roads, gates, and buildings (PokeMart and PokeCenter) on the map.
+ * 
+ * @param map Pointer to the mapclass object representing the current terrain.
+ * @param distanceFromCenter An integer representing the distance from the center of the map.
+ * @param x An integer representing the x-coordinate of the center of the map.
+ * @param y An integer representing the y-coordinate of the center of the map.
+ * @param wm Pointer to the worldMap object representing the game world.
+ * 
+ * This function creates roads on the map and places gates at the north, south, east, and west edges. 
+ * The location of the gates is determined randomly, but within certain bounds to ensure they are not 
+ * too close to the corners. If a gate already exists in a certain direction, the function uses the 
+ * existing gate location instead of generating a new one. The roads are created based on the distance 
+ * from the center of the map. The function also places buildings (PokeMart and PokeCenter) on the map.
+ */
 void makeRoads(mapclass *map, int distanceFromCenter, int x, int y, worldMap* wm){
     //rand() % (max_number + 1 - minimum_number) + minimum_number
     int entranceX1[2] = {0, rand() % (COL-4+1-4)+4}; //North gate
@@ -1228,9 +1211,7 @@ void makeRoads(mapclass *map, int distanceFromCenter, int x, int y, worldMap* wm
         for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
             for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
                 map->terrain[i][j] = 'M';
-                // b++;
-                // if (b == 4)
-                //     break;
+                // b++; // if (b == 4) //     break;     break;
             }
         }
     } else if ( chancesOutOf100 <= oddsForBuilding && distanceFromCenter <= 200) { //away from center but distance is less than 200
@@ -1238,9 +1219,7 @@ void makeRoads(mapclass *map, int distanceFromCenter, int x, int y, worldMap* wm
         for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
             for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
                 map->terrain[i][j] = 'M';
-                // b++;
-                // if (b == 4)
-                //     break;
+                // b++; // if (b == 4) //     break;
             }
         }
     } else if (chancesOutOf100 <= 5){//flat 5% chance if 200 away from center
@@ -1248,9 +1227,7 @@ void makeRoads(mapclass *map, int distanceFromCenter, int x, int y, worldMap* wm
         for(i = entranceX1[0]+1; i<entranceX1[0]+3; i++){
             for(j = entranceX1[1]+1; j<entranceX1[1]+3; j++){
                 map->terrain[i][j] = 'M';
-                // b++;
-                // if (b == 4)
-                //     break;
+                // b++; // if (b == 4) //     break;    break;
             }
         }
     }
@@ -1264,9 +1241,7 @@ void makeRoads(mapclass *map, int distanceFromCenter, int x, int y, worldMap* wm
         for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
             for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
                 map->terrain[i][j] = 'C';
-                // b++;
-                // if (b == 4)
-                //     break;
+                // b++; // if (b == 4) //     break;
             }
         }
     } else if ( chancesOutOf100 <= oddsForBuilding && distanceFromCenter <= 200) { //away from center but distance is less than 200
@@ -1275,9 +1250,7 @@ void makeRoads(mapclass *map, int distanceFromCenter, int x, int y, worldMap* wm
         for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
             for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
                 map->terrain[i][j] = 'C';
-                // b++;
-                // if (b == 4)
-                //     break;
+                // b++; // if (b == 4) //     break;
             }
         }
     } else if (chancesOutOf100 <= 5){ //flat 5% chance if 200 away from center
@@ -1286,9 +1259,7 @@ void makeRoads(mapclass *map, int distanceFromCenter, int x, int y, worldMap* wm
         for(i = entranceY1[0]+1; i<entranceY1[0]+3; i++){
             for(j = entranceY1[1]+1; j<entranceY1[1]+3; j++){
                 map->terrain[i][j] = 'C';
-                // b++;
-                // if (b == 4)
-                //     break;
+                // b++;// if (b == 4) //     break;
             }
         }
     }
@@ -1591,9 +1562,6 @@ void createMap(int x, int y, worldMap *wm, int npcNum){
 
     wm->arr[x][y] = newMap; //add new terrain map to world map
 
-    //newMap->playerT = wm->player;
-    // newMap->playerT->row = wm->player->row;
-    // newMap->playerT->col = wm->player->col;
 
     if(newMap->NPCSInit == 0){
         placeNPCS(wm, newMap, npcNum);
@@ -1603,22 +1571,6 @@ void createMap(int x, int y, worldMap *wm, int npcNum){
     heap* h = createHeap();
     newMap->terrainHeap = h;
 
-    //printMap(newMap, wm->player); //print map and player
-    
-//     newMap->npcArray[0][0] = malloc(sizeof(NPC)); //Hiker
-//     newMap->npcArray[0][1] = malloc(sizeof(NPC)); //Rival
-
-//     newMap->npcArray[0][0]->symb = 0;
-//     newMap->npcArray[0][1]->symb = 1;
-
-//     dijkstras(wm->player->row, wm->player->col, wm->arr[x][y], newMap->npcArray[0][0]->weightArr, newMap->npcArray[0][0]->symb); //dijkstras for hiker
-//     dijkstras(wm->player->row, wm->player->col, wm->arr[x][y], newMap->npcArray[0][1]->weightArr, newMap->npcArray[0][1]->symb); //dijkstras for rival
-
-//     printf("Weights for hiker\n");
-//     printWeightMap(wm->arr[x][y]->npcArray[0][0]->weightArr);
-
-//     printf("Weights for rival\n");
-//     printWeightMap(wm->arr[x][y]->npcArray[0][1]->weightArr);
 }
 
 /*Go to terrain map at x y*/
@@ -2264,7 +2216,21 @@ int canMove(mapclass *terrainMap, int symb, int row, int col, int prevRow, int p
 }
 
 
-
+/**
+ * Moves all characters on the map based on their move weight.
+ * 
+ * @param wm Pointer to the worldMap object representing the game world.
+ * @param terrainMap Pointer to the mapclass object representing the current terrain.
+ * @param numTrainers An integer representing the number of trainers on the map.
+ * @param h Pointer to the heap object used to manage the characters' movements.
+ * @param saved An integer indicating whether the game state has been saved.
+ * 
+ * This function initializes the heap and adds the player and NPCs to it. 
+ * It then moves each character based on their move weight, which is determined 
+ * by factors such as their speed and the terrain. The function also handles 
+ * the player's turn and updates the game state accordingly. If the game state 
+ * has been saved, the function first clears the heap before proceeding.
+ */
 void moveEveryone(worldMap *wm, mapclass *terrainMap, int numTrainers, heap *h, int saved){
     /*
     init heap
@@ -2592,6 +2558,24 @@ void enterBuilding(char building, PC *pc){
     while((in = getchar()) != '<'){}
 }
 
+/**
+ * Formats a string with location information and copies it to a buffer.
+ * 
+ * @param buffer A 2D char array to hold the formatted strings.
+ * @param c A character representing a specific location type.
+ * @param ns A character ('n' or 's') indicating the North-South direction.
+ * @param ew A character ('e' or 'w') indicating the East-West direction.
+ * @param row An integer representing the row distance.
+ * @param col An integer representing the column distance.
+ * @param i An integer representing the current index in the buffer.
+ * 
+ * This function formats a string with the provided location information, 
+ * using the snprintf function to format the string and copy it into the buffer. 
+ * The formatted string includes the location type (represented by 'c'), 
+ * the North-South direction ('ns'), the East-West direction ('ew'), 
+ * and the row and column distances. The formatted string is then copied 
+ * to the buffer at the specified index ('i').
+ */
 void copyToScreen(char buffer[1000][80], char c, char ns, char ew, int row, int col, int i) {
   if (ns == 'n') {
     if (ew == 'e') {
@@ -2607,6 +2591,7 @@ void copyToScreen(char buffer[1000][80], char c, char ns, char ew, int row, int 
     }
   }
 }
+
 
 void trainerList(mapclass *terrainMap, PC *pc){
  clear();
@@ -2911,7 +2896,21 @@ int attack(Pokemon *attacker, Pokemon *defender, Moves *move, int isPC){
     return 0;
 }
 
-int fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc, int pMove){ //TODO randomGenerator(2, 1)
+/**
+ * Handles the NPC's turn in a fight between the player's Pokemon and an NPC's Pokemon.
+ * 
+ * @param npc Pointer to the NPC object representing the non-player character.
+ * @param wp Pointer to the Pokemon object representing the wild Pokemon.
+ * @param pc Pointer to the PC object representing the player character.
+ * @param pMove An integer indicating the move chosen by the player.
+ * 
+ * This function manages the NPC's turn in a fight between the player's Pokemon and an NPC's Pokemon. 
+ * The NPC chooses a move, which is then used to attack the player's Pokemon. The function displays 
+ * the name of the move chosen by the NPC and the result of the attack. If the player's Pokemon is 
+ * defeated, the function returns PLAYERDEFEATED. If the NPC's move misses, the function displays 
+ * a message and continues the fight.
+ */
+int fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc, int pMove){ 
     if (npc != NULL){
         wp = npc->pokemons[npc->currPoke];
     }
@@ -2941,7 +2940,21 @@ int fightNPCTurn(NPC *npc, Pokemon* wp, PC *pc, int pMove){ //TODO randomGenerat
     return 0;
 }
 
-int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP){ //TODO
+/**
+ * Handles a fight between the player's Pokemon and an enemy Pokemon.
+ * 
+ * @param pc Pointer to the PC object representing the player character.
+ * @param wildPokemon Pointer to the Pokemon object representing the wild Pokemon.
+ * @param npc Pointer to the NPC object representing the non-player character.
+ * @param switchP An integer indicating whether the player is switching Pokemon.
+ * 
+ * This function manages a fight between the player's Pokemon and an enemy Pokemon, 
+ * which can be either a wild Pokemon or an NPC's Pokemon. The function first displays 
+ * the enemy Pokemon's name, level, and health. It then enters a loop where the player 
+ * can choose to attack, use an item, run away, or switch their active Pokemon. The loop 
+ * continues until one of the Pokemon is defeated or the player runs away.
+ */
+int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP){ 
     move(8,0);
     if (npc != NULL){
         wildPokemon = npc->pokemons[npc->currPoke];
@@ -3178,6 +3191,16 @@ int fight(PC *pc, Pokemon *wildPokemon, NPC *npc, int switchP){ //TODO
     return 0;         
 }
 
+/**
+ * Handles a random encounter with a wild Pokemon.
+ * 
+ * @param pc Pointer to the PC object representing the player character.
+ * 
+ * This function generates a new wild Pokemon based on the player's global position. 
+ * It then enters a loop where the player can choose to fight, use an item from their bag, 
+ * run away, or switch their active Pokemon. The loop continues until the player runs away, 
+ * all of the player's Pokemon are knocked out, or the wild Pokemon is defeated.
+ */
 void encounterPokemon(PC *pc){
     Pokemon* spawnedPokemon = new Pokemon(DFC(pc->globalX, pc->globalY));
     pc->findFirstPoke(); //Get first pokemon not knocked out
@@ -3273,6 +3296,23 @@ void encounterPokemon(PC *pc){
 
 }
 
+/**
+ * Handles the player's movement when they reach a gate on the map.
+ * 
+ * @param wm Pointer to the worldMap object representing the game world.
+ * @param terrainMap Pointer to the mapclass object representing the current terrain.
+ * @param pc Pointer to the PC object representing the player character.
+ * @param newRow The row the player is moving to.
+ * @param newCol The column the player is moving to.
+ * @param curRow The current row of the player.
+ * @param curCol The current column of the player.
+ * @param direc The direction the player is moving in.
+ * @param npcNum The number of NPCs in the current terrain.
+ * 
+ * This function checks if the player has reached a gate on the map. If they have, 
+ * it updates the player's global position and calls the fly function to move the player 
+ * to the new terrain. The direction of the movement determines which gate (N, E, S, W) is checked.
+ */
 void moveOnGate(worldMap *wm, mapclass *terrainMap, PC *pc, int newRow, int newCol, int curRow, int curCol, int direc, int npcNum){
     mvprintw(ROW+2, 0, "new row %d, new col %d", newRow, newCol);
     switch (direc){
@@ -3784,6 +3824,16 @@ void parsePokemonTypesFile(){
     }
 }
 
+/**
+ * Encrypts a file using a given key.
+ * 
+ * @param filename The name of the file to encrypt.
+ * @param key The key to use for encryption.
+ * 
+ * This function reads the data from the specified file, encrypts it using the provided key, 
+ * and writes the encrypted data back to the file. This is used to secure game state data 
+ * that is saved to a file.
+ */
 int encryptFile(const char *filename){
     int key = randomGenerator(999, 100);
     char c;
@@ -3918,6 +3968,16 @@ int saveGameState(worldMap *wm){
     exit(0);
 }
 
+/**
+ * Decrypts a file using a given key.
+ * 
+ * @param filename The name of the file to decrypt.
+ * @param key The key to use for decryption.
+ * 
+ * This function reads the data from the specified file, decrypts it using the provided key, 
+ * and writes the decrypted data back to the file. This is used to decrypt game state data 
+ * that has been previously encrypted for security purposes.
+ */
 void decryptFile(const char *filename, int key){
     char c;
 
@@ -3945,6 +4005,15 @@ void decryptFile(const char *filename, int key){
     
 }
 
+/**
+ * Loads the game state from a file.
+ * 
+ * @param searchFile The name of the file to load the game state from.
+ * @param decypher An integer used to decrypt the game state data in the file.
+ * 
+ * This function reads the game state data from the specified file, decrypts it using the provided decypher value, 
+ * and updates the current game state with the loaded data. This allows the player to continue a previously saved game.
+ */
 void loadGameState(const char *searchFile, int decypher){
     // parsePokemonFile();
     // parseMovesFile();    
